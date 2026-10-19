@@ -1,6 +1,6 @@
 
 """
-Core data models used throughout the MDM Audit application.
+Core data models used throughout the VPN Audit application.
 
 This module defines the strongly-typed data structures that represent:
 
@@ -20,43 +20,25 @@ throughout the application.
 """
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
-class Platform(str, Enum):
+class VPNVendor(str, Enum):
     """
-    Supported device platforms.
-
-    Used to determine which questions, context fields, findings,
-    and reports apply to a given assessment.
-
-    Values:
-        IOS: Apple iOS devices.
-        ANDROID: Android devices.
-        BOTH: Shared controls applicable to both platforms.
-    """
-
-    IOS = "ios"
-    ANDROID = "android"
-    BOTH = "both"
-
-
-class Vendor(str, Enum):
-    """
-    Supported Mobile Device Management (MDM) vendors.
+    Supported VPN vendors.
 
     Used for displaying vendor-specific navigation hints
-    and generating platform-specific preparation guides.
-
-    The values correspond to the normalised vendor names
-    used throughout the application.
+    throughout the assessment process.
     """
-    INTUNE = "Microsoft Intune"
-    JAMF = "Jamf Pro"
-    WORKSPACE_ONE = "Omnissa Workspace ONE"
-    GOOGLE_ENDPOINT = "Google Endpoint Management"
+
+    CISCO = "Cisco Secure Client"
+    GLOBALPROTECT = "Palo Alto GlobalProtect"
+    FORTICLIENT = "Fortinet FortiClient"
+    CHECKPOINT = "Check Point Remote Access VPN"
+    ALWAYS_ON_VPN = "Microsoft Always On VPN"
+    OPENVPN = "OpenVPN"
+    WIREGUARD = "WireGuard"
     OTHER = "Other"
 
 
@@ -89,19 +71,8 @@ class ContextField(BaseModel):
     """
     Defines a contextual information field collected before
     the assessment begins.
-
-    Context fields describe metadata about the client
-    environment such as:
-
-    - Client name
-    - MDM platform
-    - MDM version
-    - Device counts
-    - Policy counts
-    - Minimum supported operating system versions
-
-    Fields are loaded dynamically from context_fields.yaml.
     """
+
     id: str
     order: int
 
@@ -109,8 +80,6 @@ class ContextField(BaseModel):
     type: str
 
     required: bool = True
-
-    platforms: list[Platform]
 
     options: list[str] | None = None
 
@@ -122,60 +91,34 @@ class ReviewContext(BaseModel):
     Stores environment information gathered during the
     assessment context collection phase.
 
-    This information is used within exported reports,
-    preparation guides, and XML outputs to provide
-    background information about the reviewed environment.
+    This information is used within exported reports
+    and findings to provide background information
+    about the reviewed VPN environment.
 
     A single ReviewContext exists for each assessment.
     """
 
     client_name: str
+    vpn_vendor: VPNVendor
+    vpn_version: str
 
-    mdm_vendor: Vendor
-    mdm_version: str
+    vpn_user_count: int | None = None
 
-    ios_policy_count: Optional[int] = None
-    android_policy_count: Optional[int] = None
+    authentication_method: str | None = None
 
-    minimum_ios_version: Optional[str] = None
-    minimum_android_version: Optional[str] = None
-
-    ios_device_count: Optional[int] = None
-    android_device_count: Optional[int] = None
+    context_notes: dict[str, str] = Field(default_factory=dict)
 
 
 class QuestionResponse(BaseModel):
     """
     Represents the assessor's response to a single question.
-
-    Responses are recorded regardless of whether the
-    control is compliant or non-compliant and provide
-    a complete audit trail of the assessment.
-
-    These records form the basis for generating findings,
-    positive observations, reports, and future analytics.
     """
 
     question_id: int
 
-    platform: Platform
-
     answer: AuditAnswer
 
     notes: str | None = None
-
-
-class VendorHints(BaseModel):
-    """
-    Vendor-specific navigation hints used to guide
-    the assessor to the relevant configuration within
-    each supported MDM platform.
-    """
-
-    intune: str
-    jamf: str
-    workspace_one: str
-    google_endpoint: str
 
 
 class Question(BaseModel):
@@ -196,7 +139,6 @@ class Question(BaseModel):
     """
 
     id: int
-    applies_to: Platform
 
     finding_id: str
     finding_title: str
@@ -213,54 +155,40 @@ class Question(BaseModel):
     good_value: str
     bad_value: str
 
-    hints: VendorHints
+    hints: dict[str, str] | None = None
+    vendors: list[str] = Field(default_factory=lambda: ["all"])
 
 
 class Finding(BaseModel):
     """
     Represents a non-compliant control identified during
     the assessment.
-
-    Findings are created when the assessor's response does
-    not match the expected compliant state defined by the
-    question.
-
-    Each finding contains:
-    - Vulnerability identifier
-    - Platform
-    - Description of the issue
-    - Recommended remediation
     """
-    
+
     finding_id: str
-    platform: Platform
+
     title: str
+
     description: str
     commentary: str
     solution: str
+
+    notes: str | None = None
 
 
 class PositiveObservation(BaseModel):
     """
     Represents a successfully implemented security control.
-
-    Positive observations are generated when a control
-    meets the expected compliance requirements and can
-    be included within reports and executive summaries.
-
-    These observations help demonstrate security strengths
-    alongside identified findings.
     """
+
     finding_id: str
-
-    platform: Platform
-
     text: str
+    notes: str | None = None
 
 
 class AssessmentResults(BaseModel):
     """
-    Represents the complete outcome of an MDM assessment.
+    Represents the complete outcome of a VPN assessment.
 
     This model acts as the central object exchanged between
     the review engine and exporters.
@@ -275,6 +203,7 @@ class AssessmentResults(BaseModel):
     Exporters should consume this model instead of directly
     accessing the review engine or raw YAML data.
     """
+
     context: ReviewContext
 
     findings: list[Finding] = Field(default_factory=list)

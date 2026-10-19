@@ -1,12 +1,12 @@
 """
-Assessment workflow engine for MDM reviews.
+Assessment workflow engine for VPN reviews.
 
 This module contains the core assessment workflow logic and is
 responsible for:
 
-- Selecting the appropriate context fields
-- Selecting the appropriate audit questions
-- Filtering controls by platform
+- Collecting assessment context
+- Selecting applicable audit questions
+- Filtering controls by VPN vendor
 - Coordinating the assessment workflow
 
 The review engine is intentionally separated from reporting and
@@ -14,112 +14,62 @@ export functionality to ensure the assessment logic remains
 independent from output formats.
 """
 
-from mdm_audit.models import (
+from vpn_audit.models import (
     AssessmentResults,
     AuditAnswer,
     ContextField,
     Finding,
-    Platform,
     PositiveObservation,
     Question,
     QuestionResponse,
     ReviewContext,
-    Vendor
+    VPNVendor,
 )
-from mdm_audit.loader import (
+from vpn_audit.loader import (
     load_context_fields,
     load_questions,
 )
-from mdm_audit.ui import console
+from vpn_audit.ui import console
 
+
+def get_applicable_context_fields(
+    fields: list[ContextField],
+) -> list[ContextField]:
+    """
+    Return all configured context fields.
+    """
+
+    return sorted(
+        fields,
+        key=lambda field: field.order,
+    )
 
 
 def get_applicable_questions(
     questions: list[Question],
-    platforms: list[Platform],
+    vendor: VPNVendor,
 ) -> list[Question]:
     """
-    Return all questions applicable to the selected platforms.
-
-    Shared controls are included once regardless of how many
-    platforms are selected.
-
-    Args:
-        questions:
-            Complete set of available audit questions.
-
-        platforms:
-            Platforms selected for review.
-
-    Returns:
-        Ordered list of questions to present to the assessor.
+    Return all questions applicable to the selected VPN vendor.
     """
 
     applicable_questions = []
 
     for question in questions:
-        if question.applies_to == Platform.BOTH:
+
+        if any(
+            vendor_name.lower() == "all"
+            for vendor_name in question.vendors
+        ):
             applicable_questions.append(question)
 
-        elif question.applies_to in platforms:
+        elif vendor.value in question.vendors:
             applicable_questions.append(question)
 
-    return sorted(applicable_questions, key=lambda q: q.id)
-
-
-def get_applicable_context_fields(
-    fields: list[ContextField],
-    platforms: list[Platform],
-) -> list[ContextField]:
-    """
-    Return all context fields applicable to the selected platforms.
-
-    Args:
-        fields:
-            Complete set of context fields.
-
-        platforms:
-            Platforms selected for review.
-
-    Returns:
-        Ordered list of context fields to collect.
-    """
-
-    applicable_fields = []
-
-    for field in fields:
-        if any(platform in field.platforms for platform in platforms):
-            applicable_fields.append(field)
-
-    return sorted(applicable_fields, key=lambda field: field.order)
-
-
-def select_platforms() -> list[Platform]:
-    """
-    Prompt the assessor to select the scope of the review.
-    """
-
-    console.print()
-    console.print("[bold]Which mobile platforms are being reviewed?[/bold]")
-    console.print("1. iOS and Android")
-    console.print("2. iOS only")
-    console.print("3. Android only")
-
-    while True:
-        choice = input("> ").strip()
-
-        match choice:
-            case "1":
-                return [Platform.IOS, Platform.ANDROID]
-
-            case "2":
-                return [Platform.IOS]
-
-            case "3":
-                return [Platform.ANDROID]
-
-            case _:
-                console.print("[red]Invalid selection.[/red]")
+    return sorted(
+        applicable_questions,
+        key=lambda q: q.id,
+    )
 
 
 def collect_context(
@@ -130,6 +80,7 @@ def collect_context(
     """
 
     responses = {}
+    context_notes = {}
 
     for field in fields:
 
@@ -153,7 +104,7 @@ def collect_context(
         else:
             console.print(f"[bold]{field.label}[/bold]")
 
-            vendor = responses.get("mdm_vendor")
+            vendor = responses.get("vpn_vendor")
                             
             if field.hints and vendor:
     
@@ -180,36 +131,33 @@ def collect_context(
                 except ValueError:
                     value = input(f"{field.label} (enter a number): ")
 
+        console.print("[bold]Notes (optional):[/bold]")
+        notes = input("> ").strip() or None
+
+        if notes:
+            context_notes[field.id] = notes
+            
         responses[field.id] = value
+
+    responses["context_notes"] = context_notes
 
     return ReviewContext(**responses)
 
 
 def ask_question(
     question: Question,
-    vendor: Vendor,
-    platforms: list[Platform],
+    vendor: VPNVendor,
     current: int,
     total: int,
-) -> list[QuestionResponse]:
+) -> QuestionResponse:
     """
-    Present a question to the assessor and record one or more
-    responses.
+    Present a question to the assessor and record the response.
     """
 
-    vendor_map = {
-        Vendor.INTUNE: question.hints.intune,
-        Vendor.JAMF: question.hints.jamf,
-        Vendor.WORKSPACE_ONE: question.hints.workspace_one,
-        Vendor.GOOGLE_ENDPOINT: question.hints.google_endpoint,
-    }
+    hint = None
 
-    hint = vendor_map.get(vendor)
-
-    if question.applies_to == Platform.BOTH:
-        question_platforms = platforms
-    else:
-        question_platforms = [question.applies_to]
+    if question.hints:
+        hint = question.hints.get(vendor.value)
 
     console.print()
     console.print(
@@ -225,56 +173,49 @@ def ask_question(
         f"[red]✗ {question.bad_value}[/red]"
     )
 
-    responses = []
+    console.print("1. Compliant")
+    console.print("2. Non-Compliant")
+    console.print("3. Not Applicable")
+    console.print("4. Unknown")
 
-    for platform in question_platforms:
-        console.print(f"[bold]{platform.value.upper()}[/bold]")
+    while True:
+        choice = input("> ").strip()
 
-        console.print("1. Compliant")
-        console.print("2. Non-Compliant")
-        console.print("3. Not Applicable")
-        console.print("4. Unknown")
+        match choice:
+            case "1":
+                answer = AuditAnswer.COMPLIANT
+                break
 
-        while True:
-            choice = input("> ").strip()
+            case "2":
+                answer = AuditAnswer.NON_COMPLIANT
+                break
 
-            match choice:
-                case "1":
-                    answer = AuditAnswer.COMPLIANT
-                    break
+            case "3":
+                answer = AuditAnswer.NOT_APPLICABLE
+                break
 
-                case "2":
-                    answer = AuditAnswer.NON_COMPLIANT
-                    break
+            case "4":
+                answer = AuditAnswer.UNKNOWN
+                break
 
-                case "3":
-                    answer = AuditAnswer.NOT_APPLICABLE
-                    break
+            case _:
+                console.print(
+                    "[red]Invalid selection.[/red]"
+                )
 
-                case "4":
-                    answer = AuditAnswer.UNKNOWN
-                    break
+    console.print("[bold]Notes (optional):[/bold]")
+    notes = input("> ").strip() or None
 
-                case _:
-                    console.print(
-                        "[red]Invalid selection.[/red]"
-                    )
-
-        responses.append(
-            QuestionResponse(
-                question_id=question.id,
-                platform=platform,
-                answer=answer,
-            )
-        )
-
-    return responses
+    return QuestionResponse(
+        question_id=question.id,
+        answer=answer,
+        notes=notes,
+    )
 
 
 def conduct_review(
     questions: list[Question],
-    vendor: Vendor,
-    platforms: list[Platform],
+    vendor: VPNVendor,
 ) -> list[QuestionResponse]:
     """
     Execute the assessment question set.
@@ -288,15 +229,14 @@ def conduct_review(
         questions,
         start=1,
     ):
-        question_responses = ask_question(
+        response = ask_question(
             question,
             vendor,
-            platforms,
             current,
             total,
         )
 
-        responses.extend(question_responses)
+        responses.append(response)
 
     return responses
 
@@ -329,11 +269,11 @@ def generate_findings(
             findings.append(
                 Finding(
                     finding_id=question.finding_id,
-                    platform=response.platform,
                     title=question.finding_title,
                     description=question.description.strip(),
                     commentary=question.commentary.strip(),
                     solution=question.solution.strip(),
+                    notes=response.notes,
                 )
             )
 
@@ -368,8 +308,8 @@ def generate_positive_observations(
             positives.append(
                 PositiveObservation(
                     finding_id=question.finding_id,
-                    platform=response.platform,
                     text=question.positive,
+                    notes=response.notes,
                 )
             )
 
@@ -405,24 +345,25 @@ def build_assessment_results(
 
 def run_assessment() -> AssessmentResults:
     """
-    Execute a complete MDM assessment.
+    Execute a complete VPN assessment.
     """
-
-    platforms = select_platforms()
 
     context_fields = get_applicable_context_fields(
         load_context_fields(),
-        platforms,
     )
 
-    context = collect_context(context_fields)
+    context = collect_context(
+        context_fields,
+    )
 
-    questions = get_applicable_questions(load_questions(), platforms)
+    questions = get_applicable_questions(
+        load_questions(),
+        context.vpn_vendor,
+    )
 
     responses = conduct_review(
         questions,
-        context.mdm_vendor,
-        platforms,
+        context.vpn_vendor,
     )
 
     return build_assessment_results(

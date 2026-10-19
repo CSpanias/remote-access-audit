@@ -1,5 +1,5 @@
 """
-Shared Rich console configuration for the MDM Audit application.
+Shared Rich console configuration for the VPN Audit application.
 """
 
 from rich.console import Console

@@ -1,7 +1,7 @@
 [project]
-name = "mdm-audit"
+name = "vpn-audit"
 version = "0.0.1"
-description = "Interactive MDM configuration review and reporting tool"
+description = "Interactive VPN configuration review and reporting tool"
 readme = "README.md"
 requires-python = ">=3.10"
 
@@ -18,7 +18,7 @@ dependencies = [
 
 keywords = [
     "security",
-    "mdm",
+    "vpn",
     "intune",
     "jamf",
     "workspaceone",
@@ -30,10 +30,10 @@ keywords = [
 ]
 
 [project.scripts]
-mdm-audit = "mdm_audit.cli:main"
+vpn-audit = "vpn_audit.cli:main"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.package-data]
-mdm_audit = ["data/*.yaml"]
+vpn_audit = ["data/*.yaml"]

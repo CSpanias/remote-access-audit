@@ -1,8 +1,8 @@
-# MDM-Audit
+# vpn-Audit
 
-A Python-based tool designed to make Mobile Device Management security reviews more efficient.
+A Python-based tool designed to make Virtual Private Network security reviews more efficient.
 
-Developed as an educational tool to accompany [Mobile Device Management Security Explained: Microsoft Intune](https://mollysec.com/posts/mdm-security-explained/). 
+Developed as an educational tool to accompany [Virtual Private Network Security Explained: Microsoft Intune](https://mollysec.com/posts/vpn-security-explained/). 
 
 The generated outputs are intended to support formal security reviews and can be used as inputs into downstream reporting and governance platforms.
 
@@ -22,14 +22,14 @@ Markdown Report + JSON Export
 # Install UV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install mdm-audit via UV
-uv tool install git+https://github.com/CSpanias/mdm-audit
+# Install vpn-audit via UV
+uv tool install git+https://github.com/CSpanias/vpn-audit
 
 # Verify installation
-mdm-audit -h
+vpn-audit -h
 
 # Update
-uv tool upgrade mdm-audit
+uv tool upgrade vpn-audit
 ```
 
 ### Development Installation
@@ -40,10 +40,10 @@ uv tool upgrade mdm-audit
 
 ```bash
 # Clone repository
-git clone https://github.com/CSpanias/mdm-audit /opt/mdm-audit
+git clone https://github.com/CSpanias/vpn-audit /opt/vpn-audit
 
 # Move into the directory
-cd /opt/mdm-audit
+cd /opt/vpn-audit
 
 # Create virtual environment
 uv venv
@@ -52,7 +52,7 @@ uv venv
 uv pip install -e .
 
 # Verify installation
-python -m mdm_audit.review
+python -m vpn_audit.review
 ```
 
 ## Features

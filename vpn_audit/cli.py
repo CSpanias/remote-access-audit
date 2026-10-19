@@ -13,19 +13,19 @@ import argparse
 from rich.panel import Panel
 from textwrap import dedent
 
-from mdm_audit.exporters.json import export_findings_json
-from mdm_audit.exporters.markdown import export_markdown
-from mdm_audit.review import run_assessment
-from mdm_audit.ui import console
+from vpn_audit.exporters.json import export_findings_json
+from vpn_audit.exporters.markdown import export_markdown
+from vpn_audit.review import run_assessment
+from vpn_audit.ui import console
 
 
 def main() -> None:
     """
-    Execute the MDM assessment workflow.
+    Execute the VPN assessment workflow.
     """
 
     parser = argparse.ArgumentParser(
-        description="Conduct Mobile Device Management (MDM) security reviews.",
+        description="Conduct Virtual Private Network (VPN) security reviews.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 

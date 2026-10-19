@@ -13,14 +13,15 @@ All loaded data is validated using the Pydantic models
 defined in models.py before being returned to the caller.
 
 This ensures invalid configuration is detected early
-during application startup.
+during application startup and prevents malformed
+assessment content from reaching the review engine.
 """
-
-from pathlib import Path
-
 import yaml
 
-from mdm_audit.models import ContextField, Question
+from pathlib import Path
+from pydantic import ValidationError
+
+from vpn_audit.models import ContextField, Question
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -67,7 +68,22 @@ def load_questions() -> list[Question]:
     path = DATA_DIR / "questions.yaml"
     data = _load_yaml(path)
 
-    return [Question.model_validate(item) for item in data]
+    questions = []
+
+    for item in data:
+        try:
+            questions.append(
+                Question.model_validate(item)
+            )
+
+        except ValidationError as exc:
+            raise ValueError(
+                f"Invalid question definition "
+                f"(ID {item.get('id')}, "
+                f"Finding: {item.get('finding_id')})"
+            ) from exc
+
+    return questions
 
 
 def load_context_fields() -> list[ContextField]:
