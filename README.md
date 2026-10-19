@@ -2,7 +2,7 @@
 
 A Python-based tool designed to make Virtual Private Network security reviews more efficient.
 
-Developed as an educational tool to accompany [Virtual Private Network Security Explained: Microsoft Intune](https://mollysec.com/posts/vpn-security-explained/). 
+Developed as an educational tool to accompany [Virtual Private Network Security Explained: Always On VPN](https://mollysec.com/posts/vpn-security-explained/). 
 
 The generated outputs are intended to support formal security reviews and can be used as inputs into downstream reporting and governance platforms.
 
