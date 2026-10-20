@@ -22,7 +22,9 @@
 # state always results in a "Compliant" response.
 
 
-# Authentication Controls (Q1-Q5)
+#-------------------------------------------------------------------------------
+# Authentication Controls
+#-------------------------------------------------------------------------------
 
 - id: 1
   finding_id: vpn-mfa-not-enforced
@@ -36,6 +38,15 @@
   hints:
     Microsoft Always On VPN: >
       NPS > Network Policies > Authentication Configuration
+
+    Cisco Secure Client: >
+      ASA / Secure Firewall > Remote Access VPN > Connection Profiles
+
+    Palo Alto GlobalProtect: >
+      Network > GlobalProtect > Portals/Gateways > Authentication
+
+    Fortinet FortiClient: >
+      User & Authentication > User Groups
 
   description: >
     Multi-factor authentication was not enforced for VPN users,
@@ -63,16 +74,6 @@
 
   bad_value: >
     VPN access is protected only by passwords.
-
-  hints:
-    Cisco Secure Client: >
-      ASA / Secure Firewall > Remote Access VPN > Connection Profiles
-
-    Palo Alto GlobalProtect: >
-      Network > GlobalProtect > Portals/Gateways > Authentication
-
-    Fortinet FortiClient: >
-      User & Authentication > User Groups
 
 - id: 2
   finding_id: vpn-shared-accounts-permitted
@@ -113,7 +114,8 @@
     - all
   expected_answer: compliant
 
-  question: Is centralised identity management used instead of local VPN accounts?
+  question: Is centralised identity management used instead of local VPN 
+    accounts?
 
   description: >
     VPN authentication relied on locally managed accounts rather
@@ -139,36 +141,6 @@
     Local VPN accounts are used.
 
 - id: 4
-  finding_id: vpn-certificate-authentication-disabled
-  finding_title: Certificate Authentication Not Configured
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is certificate-based authentication enabled where supported?
-
-  description: >
-    Certificate-based authentication was not configured where
-    supported by the VPN platform.
-
-  commentary: >
-    Certificates provide a stronger authentication mechanism and
-    may reduce exposure to credential theft and phishing attacks.
-
-  solution: >
-    Enable certificate-based authentication for VPN access where
-    operationally feasible.
-
-  positive: >
-    Certificate authentication is enabled for VPN access.
-
-  good_value: >
-    Certificate authentication is used.
-
-  bad_value: >
-    Authentication relies solely on credentials.
-
-- id: 5
   finding_id: vpn-weak-authentication-methods
   finding_title: Weak Authentication Methods Allowed
   vendors:
@@ -198,8 +170,43 @@
   bad_value: >
     Legacy authentication remains enabled.
 
+- id: 5
+  finding_id: vpn-admin-mfa-not-enforced
+  finding_title: VPN Administrator Multi-Factor Authentication Not Enforced
+  vendors:
+    - all
+  expected_answer: compliant
 
-# Protocol & Cryptography Controls (Q6-Q8)
+  question: Is multi-factor authentication enforced for VPN administrators?
+
+  description: >
+    Multi-factor authentication was not enforced for VPN
+    administrators, increasing the risk of administrative
+    account compromise.
+
+  commentary: >
+    Administrative accounts provide highly privileged access to
+    the VPN environment. Compromise of such accounts may allow
+    an attacker to modify configurations, weaken security
+    controls, or establish persistent access.
+
+  solution: >
+    Enforce multi-factor authentication for all VPN
+    administrative accounts.
+
+  positive: >
+    Multi-factor authentication is enforced for VPN
+    administrators.
+
+  good_value: >
+    Administrative MFA is enforced.
+
+  bad_value: >
+    Administrative accounts rely solely on passwords.
+
+#-------------------------------------------------------------------------------
+# Protocol & Cryptography Controls
+#-------------------------------------------------------------------------------
 
 - id: 6
   finding_id: vpn-insecure-protocol-enabled
@@ -293,8 +300,9 @@
   bad_value: >
     Weak cryptographic algorithms remain enabled.
 
-
-# Access Control Controls (Q9-Q12)
+#-------------------------------------------------------------------------------
+# Access Control Controls
+#-------------------------------------------------------------------------------
 
 - id: 9
   finding_id: vpn-excessive-network-access
@@ -303,7 +311,12 @@
     - all
   expected_answer: compliant
 
-  question: Is VPN access restricted according to least-privilege principles?
+  question: Is VPN access restricted based on user or device role?
+
+  hints:
+    Microsoft Always On VPN: >
+      RRAS Remote Access Policies, NPS Policies, Firewall Rules, Security 
+      Groups, and Network Segmentation Controls.
 
   description: >
     VPN users were granted unnecessary access to internal
@@ -363,11 +376,13 @@
     - all
   expected_answer: compliant
 
-  question: Are device compliance or health checks performed before granting VPN access?
+  question: Are device compliance or health checks performed before granting 
+    VPN access?
 
   hints:
     Microsoft Always On VPN: >
-      Device certificates, Intune compliance policies, or computer-group restrictions.
+      Device certificates, Intune compliance policies, or computer-group 
+      restrictions.
 
   description: >
     VPN access was granted without validating device security
@@ -419,485 +434,7 @@
   bad_value: >
     Unmanaged devices are permitted.
 
-
-# Session & Monitoring Controls (Q13-Q14)
-
 - id: 13
-  finding_id: vpn-session-timeout-missing
-  finding_title: Session Timeout Not Configured
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are inactivity session timeouts configured for VPN connections?
-
-  description: >
-    VPN sessions remained active indefinitely during periods of
-    inactivity.
-
-  commentary: >
-    Long-lived sessions may increase the risk of unauthorised
-    access from unattended devices.
-
-  solution: >
-    Configure inactivity timeouts appropriate to business and
-    security requirements.
-
-  positive: >
-    Inactivity timeouts are enforced for VPN sessions.
-
-  good_value: >
-    Session inactivity timeouts are configured.
-
-  bad_value: >
-    Session timeouts are not configured.
-
-- id: 14
-  finding_id: vpn-insufficient-logging
-  finding_title: Insufficient VPN Logging and Monitoring
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are VPN authentication and connection events logged and monitored?
-
-  description: >
-    VPN activity was not adequately logged or monitored.
-
-  commentary: >
-    Insufficient logging reduces visibility of suspicious
-    activity, authentication abuse, and security incidents.
-
-  solution: >
-    Enable logging of authentication, connection, and
-    administrative events and integrate logs with monitoring
-    processes.
-
-  positive: >
-    VPN activity is logged and monitored.
-
-  good_value: >
-    Logging and monitoring are implemented.
-
-  bad_value: >
-    VPN activity is not adequately monitored.
-
-# Administrative Security Controls (Q15-Q17)
-
-- id: 15
-  finding_id: vpn-admin-mfa-not-enforced
-  finding_title: VPN Administrator Multi-Factor Authentication Not Enforced
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is multi-factor authentication enforced for VPN administrators?
-
-  description: >
-    Multi-factor authentication was not enforced for VPN
-    administrators, increasing the risk of administrative
-    account compromise.
-
-  commentary: >
-    Administrative accounts provide highly privileged access to
-    the VPN environment. Compromise of such accounts may allow
-    an attacker to modify configurations, weaken security
-    controls, or establish persistent access.
-
-  solution: >
-    Enforce multi-factor authentication for all VPN
-    administrative accounts.
-
-  positive: >
-    Multi-factor authentication is enforced for VPN
-    administrators.
-
-  good_value: >
-    Administrative MFA is enforced.
-
-  bad_value: >
-    Administrative accounts rely solely on passwords.
-
-- id: 16
-  finding_id: vpn-excessive-admin-privileges
-  finding_title: Excessive Administrative Privileges
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is role-based access control used for VPN administration?
-
-  description: >
-    Administrative access to the VPN platform was not restricted
-    according to role-based access control principles.
-
-  commentary: >
-    Granting unnecessary administrative privileges increases the
-    risk of accidental misconfiguration, malicious abuse, and
-    unauthorised changes to security controls.
-
-  solution: >
-    Implement role-based access control and ensure administrative
-    permissions are limited to the minimum required for each role.
-
-  positive: >
-    Administrative access is controlled through role-based access
-    control and least-privilege principles.
-
-  good_value: >
-    Administrative privileges are role-based.
-
-  bad_value: >
-    Excessive administrative privileges are assigned.
-
-- id: 17
-  finding_id: vpn-admin-activity-not-logged
-  finding_title: Administrative Actions Not Logged
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are administrative actions logged and retained?
-
-  description: >
-    Administrative activity was not adequately logged or retained.
-
-  commentary: >
-    A lack of administrative logging reduces accountability and
-    hinders the investigation of configuration changes, security
-    incidents, and misuse of privileged accounts.
-
-  solution: >
-    Enable logging and retention of administrative actions and
-    regularly review logged events.
-
-  positive: >
-    Administrative actions are logged and retained appropriately.
-
-  good_value: >
-    Administrative activity is logged.
-
-  bad_value: >
-    Administrative activity is not logged.
-
-- id: 18
-  finding_id: vpn-configuration-backups-missing
-  finding_title: VPN Configuration Backups Not Performed
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are VPN configuration backups performed and retained?
-
-  description: >
-    VPN configuration backups were not performed or retained.
-
-  commentary: >
-    Failure to maintain configuration backups may increase recovery
-    time following misconfiguration, system failure, or security
-    incidents.
-
-  solution: >
-    Implement regular automated configuration backups and define
-    appropriate retention requirements.
-
-  positive: >
-    VPN configuration backups are regularly performed and retained.
-
-  good_value: >
-    Configuration backups are available.
-
-  bad_value: >
-    Configuration backups are absent.
-
-- id: 19
-  finding_id: vpn-no-high-availability
-  finding_title: High Availability Not Configured
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is a high-availability or failover VPN architecture implemented?
-
-  description: >
-    The VPN service lacked high-availability or failover capability.
-
-  commentary: >
-    Reliance on a single VPN gateway may result in service outages
-    and loss of remote access during hardware, software, or network
-    failures.
-
-  solution: >
-    Implement a high-availability or failover architecture for VPN
-    services.
-
-  positive: >
-    High-availability controls are implemented for VPN services.
-
-  good_value: >
-    VPN failover capability exists.
-
-  bad_value: >
-    Single points of failure exist.
-
-- id: 20
-  finding_id: vpn-failover-not-tested
-  finding_title: VPN Failover Not Tested
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is VPN failover functionality tested on a regular basis?
-
-  description: >
-    VPN failover mechanisms were not routinely tested.
-
-  commentary: >
-    Untested failover capabilities may not function as expected
-    during service disruptions or outages.
-
-  solution: >
-    Regularly test VPN failover procedures and document the results.
-
-  positive: >
-    VPN failover functionality is regularly tested.
-
-  good_value: >
-    Failover testing is performed.
-
-  bad_value: >
-    Failover capability is untested.
-
-- id: 21
-  finding_id: vpn-client-versions-unmanaged
-  finding_title: VPN Client Versions Not Managed
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are VPN client versions centrally managed?
-
-  description: >
-    VPN client versions were not centrally managed.
-
-  commentary: >
-    Inconsistent client versions may increase exposure to known
-    vulnerabilities and support issues.
-
-  solution: >
-    Implement central management and version control for VPN clients.
-
-  positive: >
-    VPN client versions are centrally managed.
-
-  good_value: >
-    Client versions are managed.
-
-  bad_value: >
-    Client versions are unmanaged.
-
-- id: 22
-  finding_id: vpn-client-updates-not-enforced
-  finding_title: VPN Client Updates Not Enforced
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are VPN clients automatically updated to supported versions?
-
-  description: >
-    VPN client updates were not enforced.
-
-  commentary: >
-    Unsupported or outdated VPN clients may contain known
-    vulnerabilities or configuration weaknesses.
-
-  solution: >
-    Enable automatic updates or implement a controlled update
-    process for VPN client software.
-
-  positive: >
-    VPN clients are maintained on supported versions.
-
-  good_value: >
-    Client updates are enforced.
-
-  bad_value: >
-    Outdated VPN clients are permitted.
-
-- id: 23
-  finding_id: vpn-always-on-vpn-disabled
-  finding_title: Always-On VPN Not Enforced
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is an always-on VPN configuration enforced where required?
-
-  description: >
-    Always-on VPN functionality was not enabled where required.
-
-  commentary: >
-    Devices may connect to organisational resources without
-    consistently applying VPN security controls.
-
-  solution: >
-    Enable always-on VPN functionality for applicable user groups
-    and device populations.
-
-  positive: >
-    Always-on VPN is enforced where required.
-
-  good_value: >
-    Always-on VPN is enabled.
-
-  bad_value: >
-    Always-on VPN is disabled.
-
-- id: 24
-  finding_id: vpn-kill-switch-disabled
-  finding_title: VPN Kill Switch Not Enabled
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Is a VPN kill switch enabled where supported?
-
-  description: >
-    VPN kill switch functionality was not enabled.
-
-  commentary: >
-    Loss of VPN connectivity may expose traffic to untrusted
-    networks if connections continue outside the VPN tunnel.
-
-  solution: >
-    Enable VPN kill switch functionality where supported by the
-    platform and client software.
-
-  positive: >
-    VPN kill switch functionality is enabled.
-
-  good_value: >
-    Kill switch protection is enabled.
-
-  bad_value: >
-    Kill switch protection is disabled.
-
-- id: 25
-  finding_id: vpn-logs-not-centralised
-  finding_title: VPN Logs Not Centralised
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are VPN logs forwarded to a central logging or SIEM platform?
-
-  description: >
-    VPN logs were not forwarded to a central monitoring platform.
-
-  commentary: >
-    Centralised logging improves visibility, correlation, and
-    investigation of security events across the environment.
-
-  solution: >
-    Forward VPN logs to a central logging or SIEM platform.
-
-  positive: >
-    VPN logs are centrally collected and monitored.
-
-  good_value: >
-    Logging is centralised.
-
-  bad_value: >
-    Logs remain local to the platform.
-
-- id: 26
-  finding_id: vpn-authentication-failure-alerting-missing
-  finding_title: Authentication Failure Alerting Not Configured
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are alerts configured for excessive VPN authentication failures?
-
-  description: >
-    Alerts for excessive VPN authentication failures were not configured.
-
-  commentary: >
-    Authentication failures may indicate brute-force attacks,
-    credential stuffing, or user account abuse.
-
-  solution: >
-    Configure alerting thresholds for excessive authentication
-    failures and suspicious authentication activity.
-
-  positive: >
-    Authentication failure monitoring and alerting are implemented.
-
-  good_value: >
-    Authentication failure alerts exist.
-
-  bad_value: >
-    Authentication failures are not monitored.
-
-- id: 27
-  finding_id: vpn-anomalous-login-alerting-missing
-  finding_title: Anomalous VPN Login Alerting Not Configured
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are alerts generated for VPN logins from unusual locations or impossible travel scenarios?
-
-  description: >
-    Detection and alerting for anomalous VPN logins were not configured.
-
-  commentary: >
-    Unusual login behaviour may indicate compromised credentials
-    or unauthorised remote access attempts.
-
-  solution: >
-    Implement monitoring and alerting for suspicious VPN login
-    patterns and impossible travel events.
-
-  positive: >
-    Anomalous VPN login activity is actively monitored.
-
-  good_value: >
-    Anomaly detection is enabled.
-
-  bad_value: >
-    Anomalous logins are not monitored.
-
-- id: 28
-  finding_id: vpn-dormant-accounts-not-reviewed
-  finding_title: Dormant VPN Accounts Not Reviewed
-  vendors:
-    - all
-  expected_answer: compliant
-
-  question: Are dormant VPN accounts reviewed and removed on a regular basis?
-
-  description: >
-    Dormant VPN accounts were not routinely reviewed or removed.
-
-  commentary: >
-    Unused accounts increase attack surface and may be abused by
-    attackers if credentials are compromised.
-
-  solution: >
-    Periodically review and disable inactive VPN accounts.
-
-  positive: >
-    Dormant VPN accounts are reviewed and removed regularly.
-
-  good_value: >
-    Dormant accounts are managed.
-
-  bad_value: >
-    Dormant accounts remain active.
-
-- id: 29
   finding_id: vpn-user-access-not-reviewed
   finding_title: VPN User Access Not Periodically Reviewed
   vendors:
@@ -906,15 +443,25 @@
 
   question: Is VPN user access reviewed on a regular basis?
 
+  hints:
+    Microsoft Always On VPN: >
+      Active Directory or Entra ID VPN access groups, access review records, 
+      membership certification activities, and evidence of periodic entitlement
+      reviews.
+
   description: >
     VPN user access was not subject to periodic review.
 
   commentary: >
     Access reviews help ensure that users retain only the access
-    required for their current job responsibilities.
+    required for their current job responsibilities. Regular
+    reviews reduce the risk of excessive access, orphaned
+    accounts, and inappropriate access permissions remaining
+    assigned following role changes.
 
   solution: >
-    Perform periodic access reviews and remove unnecessary VPN access.
+    Perform periodic access reviews and remove unnecessary VPN
+    access.
 
   positive: >
     VPN user access is reviewed regularly.
@@ -925,284 +472,125 @@
   bad_value: >
     User access is not reviewed.
 
-- id: 30
-  finding_id: vpn-privileged-access-not-restricted
-  finding_title: Privileged VPN Access Not Restricted
+#-------------------------------------------------------------------------------
+# Session & Monitoring Controls
+#-------------------------------------------------------------------------------
+
+- id: 14
+  finding_id: vpn-insufficient-logging
+  finding_title: Insufficient VPN Logging and Monitoring
   vendors:
     - all
   expected_answer: compliant
 
-  question: Is privileged VPN access restricted to authorised personnel only?
+  question: Are VPN authentication and connection events logged and monitored?
+
+  hints:
+    Microsoft Always On VPN: >
+      Event Viewer > Microsoft > Windows > RemoteAccess, RRAS Logging, NPS Logs,
+      and SIEM Integration.
 
   description: >
-    Privileged VPN access was not adequately restricted.
+    VPN activity was not adequately logged or monitored.
 
   commentary: >
-    Excessive privileged access increases the potential impact of
-    compromised accounts and insider threats.
+    Insufficient logging reduces visibility of suspicious activity, 
+    authentication abuse, and security incidents.
 
   solution: >
-    Restrict privileged VPN access to authorised personnel with a
-    documented business requirement.
+    Enable logging of authentication, connection, and administrative events and 
+    integrate logs with monitoring processes.
 
   positive: >
-    Privileged VPN access is appropriately restricted.
+    VPN activity is logged and monitored.
 
   good_value: >
-    Privileged access is controlled.
+    Logging and monitoring are implemented.
 
   bad_value: >
-    Excessive privileged access exists.
+    VPN activity is not adequately monitored.
 
-- id: 31
-  finding_id: vpn-third-party-access-not-controlled
-  finding_title: Third-Party VPN Access Not Adequately Controlled
+- id: 15
+  finding_id: vpn-admin-activity-not-logged
+  finding_title: Administrative Actions Not Logged
   vendors:
     - all
   expected_answer: compliant
 
-  question: Are third-party VPN accounts subject to additional restrictions and review?
+  question: Are administrative actions logged and retained?
+
+  hints:
+    Microsoft Always On VPN: >
+      Event Viewer, Local Security Logs, RRAS Administrative Logs, and SIEM 
+      Integration.
 
   description: >
-    Third-party VPN access was not adequately governed.
+    Administrative activity was not adequately logged or retained.
 
   commentary: >
-    External users may introduce additional security risks if
-    access is not restricted, monitored, and reviewed.
+    A lack of administrative logging reduces accountability and hinders the 
+    investigation of configuration changes, security incidents, and misuse of 
+    privileged accounts.
 
   solution: >
-    Apply additional controls, monitoring, and review processes
-    to third-party VPN accounts.
+    Enable logging and retention of administrative actions and regularly review 
+    logged events.
 
   positive: >
-    Third-party VPN access is appropriately controlled.
+    Administrative actions are logged and retained appropriately.
 
   good_value: >
-    Third-party access is governed.
+    Administrative activity is logged.
 
   bad_value: >
-    Third-party access is unrestricted.
+    Administrative activity is not logged.
 
-- id: 32
-  finding_id: vpn-account-deprovisioning-not-timely
-  finding_title: VPN Accounts Not Promptly Deprovisioned
+#-------------------------------------------------------------------------------
+# Administrative Security Controls
+#-------------------------------------------------------------------------------
+
+- id: 16
+  finding_id: vpn-excessive-admin-privileges
+  finding_title: Excessive Administrative Privileges
   vendors:
     - all
   expected_answer: compliant
 
-  question: Are VPN accounts disabled promptly when users leave the organisation or no longer require access?
-
-  description: >
-    VPN accounts were not disabled promptly when no longer required.
-
-  commentary: >
-    Delays in account deprovisioning may allow former users to
-    retain access to organisational resources.
-
-  solution: >
-    Implement procedures to promptly disable VPN accounts when
-    users leave the organisation or access is no longer required.
-
-  positive: >
-    VPN accounts are promptly deprovisioned when no longer required.
-
-  good_value: >
-    Account deprovisioning is timely.
-
-  bad_value: >
-    Former users retain VPN access.
-
-- id: 33
-  finding_id: aovpn-device-tunnel-excessive-access
-  finding_title: Device Tunnel Provides Excessive Network Access
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Is Device Tunnel access restricted to only the infrastructure and management services required for operation?
+  question: Is role-based access control used for VPN administration?
 
   hints:
     Microsoft Always On VPN: >
-      RRAS > IPv4/IPv6 Routing Configuration, VPN Profile XML, and Route Configuration
+      Local Administrators Group, Server Administration Roles, Entra Roles, 
+      and Delegated Permissions.
 
   description: >
-    The Always On VPN Device Tunnel provided access to resources
-    beyond those required for device management and pre-logon
-    connectivity.
+    Administrative access to the VPN platform was not restricted according to 
+    role-based access control principles.
 
   commentary: >
-    Device Tunnel connectivity is typically intended to provide
-    access to core infrastructure services such as domain
-    controllers, certificate services, DNS, and management
-    platforms. Excessive access may increase the impact of
-    device compromise and expose additional internal resources.
+    Granting unnecessary administrative privileges increases the risk of 
+    accidental misconfiguration, malicious abuse, and unauthorised changes to 
+    security controls.
 
   solution: >
-    Restrict Device Tunnel access to only those services required
-    for device management, authentication, and pre-logon
-    connectivity.
+    Implement role-based access control and ensure administrative permissions 
+    are limited to the minimum required for each role.
 
   positive: >
-    Device Tunnel connectivity is restricted to required
-    infrastructure services.
+    Administrative access is controlled through role-based access control and 
+    least-privilege principles.
 
   good_value: >
-    Device Tunnel access is limited to infrastructure services.
+    Administrative privileges are role-based.
 
   bad_value: >
-    Device Tunnel provides unnecessary internal network access.
+    Excessive administrative privileges are assigned.
 
-- id: 34
-  finding_id: aovpn-profile-modification-permitted
-  finding_title: Users Can Modify VPN Configuration
-  expected_answer: compliant
+#-------------------------------------------------------------------------------
+# Microsoft AOVPN Specific
+#-------------------------------------------------------------------------------
 
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Are users prevented from modifying or removing Always On VPN profiles?
-
-  hints:
-    Microsoft Always On VPN: >
-      Intune VPN Profile, Group Policy, or ProfileXML deployment settings. Confirm 
-      users cannot edit or remove the profile.
-
-  description: >
-    Users were able to modify or remove the configured Always On
-    VPN profile.
-
-  commentary: >
-    Allowing users to alter VPN configuration may weaken security
-    controls, bypass organisational requirements, or disrupt
-    expected remote connectivity. Secure deployments should
-    prevent unauthorised modification of managed VPN profiles.
-
-  solution: >
-    Deploy VPN profiles using managed configurations and restrict
-    users from modifying or removing VPN settings.
-
-  positive: >
-    VPN profiles are protected from unauthorised modification.
-
-  good_value: >
-    Users cannot modify or remove VPN profiles.
-
-  bad_value: >
-    Users can alter or remove VPN profiles.
-
-- id: 35
-  finding_id: aovpn-certificate-autoenrollment-disabled
-  finding_title: Certificate Auto-Enrollment Not Configured
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Is certificate auto-enrollment configured for VPN devices?
-
-  hints:
-    Microsoft Always On VPN: >
-      Group Policy Management > Computer Configuration > Public Key Policies > Certificate Services Client - Auto-Enrollment
-
-  description: >
-    Certificate auto-enrollment was not configured for VPN-enabled
-    devices.
-
-  commentary: >
-    Manual certificate provisioning increases administrative
-    overhead and may result in devices lacking valid certificates.
-    Auto-enrollment helps ensure devices consistently receive
-    required authentication certificates.
-
-  solution: >
-    Configure certificate auto-enrollment for VPN-enabled devices
-    through Active Directory Certificate Services or an
-    equivalent certificate management solution.
-
-  positive: >
-    VPN authentication certificates are automatically enrolled.
-
-  good_value: >
-    Certificate auto-enrollment is configured.
-
-  bad_value: >
-    Certificates must be deployed manually.
-
-- id: 36
-  finding_id: aovpn-certificate-renewal-not-configured
-  finding_title: Certificate Renewal Not Automated
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Are VPN authentication certificates automatically renewed before expiry?
-
-  hints:
-    Microsoft Always On VPN: >
-      Certificate Templates (certtmpl.msc) and issued computer certificates. Confirm automatic renewal settings.
-
-  description: >
-    VPN authentication certificates were not automatically renewed
-    before expiration.
-
-  commentary: >
-    Expired certificates may prevent devices from establishing VPN
-    connectivity, potentially affecting remote users and device
-    management operations.
-
-  solution: >
-    Configure automatic certificate renewal and monitor upcoming
-    certificate expirations.
-
-  positive: >
-    VPN authentication certificates are renewed automatically.
-
-  good_value: >
-    Certificate renewal is automated.
-
-  bad_value: >
-    Certificates require manual renewal.
-
-- id: 37
-  finding_id: aovpn-revocation-checking-disabled
-  finding_title: Certificate Revocation Validation Disabled
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Is certificate revocation checking enforced for VPN authentication?
-
-  hints:
-    Microsoft Always On VPN: >
-      NPS Network Policies, RRAS authentication settings, CRL/OCSP configuration on the issuing CA.
-
-  description: >
-    Certificate revocation validation was not performed during VPN
-    authentication.
-
-  commentary: >
-    Failing to validate certificate revocation status may allow
-    compromised, revoked, or otherwise invalid certificates to be
-    accepted for VPN access.
-
-  solution: >
-    Enable certificate revocation checking and ensure supporting
-    CRL or OCSP infrastructure is available.
-
-  positive: >
-    Certificate revocation validation is enforced during VPN
-    authentication.
-
-  good_value: >
-    Revocation checking is enabled.
-
-  bad_value: >
-    Revocation status is not validated.
-
-- id: 38
+- id: 17
   finding_id: aovpn-device-authentication-not-enforced
   finding_title: Device Authentication Not Enforced
   expected_answer: compliant
@@ -1210,29 +598,27 @@
   vendors:
     - Microsoft Always On VPN
 
-  question: Is machine certificate authentication required for Device Tunnel connections?
+  question: Is machine certificate authentication required for Device Tunnel 
+    connections?
 
   hints:
     Microsoft Always On VPN: >
-      NPS > Network Policies > Constraints > Authentication Methods and VPN Profile XML configuration.
-
-  hints:
-    Microsoft Always On VPN: >
-      NPS > Network Policies > Authentication Methods and RRAS > Security > Authentication Provider
+      NPS > Network Policies > Constraints > Authentication Methods, and RRAS > 
+      Security > Authentication Provider. Confirm Device Tunnel connections 
+      require machine certificate authentication.
 
   description: >
-    Device Tunnel connections were not restricted to machine
-    certificate authentication.
+    Device Tunnel connections were not restricted to machine certificate 
+    authentication.
 
   commentary: >
-    Device Tunnel connectivity should rely on device identity
-    rather than user credentials. Failure to enforce device
-    authentication may reduce assurance that connecting systems
-    are trusted and managed.
+    Device Tunnel connectivity should rely on device identity rather than user 
+    credentials. Failure to enforce device authentication may reduce assurance 
+    that connecting systems are trusted and managed.
 
   solution: >
-    Configure Device Tunnel connections to use machine
-    certificate authentication only.
+    Configure Device Tunnel connections to use machine certificate 
+    authentication only.
 
   positive: >
     Device Tunnel connectivity requires machine certificates.
@@ -1243,7 +629,7 @@
   bad_value: >
     Device authentication is not enforced.
 
-- id: 39
+- id: 18
   finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
   expected_answer: compliant
@@ -1251,24 +637,26 @@
   vendors:
     - Microsoft Always On VPN
 
-  question: Is Always On VPN connectivity enforced without requiring user intervention?
+  question: Is Always On VPN connectivity enforced without requiring user 
+    intervention?
 
   hints:
     Microsoft Always On VPN: >
-      VPN Profile XML. Confirm AlwaysOn=true and Device Tunnel configuration where applicable.
+      VPN Profile XML. Confirm AlwaysOn=true and Device Tunnel configuration 
+      where applicable.
 
   description: >
     VPN connectivity was not available before user authentication.
 
   commentary: >
-    Pre-logon VPN connectivity supports device management,
-    Group Policy processing, certificate enrollment, and other
-    infrastructure services before user sign-in. Environments
-    relying on device tunnels may require this capability.
+    Pre-logon VPN connectivity supports device management, Group Policy 
+    processing, certificate enrollment, and other infrastructure services 
+    before user sign-in. Environments relying on device tunnels may require 
+    this capability.
 
   solution: >
-    Configure Device Tunnel connectivity to establish VPN access
-    before user authentication where operationally required.
+    Configure Device Tunnel connectivity to establish VPN access before user 
+    authentication where operationally required.
 
   positive: >
     VPN connectivity is available prior to user logon.
@@ -1279,45 +667,7 @@
   bad_value: >
     VPN connectivity requires user sign-in.
 
-- id: 40
-  finding_id: aovpn-insecure-certificate-template
-  finding_title: VPN Certificate Template Security Weaknesses
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
-
-  question: Are VPN authentication certificate templates secured and restricted to authorised devices?
-
-  hints:
-    Microsoft Always On VPN: >
-      Certificate Templates (certtmpl.msc) > Security tab and Enrollment permissions.
-
-  description: >
-    Certificate templates used for VPN authentication contained
-    overly permissive enrollment or security settings.
-
-  commentary: >
-    Weak certificate template security may allow unauthorised
-    certificate enrollment and could facilitate impersonation of
-    trusted devices. Certificate templates should be restricted
-    according to least-privilege principles.
-
-  solution: >
-    Review certificate template permissions and restrict
-    enrollment to authorised devices and security groups only.
-
-  positive: >
-    VPN authentication certificate templates are securely
-    configured and access is restricted appropriately.
-
-  good_value: >
-    Certificate templates are securely restricted.
-
-  bad_value: >
-    Certificate template permissions are overly permissive.
-
-- id: 41
+- id: 19
   finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
   expected_answer: compliant
@@ -1325,24 +675,25 @@
   vendors:
     - Microsoft Always On VPN
 
-  question: Are route restrictions and validation controls enforced for VPN traffic?
+  question: Are VPN routes restricted to approved destinations and networks?
 
   hints:
     Microsoft Always On VPN: >
-      VPN Profile XML > Routes, RRAS configuration, route validation controls and exclusions.
+      VPN Profile XML > Routes, RRAS configuration, route validation controls 
+      and exclusions.
 
   description: >
-    Route restrictions and validation controls were not enforced
-    for VPN traffic.
+    Route restrictions and validation controls were not enforced for VPN 
+    traffic.
 
   commentary: >
-    Route validation helps ensure traffic is routed only through
-    approved network paths and reduces the risk of traffic
-    bypassing organisational security controls.
+    Route validation helps ensure traffic is routed only through approved 
+    network paths and reduces the risk of traffic bypassing organisational 
+    security controls.
 
   solution: >
-    Implement route validation controls and restrict VPN traffic
-    to approved routes and destinations.
+    Implement route validation controls and restrict VPN traffic to approved 
+    routes and destinations.
 
   positive: >
     Route validation controls are implemented and enforced.
@@ -1353,7 +704,7 @@
   bad_value: >
     VPN routes are not validated.
 
-- id: 42
+- id: 20
   finding_id: aovpn-split-tunnel-not-controlled
   finding_title: Split Tunnel Configuration Not Adequately Controlled
   expected_answer: compliant
@@ -1361,31 +712,401 @@
   vendors:
     - Microsoft Always On VPN
 
-  question: Is split tunnel behaviour documented, restricted and aligned with organisational requirements?
+  question: Are split tunnel exclusions documented and approved?
 
   hints:
     Microsoft Always On VPN: >
-      VPN Profile XML > RoutingPolicyType, Traffic Filters, Exclusion Routes, Split Tunnel configuration.
+      VPN Profile XML > RoutingPolicyType, Traffic Filters, Exclusion Routes, 
+      Split Tunnel configuration.
 
   description: >
-    Split tunnel behaviour was not adequately documented,
-    governed or restricted.
+    Split tunnel behaviour was not adequately documented, governed or 
+    restricted.
 
   commentary: >
-    Poorly controlled split tunnel configurations may allow
-    traffic to bypass organisational monitoring and security
-    controls, potentially increasing security risk.
+    Poorly controlled split tunnel configurations may allow traffic to bypass 
+    organisational monitoring and security controls, potentially increasing 
+    security risk.
 
   solution: >
-    Document and review split tunnel requirements and restrict
-    exclusions to approved business use cases.
+    Document and review split tunnel requirements and restrict exclusions to 
+    approved business use cases.
 
   positive: >
-    Split tunnel behaviour is documented and appropriately
-    controlled.
+    Split tunnel behaviour is documented and appropriately controlled.
 
   good_value: >
     Split tunnel configuration is governed and restricted.
 
   bad_value: >
     Split tunnel behaviour is uncontrolled.
+
+#-------------------------------------------------------------------------------
+# Extra Questions (to be reviewed)
+#-------------------------------------------------------------------------------
+
+# - id: ?
+#   finding_id: vpn-session-timeout-missing
+#   finding_title: Session Timeout Not Configured
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Are inactivity session timeouts configured for VPN connections?
+
+#   description: >
+#     VPN sessions remained active indefinitely during periods of
+#     inactivity.
+
+#   commentary: >
+#     Long-lived sessions may increase the risk of unauthorised
+#     access from unattended devices.
+
+#   solution: >
+#     Configure inactivity timeouts appropriate to business and
+#     security requirements.
+
+#   positive: >
+#     Inactivity timeouts are enforced for VPN sessions.
+
+#   good_value: >
+#     Session inactivity timeouts are configured.
+
+#   bad_value: >
+#     Session timeouts are not configured.
+
+# - id: 22
+#   finding_id: vpn-client-updates-not-enforced
+#   finding_title: VPN Client Updates Not Enforced
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Are VPN clients automatically updated to supported versions?
+
+#   description: >
+#     VPN client updates were not enforced.
+
+#   commentary: >
+#     Unsupported or outdated VPN clients may contain known
+#     vulnerabilities or configuration weaknesses.
+
+#   solution: >
+#     Enable automatic updates or implement a controlled update
+#     process for VPN client software.
+
+#   positive: >
+#     VPN clients are maintained on supported versions.
+
+#   good_value: >
+#     Client updates are enforced.
+
+#   bad_value: >
+#     Outdated VPN clients are permitted.
+
+
+# - id: 24
+#   finding_id: vpn-kill-switch-disabled
+#   finding_title: VPN Kill Switch Not Enabled
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Is a VPN kill switch enabled where supported?
+
+#   description: >
+#     VPN kill switch functionality was not enabled.
+
+#   commentary: >
+#     Loss of VPN connectivity may expose traffic to untrusted
+#     networks if connections continue outside the VPN tunnel.
+
+#   solution: >
+#     Enable VPN kill switch functionality where supported by the
+#     platform and client software.
+
+#   positive: >
+#     VPN kill switch functionality is enabled.
+
+#   good_value: >
+#     Kill switch protection is enabled.
+
+#   bad_value: >
+#     Kill switch protection is disabled.
+
+# - id: 30
+#   finding_id: vpn-privileged-access-not-restricted
+#   finding_title: Privileged VPN Access Not Restricted
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Is privileged VPN access restricted to authorised personnel only?
+
+#   description: >
+#     Privileged VPN access was not adequately restricted.
+
+#   commentary: >
+#     Excessive privileged access increases the potential impact of
+#     compromised accounts and insider threats.
+
+#   solution: >
+#     Restrict privileged VPN access to authorised personnel with a
+#     documented business requirement.
+
+#   positive: >
+#     Privileged VPN access is appropriately restricted.
+
+#   good_value: >
+#     Privileged access is controlled.
+
+#   bad_value: >
+#     Excessive privileged access exists.
+
+# - id: 31
+#   finding_id: vpn-third-party-access-not-controlled
+#   finding_title: Third-Party VPN Access Not Adequately Controlled
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Are third-party VPN accounts subject to additional restrictions and review?
+
+#   description: >
+#     Third-party VPN access was not adequately governed.
+
+#   commentary: >
+#     External users may introduce additional security risks if
+#     access is not restricted, monitored, and reviewed.
+
+#   solution: >
+#     Apply additional controls, monitoring, and review processes
+#     to third-party VPN accounts.
+
+#   positive: >
+#     Third-party VPN access is appropriately controlled.
+
+#   good_value: >
+#     Third-party access is governed.
+
+#   bad_value: >
+#     Third-party access is unrestricted.
+
+# - id: 32
+#   finding_id: vpn-account-deprovisioning-not-timely
+#   finding_title: VPN Accounts Not Promptly Deprovisioned
+#   vendors:
+#     - all
+#   expected_answer: compliant
+
+#   question: Are VPN accounts disabled promptly when users leave the organisation or no longer require access?
+
+#   description: >
+#     VPN accounts were not disabled promptly when no longer required.
+
+#   commentary: >
+#     Delays in account deprovisioning may allow former users to
+#     retain access to organisational resources.
+
+#   solution: >
+#     Implement procedures to promptly disable VPN accounts when
+#     users leave the organisation or access is no longer required.
+
+#   positive: >
+#     VPN accounts are promptly deprovisioned when no longer required.
+
+#   good_value: >
+#     Account deprovisioning is timely.
+
+#   bad_value: >
+#     Former users retain VPN access.
+
+# - id: 33
+#   finding_id: aovpn-device-tunnel-excessive-access
+#   finding_title: Device Tunnel Provides Excessive Network Access
+#   expected_answer: compliant
+
+#   vendors:
+#     - Microsoft Always On VPN
+
+#   question: Is Device Tunnel access restricted to only the infrastructure and management services required for operation?
+
+#   hints:
+#     Microsoft Always On VPN: >
+#       RRAS > IPv4/IPv6 Routing Configuration, VPN Profile XML, and Route Configuration
+
+#   description: >
+#     The Always On VPN Device Tunnel provided access to resources
+#     beyond those required for device management and pre-logon
+#     connectivity.
+
+#   commentary: >
+#     Device Tunnel connectivity is typically intended to provide
+#     access to core infrastructure services such as domain
+#     controllers, certificate services, DNS, and management
+#     platforms. Excessive access may increase the impact of
+#     device compromise and expose additional internal resources.
+
+#   solution: >
+#     Restrict Device Tunnel access to only those services required
+#     for device management, authentication, and pre-logon
+#     connectivity.
+
+#   positive: >
+#     Device Tunnel connectivity is restricted to required
+#     infrastructure services.
+
+#   good_value: >
+#     Device Tunnel access is limited to infrastructure services.
+
+#   bad_value: >
+#     Device Tunnel provides unnecessary internal network access.
+
+# - id: 35
+#   finding_id: aovpn-certificate-autoenrollment-disabled
+#   finding_title: Certificate Auto-Enrollment Not Configured
+#   expected_answer: compliant
+
+#   vendors:
+#     - Microsoft Always On VPN
+
+#   question: Is certificate auto-enrollment configured for VPN devices?
+
+#   hints:
+#     Microsoft Always On VPN: >
+#       Group Policy Management > Computer Configuration > Public Key Policies > Certificate Services Client - Auto-Enrollment
+
+#   description: >
+#     Certificate auto-enrollment was not configured for VPN-enabled
+#     devices.
+
+#   commentary: >
+#     Manual certificate provisioning increases administrative
+#     overhead and may result in devices lacking valid certificates.
+#     Auto-enrollment helps ensure devices consistently receive
+#     required authentication certificates.
+
+#   solution: >
+#     Configure certificate auto-enrollment for VPN-enabled devices
+#     through Active Directory Certificate Services or an
+#     equivalent certificate management solution.
+
+#   positive: >
+#     VPN authentication certificates are automatically enrolled.
+
+#   good_value: >
+#     Certificate auto-enrollment is configured.
+
+#   bad_value: >
+#     Certificates must be deployed manually.
+
+# - id: 36
+#   finding_id: aovpn-certificate-renewal-not-configured
+#   finding_title: Certificate Renewal Not Automated
+#   expected_answer: compliant
+
+#   vendors:
+#     - Microsoft Always On VPN
+
+#   question: Are VPN authentication certificates automatically renewed before expiry?
+
+#   hints:
+#     Microsoft Always On VPN: >
+#       Certificate Templates (certtmpl.msc) and issued computer certificates. Confirm automatic renewal settings.
+
+#   description: >
+#     VPN authentication certificates were not automatically renewed
+#     before expiration.
+
+#   commentary: >
+#     Expired certificates may prevent devices from establishing VPN
+#     connectivity, potentially affecting remote users and device
+#     management operations.
+
+#   solution: >
+#     Configure automatic certificate renewal and monitor upcoming
+#     certificate expirations.
+
+#   positive: >
+#     VPN authentication certificates are renewed automatically.
+
+#   good_value: >
+#     Certificate renewal is automated.
+
+#   bad_value: >
+#     Certificates require manual renewal.
+
+# - id: 37
+#   finding_id: aovpn-revocation-checking-disabled
+#   finding_title: Certificate Revocation Validation Disabled
+#   expected_answer: compliant
+
+#   vendors:
+#     - Microsoft Always On VPN
+
+#   question: Is certificate revocation checking enforced for VPN authentication?
+
+#   hints:
+#     Microsoft Always On VPN: >
+#       NPS Network Policies, RRAS authentication settings, CRL/OCSP configuration on the issuing CA.
+
+#   description: >
+#     Certificate revocation validation was not performed during VPN
+#     authentication.
+
+#   commentary: >
+#     Failing to validate certificate revocation status may allow
+#     compromised, revoked, or otherwise invalid certificates to be
+#     accepted for VPN access.
+
+#   solution: >
+#     Enable certificate revocation checking and ensure supporting
+#     CRL or OCSP infrastructure is available.
+
+#   positive: >
+#     Certificate revocation validation is enforced during VPN
+#     authentication.
+
+#   good_value: >
+#     Revocation checking is enabled.
+
+#   bad_value: >
+#     Revocation status is not validated.
+
+# - id: 40
+#   finding_id: aovpn-insecure-certificate-template
+#   finding_title: VPN Certificate Template Security Weaknesses
+#   expected_answer: compliant
+
+#   vendors:
+#     - Microsoft Always On VPN
+
+#   question: Are VPN authentication certificate templates secured and restricted to authorised devices?
+
+#   hints:
+#     Microsoft Always On VPN: >
+#       Certificate Templates (certtmpl.msc) > Security tab and Enrollment permissions.
+
+#   description: >
+#     Certificate templates used for VPN authentication contained
+#     overly permissive enrollment or security settings.
+
+#   commentary: >
+#     Weak certificate template security may allow unauthorised
+#     certificate enrollment and could facilitate impersonation of
+#     trusted devices. Certificate templates should be restricted
+#     according to least-privilege principles.
+
+#   solution: >
+#     Review certificate template permissions and restrict
+#     enrollment to authorised devices and security groups only.
+
+#   positive: >
+#     VPN authentication certificate templates are securely
+#     configured and access is restricted appropriately.
+
+#   good_value: >
+#     Certificate templates are securely restricted.
+
+#   bad_value: >
+#     Certificate template permissions are overly permissive.

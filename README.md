@@ -1,4 +1,4 @@
-# vpn-Audit
+# VPN-Audit
 
 A Python-based tool designed to make Virtual Private Network security reviews more efficient.
 

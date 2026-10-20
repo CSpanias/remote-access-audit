@@ -99,12 +99,25 @@ class ReviewContext(BaseModel):
     """
 
     client_name: str
+
     vpn_vendor: VPNVendor
     vpn_version: str
 
+    deployment_model: str | None = None
+
     vpn_user_count: int | None = None
+    vpn_gateway_count: int | None = None
 
     authentication_method: str | None = None
+    identity_provider: str | None = None
+
+    tunnel_type: str | None = None
+    certificate_authority: str | None = None
+
+    user_control: str | None = None
+    split_tunnel_mode: str | None = None
+
+    mfa_solution: str | None = None
 
     context_notes: dict[str, str] = Field(default_factory=dict)
 
