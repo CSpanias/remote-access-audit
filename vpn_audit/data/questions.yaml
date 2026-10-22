@@ -36,6 +36,11 @@
   question: Is multi-factor authentication enforced for all VPN users?
 
   hints:
+    common: >
+      Review the VPN authentication configuration and confirm
+      whether all users are required to complete MFA authentication
+      during the VPN sign-in process.
+
     Microsoft Always On VPN: >
       NPS > Network Policies > Authentication Configuration
 
@@ -84,6 +89,13 @@
 
   question: Are individual user accounts required for VPN access?
 
+  hints:
+    common: >
+      Determine whether VPN users authenticate using individually
+      assigned accounts. Review authentication sources, user
+      accounts, and account assignment processes to confirm shared
+      accounts are not used.
+
   description: >
     Shared VPN accounts were permitted, reducing accountability
     and increasing the difficulty of attributing activity to
@@ -117,6 +129,13 @@
   question: Is centralised identity management used instead of local VPN 
     accounts?
 
+  hints:
+    common: >
+      Identify the source used to authenticate VPN users and
+      determine whether authentication is integrated with a central
+      identity platform such as Entra ID, Active Directory, LDAP,
+      or RADIUS rather than locally managed VPN accounts.
+
   description: >
     VPN authentication relied on locally managed accounts rather
     than an enterprise identity provider.
@@ -149,6 +168,12 @@
 
   question: Are legacy authentication mechanisms disabled?
 
+  hints:
+    common: >
+      Review supported authentication methods and verify that legacy
+      or insecure authentication mechanisms such as PAP, CHAP,
+      MS-CHAPv1, or equivalent deprecated methods are not permitted.
+
   description: >
     Legacy authentication mechanisms were enabled, increasing
     exposure to credential attacks and authentication bypass.
@@ -178,6 +203,12 @@
   expected_answer: compliant
 
   question: Is multi-factor authentication enforced for VPN administrators?
+
+  hints:
+    common: >
+      Review the authentication requirements for administrative
+      access to the VPN platform and confirm whether privileged
+      users are required to complete multi-factor authentication.
 
   description: >
     Multi-factor authentication was not enforced for VPN
@@ -217,6 +248,12 @@
 
   question: Are legacy VPN protocols such as PPTP disabled?
 
+  hints:
+    common: >
+      Review the VPN protocols supported by the platform and verify
+      that deprecated protocols such as PPTP are disabled and cannot
+      be used by clients.
+
   description: >
     Legacy VPN protocols were permitted despite known security
     weaknesses.
@@ -248,6 +285,12 @@
   question: Are only TLS 1.2 and TLS 1.3 permitted for VPN communications?
 
   hints:
+
+  hints:
+    common: >
+      Review TLS configuration and confirm that only supported TLS
+      versions are permitted for VPN communications.
+
     Microsoft Always On VPN: >
       RRAS Server, SCHANNEL TLS Configuration, NPS and Windows Security Settings
 
@@ -279,6 +322,13 @@
   expected_answer: compliant
 
   question: Are deprecated ciphers and cryptographic algorithms disabled?
+
+  hints:
+    common: >
+      Review cryptographic configuration including cipher suites,
+      encryption algorithms, integrity algorithms, and key exchange
+      settings. Confirm deprecated or weak algorithms are disabled.
+
 
   description: >
     Weak or deprecated cryptographic algorithms remained enabled.
@@ -314,9 +364,15 @@
   question: Is VPN access restricted based on user or device role?
 
   hints:
+    common: >
+      Determine whether users and devices receive access based on
+      business requirements. Review security groups, access
+      policies, network segmentation controls, firewall rules, and
+      access restrictions where applicable.
+
     Microsoft Always On VPN: >
-      RRAS Remote Access Policies, NPS Policies, Firewall Rules, Security 
-      Groups, and Network Segmentation Controls.
+      RRAS Policies, NPS Policies, Firewall Rules,
+      Security Groups, and Network Segmentation Controls.
 
   description: >
     VPN users were granted unnecessary access to internal
@@ -347,6 +403,12 @@
   expected_answer: compliant
 
   question: Is split tunnelling disabled or appropriately restricted?
+
+  hints:
+    common: >
+      Review VPN routing behaviour and determine whether split
+      tunnelling is disabled or governed through documented
+      restrictions, approved routes, and security controls.
 
   description: >
     Split tunnelling was enabled without appropriate controls.
@@ -380,6 +442,12 @@
     VPN access?
 
   hints:
+    common: >
+      Determine whether devices are evaluated against security
+      requirements before VPN access is granted. Examples include
+      compliance policies, health checks, certificates, patch
+      validation, or endpoint security requirements.
+
     Microsoft Always On VPN: >
       Device certificates, Intune compliance policies, or computer-group 
       restrictions.
@@ -414,6 +482,13 @@
 
   question: Is VPN access restricted to managed or approved devices?
 
+  hints:
+    common: >
+      Determine whether VPN access is restricted to approved or
+      organisationally managed devices. Review device enrollment,
+      device certificates, management platforms, or access policies
+      enforcing device trust requirements.
+
   description: >
     Unmanaged devices were permitted to establish VPN
     connections.
@@ -444,10 +519,15 @@
   question: Is VPN user access reviewed on a regular basis?
 
   hints:
+    common: >
+      Ask how VPN access is reviewed, who performs the review, how
+      often it occurs, and whether evidence of recent reviews can
+      be provided. Examples include access review records,
+      approval workflows, tickets, or entitlement reviews.
+
     Microsoft Always On VPN: >
-      Active Directory or Entra ID VPN access groups, access review records, 
-      membership certification activities, and evidence of periodic entitlement
-      reviews.
+      Active Directory or Entra ID VPN access groups,
+      access review records, and entitlement reviews.
 
   description: >
     VPN user access was not subject to periodic review.
@@ -486,9 +566,15 @@
   question: Are VPN authentication and connection events logged and monitored?
 
   hints:
+    common: >
+      Review whether VPN authentication attempts, connection events,
+      and security-relevant activity are logged and monitored.
+      Determine whether logs are regularly reviewed or integrated
+      with a central monitoring platform.
+
     Microsoft Always On VPN: >
-      Event Viewer > Microsoft > Windows > RemoteAccess, RRAS Logging, NPS Logs,
-      and SIEM Integration.
+      Event Viewer > Microsoft > Windows > RemoteAccess,
+      RRAS Logs, NPS Logs, and SIEM Integration.
 
   description: >
     VPN activity was not adequately logged or monitored.
@@ -520,6 +606,11 @@
   question: Are administrative actions logged and retained?
 
   hints:
+    common: >
+      Review whether administrative actions and configuration
+      changes are recorded in audit logs and retained for
+      investigation and accountability purposes.
+
     Microsoft Always On VPN: >
       Event Viewer, Local Security Logs, RRAS Administrative Logs, and SIEM 
       Integration.
@@ -559,6 +650,12 @@
   question: Is role-based access control used for VPN administration?
 
   hints:
+    common: >
+      Review administrative accounts, roles, and permissions.
+      Determine whether administrators receive only the privileges
+      required for their responsibilities and whether permissions
+      are assigned using defined roles.
+
     Microsoft Always On VPN: >
       Local Administrators Group, Server Administration Roles, Entra Roles, 
       and Delegated Permissions.
@@ -602,10 +699,18 @@
     connections?
 
   hints:
+    common: >
+      Determine how Device Tunnel connections authenticate to the
+      VPN service. Confirm device identity is validated using
+      machine certificates rather than user credentials and verify
+      only trusted, managed devices can establish Device Tunnel
+      connections.
+
     Microsoft Always On VPN: >
-      NPS > Network Policies > Constraints > Authentication Methods, and RRAS > 
-      Security > Authentication Provider. Confirm Device Tunnel connections 
-      require machine certificate authentication.
+      NPS > Network Policies > Constraints >
+      Authentication Methods, and RRAS > Security >
+      Authentication Provider. Confirm Device Tunnel
+      connections require machine certificate authentication.
 
   description: >
     Device Tunnel connections were not restricted to machine certificate 
@@ -641,9 +746,15 @@
     intervention?
 
   hints:
+    common: >
+      Determine whether VPN connectivity is established
+      automatically without requiring users to manually launch
+      or connect the VPN. Confirm connectivity is available
+      whenever the device is outside trusted networks.
+
     Microsoft Always On VPN: >
-      VPN Profile XML. Confirm AlwaysOn=true and Device Tunnel configuration 
-      where applicable.
+      VPN Profile XML. Confirm AlwaysOn=true and
+      Device Tunnel configuration where applicable.
 
   description: >
     VPN connectivity was not available before user authentication.
@@ -678,9 +789,16 @@
   question: Are VPN routes restricted to approved destinations and networks?
 
   hints:
+    common: >
+      Review which networks and resources are accessible
+      through the VPN. Confirm only approved routes and
+      destinations are available and that unnecessary
+      internal networks are not exposed to remote devices.
+
     Microsoft Always On VPN: >
-      VPN Profile XML > Routes, RRAS configuration, route validation controls 
-      and exclusions.
+      VPN Profile XML > Routes, RRAS configuration,
+      route validation controls and exclusions.
+
 
   description: >
     Route restrictions and validation controls were not enforced for VPN 
@@ -715,9 +833,19 @@
   question: Are split tunnel exclusions documented and approved?
 
   hints:
+    common: >
+      Determine whether split tunnel exclusions have been
+      formally reviewed, approved, and documented. Assess
+      whether excluded destinations are supported by a
+      legitimate business requirement and align with the
+      organisation's remote access security model.
+
     Microsoft Always On VPN: >
-      VPN Profile XML > RoutingPolicyType, Traffic Filters, Exclusion Routes, 
-      Split Tunnel configuration.
+      VPN Profile XML > RoutingPolicyType,
+      Traffic Filters, Exclusion Routes,
+      and Split Tunnel configuration.
+      Review supporting documentation or change
+      records evidencing approval of exclusions.
 
   description: >
     Split tunnel behaviour was not adequately documented, governed or 

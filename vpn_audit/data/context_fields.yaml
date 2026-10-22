@@ -35,31 +35,8 @@
   type: string
   required: true
 
-- id: deployment_model
-  order: 4
-  label: Which deployment model is used?
-  type: choice
-  required: true
-
-  options:
-    - Cloud Hosted
-    - On-Premises
-    - Hybrid
-
-- id: vpn_user_count
-  order: 5
-  label: Total VPN Users
-  type: integer
-  required: true
-
-- id: vpn_gateway_count
-  order: 6
-  label: Number of VPN Gateways
-  type: integer
-  required: false
-
 - id: authentication_method
-  order: 7
+  order: 4
   label: Primary VPN Authentication Method
   type: choice
   required: true
@@ -73,10 +50,10 @@
     - Other
 
 - id: identity_provider
-  order: 8
+  order: 5
   label: Identity Provider / Authentication Source
   type: choice
-  required: false
+  required: true
 
   options:
     - Microsoft Entra ID
@@ -87,10 +64,10 @@
     - Other
 
 - id: tunnel_type
-  order: 9
+  order: 6
   label: Which VPN tunnel type is deployed?
   type: choice
-  required: false
+  required: true
 
   options:
     - Device Tunnel
@@ -98,10 +75,10 @@
     - Device and User Tunnel
 
 - id: certificate_authority
-  order: 10
+  order: 7
   label: Certificate Authority Used for VPN Authentication
   type: choice
-  required: false
+  required: true
 
   options:
     - Active Directory Certificate Services (AD CS)
@@ -111,10 +88,10 @@
     - Other
 
 - id: user_control
-  order: 11
+  order: 8
   label: What level of VPN user control is permitted?
   type: choice
-  required: false
+  required: true
 
   options:
     - No User Control
@@ -122,10 +99,10 @@
     - Full Control
 
 - id: split_tunnel_mode
-  order: 12
+  order: 9
   label: How is VPN traffic routed?
   type: choice
-  required: false
+  required: true
 
   options:
     - Full Tunnel
@@ -133,10 +110,10 @@
     - Split-by-Exception
 
 - id: mfa_solution
-  order: 13
+  order: 10
   label: MFA Provider
   type: choice
-  required: false
+  required: true
 
   options:
     - Microsoft Entra MFA

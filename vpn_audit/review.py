@@ -111,12 +111,16 @@ def collect_context(
                 hint = field.hints.get(vendor)
     
                 if hint:
-                    console.print(
-                        f"[bold italic]Check:[/bold italic] "
-                        f"[italic]{hint}[/italic]"
-                    )
+                    console.print(f"[bold yellow]Location[/bold yellow]\n{hint}")
 
-            value = input("> ")
+            value = input("> ").strip()
+
+        if field.required:
+
+            while not value:
+
+                console.print("[red]This field is required.[/red]")
+                value = input("> ").strip()
 
         if field.type == "integer":
             while True:
@@ -154,19 +158,25 @@ def ask_question(
     Present a question to the assessor and record the response.
     """
 
-    hint = None
+    common_hint = None
+    vendor_hint = None
 
     if question.hints:
-        hint = question.hints.get(vendor.value)
+        common_hint = question.hints.get("common")
+        vendor_hint = question.hints.get(vendor.value)
 
     console.print()
     console.print(
         f"[bold cyan]Question {current}/{total}:[/bold cyan] "
         f"[bold]{question.question}[/bold]"
     )
+    console.print()
 
-    if hint:
-        console.print(f"[bold italic]Check:[/bold italic] [italic]{hint}[/italic]")
+    if common_hint:
+        console.print(f"[bold blue]Evidence[/bold blue]\n{common_hint}")
+
+    if vendor_hint:
+        console.print(f"[bold yellow]Location[/bold yellow]\n{vendor_hint}")
 
     console.print(
         f"[green]✓ {question.good_value}[/green]"
