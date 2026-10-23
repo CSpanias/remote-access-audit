@@ -9,7 +9,7 @@ converters and reporting pipelines.
 import json
 from pathlib import Path
 
-from vpn_audit.models import AssessmentResults
+from remote_access_audit.models import AssessmentResults
 
 
 def export_findings_json(

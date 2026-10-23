@@ -14,7 +14,7 @@ export functionality to ensure the assessment logic remains
 independent from output formats.
 """
 
-from vpn_audit.models import (
+from remote_access_audit.models import (
     AssessmentResults,
     AuditAnswer,
     ContextField,
@@ -25,11 +25,11 @@ from vpn_audit.models import (
     ReviewContext,
     VPNVendor,
 )
-from vpn_audit.loader import (
+from remote_access_audit.loader import (
     load_context_fields,
     load_questions,
 )
-from vpn_audit.ui import console
+from remote_access_audit.ui import console
 
 
 def get_applicable_context_fields(

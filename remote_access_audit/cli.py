@@ -11,12 +11,11 @@ findings, remediation guidance, and report outputs.
 import argparse
 
 from rich.panel import Panel
-from textwrap import dedent
 
-from vpn_audit.exporters.json import export_findings_json
-from vpn_audit.exporters.markdown import export_markdown
-from vpn_audit.review import run_assessment
-from vpn_audit.ui import console
+from remote_access_audit.exporters.json import export_findings_json
+from remote_access_audit.exporters.markdown import export_markdown
+from remote_access_audit.review import run_assessment
+from remote_access_audit.ui import console
 
 
 def main() -> None:

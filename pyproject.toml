@@ -1,7 +1,7 @@
 [project]
-name = "vpn-audit"
+name = "remote-access-audit"
 version = "0.0.1"
-description = "Interactive VPN configuration review and reporting tool"
+description = "Interactive remote access configuration review and reporting tool"
 readme = "README.md"
 requires-python = ">=3.10"
 
@@ -30,10 +30,10 @@ keywords = [
 ]
 
 [project.scripts]
-vpn-audit = "vpn_audit.cli:main"
+remote-access-audit = "remote_access_audit.cli:main"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.package-data]
-vpn_audit = ["data/*.yaml"]
+remote_access_audit = ["data/*.yaml"]

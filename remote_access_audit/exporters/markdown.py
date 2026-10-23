@@ -8,10 +8,10 @@ and remediation guidance.
 
 from pathlib import Path
 
-from vpn_audit.constants import (
+from remote_access_audit.constants import (
     FINDING_THEMES, COMMENTARY_GROUPS, REFERENCES
 )
-from vpn_audit.models import AssessmentResults
+from remote_access_audit.models import AssessmentResults
 
 
 def _get_review_scope(

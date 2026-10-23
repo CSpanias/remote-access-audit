@@ -21,7 +21,7 @@ import yaml
 from pathlib import Path
 from pydantic import ValidationError
 
-from vpn_audit.models import ContextField, Question
+from remote_access_audit.models import ContextField, Question
 
 
 DATA_DIR = Path(__file__).parent / "data"
