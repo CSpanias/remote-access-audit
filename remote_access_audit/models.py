@@ -1,6 +1,6 @@
 
 """
-Core data models used throughout the VPN Audit application.
+Core data models used throughout the Remote Access Audit application.
 
 This module defines the strongly-typed data structures that represent:
 
@@ -24,22 +24,49 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
-class VPNVendor(str, Enum):
+class RemoteAccessPlatform(str, Enum):
     """
-    Supported VPN vendors.
+    Supported remote access platforms.
 
-    Used for displaying vendor-specific navigation hints
+    Used for displaying solution-specific navigation hints
     throughout the assessment process.
     """
 
-    CISCO = "Cisco Secure Client"
-    GLOBALPROTECT = "Palo Alto GlobalProtect"
-    FORTICLIENT = "Fortinet FortiClient"
-    CHECKPOINT = "Check Point Remote Access VPN"
     ALWAYS_ON_VPN = "Microsoft Always On VPN"
-    OPENVPN = "OpenVPN"
-    WIREGUARD = "WireGuard"
+    BEYONDTRUST_PRA = "BeyondTrust PRA"
     OTHER = "Other"
+
+    @property
+    def solution_type(self) -> SolutionType:
+
+        if self is RemoteAccessPlatform.ALWAYS_ON_VPN:
+            return SolutionType.VPN
+
+        if self is RemoteAccessPlatform.BEYONDTRUST_PRA:
+            return SolutionType.PRA
+
+        if self is RemoteAccessPlatform.OTHER:
+            return SolutionType.VPN
+
+        raise ValueError(f"No solution type defined for {self}")
+
+
+class SolutionType(str, Enum):
+    """
+    Supported remote access solution categories.
+
+    VPN:
+        Traditional remote network access solutions which
+        provide connectivity to internal networks and services.
+
+    PRA:
+        Privileged Remote Access solutions which broker,
+        control, and monitor access to individual systems
+        and resources.
+    """
+
+    VPN = "vpn"
+    PRA = "pra"
 
 
 class AuditAnswer(str, Enum):
@@ -81,6 +108,13 @@ class ContextField(BaseModel):
 
     required: bool = True
 
+    solution_types: list[SolutionType] = Field(
+        default_factory=lambda: [
+            SolutionType.VPN,
+            SolutionType.PRA,
+        ]
+    )
+
     options: list[str] | None = None
 
     hints: dict[str, str] | None = None
@@ -90,23 +124,12 @@ class ReviewContext(BaseModel):
     """
     Stores environment information gathered during the
     assessment context collection phase.
-
-    This information is used within exported reports
-    and findings to provide background information
-    about the reviewed VPN environment.
-
-    A single ReviewContext exists for each assessment.
     """
 
     client_name: str
 
-    vpn_vendor: VPNVendor
-    vpn_version: str
-
-    deployment_model: str | None = None
-
-    vpn_user_count: int | None = None
-    vpn_gateway_count: int | None = None
+    remote_access_solution: RemoteAccessPlatform
+    platform_version: str
 
     authentication_method: str | None = None
     identity_provider: str | None = None
@@ -160,6 +183,13 @@ class Question(BaseModel):
 
     question: str
 
+    solution_types: list[SolutionType] = Field(
+        default_factory=lambda: [
+            SolutionType.VPN,
+            SolutionType.PRA,
+        ]
+    )
+
     description: str
     commentary: str
     solution: str
@@ -169,6 +199,7 @@ class Question(BaseModel):
     bad_value: str
 
     hints: dict[str, str] | None = None
+
     vendors: list[str] = Field(default_factory=lambda: ["all"])
 
 
@@ -201,7 +232,7 @@ class PositiveObservation(BaseModel):
 
 class AssessmentResults(BaseModel):
     """
-    Represents the complete outcome of a VPN assessment.
+    Represents the complete outcome of a remote access assessment.
 
     This model acts as the central object exchanged between
     the review engine and exporters.

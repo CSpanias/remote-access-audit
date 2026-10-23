@@ -83,7 +83,7 @@ def load_questions() -> list[Question]:
                 f"Finding: {item.get('finding_id')})"
             ) from exc
 
-    return questions
+    return sorted(questions, key=lambda question: question.id)
 
 
 def load_context_fields() -> list[ContextField]:
@@ -97,7 +97,9 @@ def load_context_fields() -> list[ContextField]:
     path = DATA_DIR / "context_fields.yaml"
     data = _load_yaml(path)
 
-    return [ContextField.model_validate(item) for item in data]
+    fields = [ContextField.model_validate(item) for item in data]
+
+    return sorted(fields, key=lambda field: field.order)
 
 
 if __name__ == "__main__":

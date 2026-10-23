@@ -21,10 +21,7 @@ def _get_review_scope(
     Return a human-readable assessment scope.
     """
 
-    return (
-        f"{results.context.vpn_vendor.value} "
-        "remote access environment"
-    )
+    return f"{results.context.remote_access_solution.value} deployment"
 
 #-------------------------------------------------------------------------------
 # Executive Summary
@@ -47,24 +44,9 @@ def _generate_assessment_context(
         "| Field | Value |",
         "|-------|-------|",
         f"| Client | {context.client_name} |",
-        f"| VPN Solution | {context.vpn_vendor.value} |",
-        f"| VPN Version | {context.vpn_version} |",
+        f"| Remote Access Solution | {context.remote_access_solution.value} |",
+        f"| Platform Version | {context.platform_version} |",
     ])
-
-    if context.deployment_model:
-        lines.append(
-            f"| Deployment Model | {context.deployment_model} |"
-        )
-
-    if context.vpn_user_count is not None:
-        lines.append(
-            f"| VPN Users | {context.vpn_user_count} |"
-        )
-
-    if context.vpn_gateway_count is not None:
-        lines.append(
-            f"| VPN Gateways | {context.vpn_gateway_count} |"
-        )
 
     if context.authentication_method:
         lines.append(
@@ -117,6 +99,7 @@ def _generate_assessment_context(
 
 
     return lines
+
 
 def _get_identified_themes(
     results: AssessmentResults,
@@ -212,12 +195,12 @@ def _generate_executive_summary(
     # Introductory Paragraph
     #---------------------------------------------------------------------------
     lines.append(
-        "A VPN configuration review was conducted "
-        f"for the {results.context.client_name} environment "
-        f"covering the {scope}. The assessment considered "
-        "authentication controls, cryptographic standards, "
-        "access control mechanisms, client security settings, "
-        "monitoring capabilities, and administrative controls."
+        "A remote access configuration review was conducted for the "
+        f"{results.context.client_name} environment covering the {scope}. The "
+        "assessment considered authentication controls, cryptographic "
+        "standards, access control mechanisms, monitoring capabilities, "
+        "logging and audit controls, administrative security controls, and "
+        "solution-specific security functionality."
     )
 
     lines.append("")
@@ -228,23 +211,23 @@ def _generate_executive_summary(
     if posture == "strong":
         lines.append(
             "The review identified that security controls were generally well "
-            "implemented across the assessed VPN environment. While several "
-            f"opportunities for improvement relating to {theme_text} were "
-            "identified, the majority of assessed controls were operating as "
-            "intended."
+            "implemented across the assessed remote access environment. While "
+            f"several opportunities for improvement relating to {theme_text} "
+            "were identified, the majority of assessed controls were operating "
+            "as intended."
         )
 
     elif posture == "moderate":
         lines.append(
             "The review identified a mixture of effective controls and "
-            "opportunities for improvement across the assessed VPN "
+            "opportunities for improvement across the assessed remote access "
             f"environment. Areas requiring attention related to {theme_text}."
         )
 
     else:
         lines.append(
             "The review identified several weaknesses affecting the "
-            "implementation and enforcement of VPN security controls. "
+            "implementation and enforcement of remote access security controls. "
             "Opportunities for improvement were identified relating to "
             f"{theme_text}."
         )
@@ -258,7 +241,8 @@ def _generate_executive_summary(
 
     if "Authentication" in themes:
         impact_areas.append(
-            "ensuring only authorised users can establish VPN connections"
+            "ensuring only authorised users can establish remote access "
+            "connections"
         )
 
     if "Access Control" in themes:
@@ -268,12 +252,13 @@ def _generate_executive_summary(
 
     if "Cryptography" in themes:
         impact_areas.append(
-            "protecting VPN communications through secure cryptographic standards"
+            "protecting remote access communications through secure "
+            "cryptographic standards"
         )
 
     if "Monitoring and Detection" in themes:
         impact_areas.append(
-            "detecting suspicious VPN activity and security events"
+            "detecting suspicious remote access activity and security events"
         )
 
     if not impact_areas:
@@ -286,12 +271,12 @@ def _generate_executive_summary(
 
         lines.append(
             "The issues identified may reduce assurance that security "
-            "requirements are applied consistently across the VPN "
+            "requirements are applied consistently across the remote access "
             "environment. Several observations related to controls "
-            f"responsible for {impact_text}. "
-            "Where such controls are not consistently enforced, the "
-            "likelihood of unauthorised access, network compromise, "
-            "or misuse of remote access services may increase."
+            f"responsible for {impact_text}. Where such controls are not "
+            "consistently enforced, the likelihood of unauthorised access, "
+            "network compromise, or misuse of remote access services may "
+            "increase."
         )
 
     else:
@@ -299,8 +284,8 @@ def _generate_executive_summary(
         lines.append(
             "No significant weaknesses were identified during the review. "
             "The assessed controls were operating as intended and "
-            "contributed towards the secure operation of the VPN environment "
-            "and the protection of corporate information."
+            "contributed towards the secure operation of the remote access "
+            "environment and the protection of corporate information."
         )
 
     lines.append("")
@@ -318,8 +303,8 @@ def _generate_executive_summary(
 
     elif posture == "moderate":
         lines.append(
-            "Overall, the VPN platform provides a foundation for secure "
-            "remote access; however, further work is required to ensure "
+            "Overall, the remote access platform provides a foundation for "
+            "secure remote access; however, further work is required to ensure "
             "that security controls are applied consistently across the "
             "environment."
         )
@@ -327,10 +312,11 @@ def _generate_executive_summary(
     else:
         lines.append(
             "Overall, significant opportunities exist to strengthen the "
-            "security posture of the VPN environment. Priority should be "
-            "given to improving authentication controls, strengthening "
-            "access restrictions, and ensuring that security requirements "
-            "are enforced consistently across remote access services."
+            "security posture of the remote access environment. Priority "
+            "should be given to improving authentication controls, "
+            "strengthening access restrictions, and ensuring that security "
+            "requirements are enforced consistently across remote access "
+            "services."
         )
 
     lines.append("")
@@ -347,8 +333,9 @@ def _get_group_intro(
     intros = {
         "Authentication": (
             "The review identified weaknesses relating to the authentication "
-            "mechanisms used to establish VPN connections. Strong authentication "
-            "controls help ensure that remote access is restricted to authorised users."
+            "mechanisms used to establish remote connections. Strong "
+            "authentication controls help ensure that remote access is "
+            "restricted to authorised users."
         ),
 
         "Access Control": (
@@ -359,24 +346,25 @@ def _get_group_intro(
 
         "Cryptography": (
             "The assessment identified areas where cryptographic controls could "
-            "be strengthened to better protect VPN communications from interception "
-            "or manipulation."
+            "be strengthened to better protect remote communications from "
+            "interception or manipulation."
         ),
 
         "Monitoring and Detection": (
             "Several observations related to logging, monitoring, and detection "
-            "capabilities. Effective monitoring improves visibility of suspicious "
-            "activity and supports incident investigation."
+            "capabilities. Effective monitoring improves visibility of "
+            "suspicious activity and supports incident investigation."
         ),
 
         "Administrative Security": (
             "The review identified opportunities to strengthen administrative "
-            "security controls governing the management of the VPN environment."
+            "security controls governing the management of the remote access "
+            "environment."
         ),
 
         "Client Security": (
             "Further observations related to the configuration and management "
-            "of VPN client software used by end users."
+            "of remote access software used by end users."
         ),
 
         "Resilience and Availability": (
@@ -421,11 +409,10 @@ def _generate_commentary(
     lines.append("")
 
     lines.append(
-        "A VPN configuration review was conducted "
-        f"for the {results.context.client_name} environment. "
-        "The assessment reviewed the effectiveness of controls "
-        "used to secure remote access services and protect access "
-        "to internal systems and data."
+        "A remote access configuration review was conducted for the "
+        f"{results.context.client_name} environment. The assessment reviewed "
+        "the effectiveness of controls used to secure remote access services "
+        "and protect access to internal systems and data."
     )
 
     lines.append("")
@@ -455,7 +442,7 @@ def _generate_commentary(
     if results.findings:
         lines.append(
             "The review identified several opportunities to further "
-            "strengthen the security posture of the VPN environment. "
+            "strengthen the security posture of the remote access environment. "
             "Addressing the observations identified throughout the "
             "assessment would improve assurance that remote access "
             "controls are operating effectively and consistently."
@@ -510,7 +497,7 @@ def _generate_remediation(
     for title, url in REFERENCES["Generic"].items():
         lines.append(f"- [{title}]({url})")
 
-    vendor = results.context.vpn_vendor.value
+    vendor = results.context.remote_access_solution.value
 
     if vendor in REFERENCES:
         for title, url in REFERENCES[vendor].items():
@@ -531,7 +518,7 @@ def export_markdown(
     path = Path(output_file)
 
     lines = [
-        f"# {results.context.client_name} - VPN Configuration Review",
+        f"# {results.context.client_name} - Remote Access Configuration Review",
         "",
     ]
 

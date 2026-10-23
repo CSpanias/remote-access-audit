@@ -22,13 +22,13 @@ def export_findings_json(
 
     findings = [
         {
-            "id": "vpn-audit",
-            "title": "VPN Configuration Review",
+            "id": "remote-access-audit",
+            "title": "Remote Access Configuration Review",
             "description": (
-                "A review of the organisation's VPN "
-                "configuration was performed."
+                "A review of the organisation's remote access configuration "
+                "was performed."
             ),
-            "vendor": results.context.vpn_vendor.value,
+            "platform": results.context.remote_access_solution.value,
         }
     ]
 

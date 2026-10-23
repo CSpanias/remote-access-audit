@@ -1,45 +1,57 @@
 # Context fields collected before an assessment begins.
 #
 # These fields define the information required to describe
-# the client's VPN environment, including the VPN solution,
-# deployment model, authentication methods and user population.
+# the client's remote access environment, including the
+# access solution, authentication mechanisms, identity
+# services, and deployment characteristics.
 #
 # Fields are loaded dynamically by the application to allow
 # future expansion without code changes.
 
 - id: client_name
   order: 1
-  label: Client / Organisation Name
+  label: What is the organisation's name?
   type: string
   required: true
 
-- id: vpn_vendor
+  solution_types:
+    - vpn
+    - pra
+
+- id: remote_access_solution
   order: 2
-  label: Which VPN solution is being reviewed?
+  label: Which remote access solution is being reviewed?
   type: choice
   required: true
 
+  solution_types:
+    - vpn
+    - pra
+
   options:
-    - Cisco Secure Client
-    - Palo Alto GlobalProtect
-    - Fortinet FortiClient
-    - Check Point Remote Access VPN
     - Microsoft Always On VPN
-    - OpenVPN
-    - WireGuard
+    - BeyondTrust PRA
     - Other
 
-- id: vpn_version
+- id: platform_version
   order: 3
-  label: Which VPN Platform Version / Service Release is in use?
+  label: Which platform version / service release is in use?
   type: string
   required: true
+
+  solution_types:
+    - vpn
+    - pra
 
 - id: authentication_method
   order: 4
-  label: Primary VPN Authentication Method
+  label: What is the primary authentication method?
   type: choice
   required: true
+
+  solution_types:
+    - vpn
+    - pra
 
   options:
     - Machine Certificate
@@ -47,13 +59,18 @@
     - EAP-TLS
     - Username and Password
     - Username and Password with MFA
+    - SAML / SSO
     - Other
 
 - id: identity_provider
   order: 5
-  label: Identity Provider / Authentication Source
+  label: What is the identity provider / authentication source?
   type: choice
   required: true
+
+  solution_types:
+    - vpn
+    - pra
 
   options:
     - Microsoft Entra ID
@@ -69,6 +86,9 @@
   type: choice
   required: true
 
+  solution_types:
+    - vpn
+
   options:
     - Device Tunnel
     - User Tunnel
@@ -76,9 +96,12 @@
 
 - id: certificate_authority
   order: 7
-  label: Certificate Authority Used for VPN Authentication
+  label: Which Certificate Authority is used for VPN authentication?
   type: choice
   required: true
+
+  solution_types:
+    - vpn
 
   options:
     - Active Directory Certificate Services (AD CS)
@@ -89,9 +112,13 @@
 
 - id: user_control
   order: 8
-  label: What level of VPN user control is permitted?
+  label: What level of user control is permitted?
   type: choice
   required: true
+
+  solution_types:
+    - vpn
+    - pra
 
   options:
     - No User Control
@@ -104,6 +131,9 @@
   type: choice
   required: true
 
+  solution_types:
+    - vpn
+
   options:
     - Full Tunnel
     - Split Tunnel
@@ -111,9 +141,13 @@
 
 - id: mfa_solution
   order: 10
-  label: MFA Provider
+  label: Who is the Multi-Factor Authentication provider?
   type: choice
   required: true
+
+  solution_types:
+    - vpn
+    - pra
 
   options:
     - Microsoft Entra MFA
@@ -123,5 +157,6 @@
     - Okta Verify
     - PingID
     - Cisco Duo
+    - BeyondTrust Verify
     - Other
     - Not Applicable

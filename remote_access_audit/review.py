@@ -1,17 +1,16 @@
 """
-Assessment workflow engine for VPN reviews.
+Assessment workflow engine for remote access reviews.
 
-This module contains the core assessment workflow logic and is
-responsible for:
+This module contains the core assessment workflow logic and is responsible for:
 
 - Collecting assessment context
 - Selecting applicable audit questions
-- Filtering controls by VPN vendor
+- Filtering controls by platform and solution
 - Coordinating the assessment workflow
 
-The review engine is intentionally separated from reporting and
-export functionality to ensure the assessment logic remains
-independent from output formats.
+The review engine is intentionally separated from reporting and export 
+functionality to ensure the assessment logic remains independent from output 
+formats.
 """
 
 from remote_access_audit.models import (
@@ -23,7 +22,8 @@ from remote_access_audit.models import (
     Question,
     QuestionResponse,
     ReviewContext,
-    VPNVendor,
+    RemoteAccessPlatform,
+    SolutionType,
 )
 from remote_access_audit.loader import (
     load_context_fields,
@@ -34,42 +34,48 @@ from remote_access_audit.ui import console
 
 def get_applicable_context_fields(
     fields: list[ContextField],
+    solution_type: SolutionType,
 ) -> list[ContextField]:
     """
     Return all configured context fields.
     """
 
     return sorted(
-        fields,
+        [
+            field
+            for field in fields
+            if solution_type in field.solution_types
+        ],
         key=lambda field: field.order,
     )
 
 
 def get_applicable_questions(
     questions: list[Question],
-    vendor: VPNVendor,
+    platform: RemoteAccessPlatform,
+    solution_type: SolutionType,
 ) -> list[Question]:
     """
-    Return all questions applicable to the selected VPN vendor.
+    Return all questions applicable to the selected platform and solution type.
     """
 
     applicable_questions = []
 
     for question in questions:
 
+        if solution_type not in question.solution_types:
+            continue
+
         if any(
-            vendor_name.lower() == "all"
-            for vendor_name in question.vendors
+            platform_name.lower() == "all"
+            for platform_name in question.vendors
         ):
             applicable_questions.append(question)
 
-        elif vendor.value in question.vendors:
+        elif platform.value in question.vendors:
             applicable_questions.append(question)
 
-    return sorted(
-        applicable_questions,
-        key=lambda q: q.id,
-    )
+    return sorted(applicable_questions, key=lambda q: q.id)
 
 
 def collect_context(
@@ -104,14 +110,16 @@ def collect_context(
         else:
             console.print(f"[bold]{field.label}[/bold]")
 
-            vendor = responses.get("vpn_vendor")
-                            
-            if field.hints and vendor:
-    
-                hint = field.hints.get(vendor)
-    
+            platform = responses.get("remote_access_solution")
+
+            if field.hints and platform:
+
+                hint = field.hints.get(platform)
+
                 if hint:
-                    console.print(f"[bold yellow]Location[/bold yellow]\n{hint}")
+                    console.print(
+                        f"[bold yellow]Location[/bold yellow]\n{hint}"
+                    )
 
             value = input("> ").strip()
 
@@ -150,7 +158,7 @@ def collect_context(
 
 def ask_question(
     question: Question,
-    vendor: VPNVendor,
+    platform: RemoteAccessPlatform,
     current: int,
     total: int,
 ) -> QuestionResponse:
@@ -159,11 +167,11 @@ def ask_question(
     """
 
     common_hint = None
-    vendor_hint = None
+    platform_hint = None
 
     if question.hints:
         common_hint = question.hints.get("common")
-        vendor_hint = question.hints.get(vendor.value)
+        platform_hint = question.hints.get(platform.value)
 
     console.print()
     console.print(
@@ -175,8 +183,8 @@ def ask_question(
     if common_hint:
         console.print(f"[bold blue]Evidence[/bold blue]\n{common_hint}")
 
-    if vendor_hint:
-        console.print(f"[bold yellow]Location[/bold yellow]\n{vendor_hint}")
+    if platform_hint:
+        console.print(f"[bold yellow]Location[/bold yellow]\n{platform_hint}")
 
     console.print(
         f"[green]✓ {question.good_value}[/green]"
@@ -225,7 +233,7 @@ def ask_question(
 
 def conduct_review(
     questions: list[Question],
-    vendor: VPNVendor,
+    platform: RemoteAccessPlatform,
 ) -> list[QuestionResponse]:
     """
     Execute the assessment question set.
@@ -241,7 +249,7 @@ def conduct_review(
     ):
         response = ask_question(
             question,
-            vendor,
+            platform,
             current,
             total,
         )
@@ -355,26 +363,25 @@ def build_assessment_results(
 
 def run_assessment() -> AssessmentResults:
     """
-    Execute a complete VPN assessment.
+    Execute a complete remote access assessment.
     """
 
-    context_fields = get_applicable_context_fields(
+    context_fields = sorted(
         load_context_fields(),
+        key=lambda field: field.order
     )
 
-    context = collect_context(
-        context_fields,
-    )
+    context = collect_context(context_fields)
+
+    solution_type = (context.remote_access_solution.solution_type)
 
     questions = get_applicable_questions(
         load_questions(),
-        context.vpn_vendor,
+        context.remote_access_solution,
+        solution_type,
     )
 
-    responses = conduct_review(
-        questions,
-        context.vpn_vendor,
-    )
+    responses = conduct_review(questions, context.remote_access_solution)
 
     return build_assessment_results(
         context=context,

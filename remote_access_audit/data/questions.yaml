@@ -1,6 +1,6 @@
 # Assessment question definitions.
 #
-# This file contains all audit controls used during VPN reviews.
+# This file contains all audit controls used during remote access reviews.
 #
 # Each question includes:
 # - Vulnerability mapping
@@ -27,17 +27,23 @@
 #-------------------------------------------------------------------------------
 
 - id: 1
-  finding_id: vpn-mfa-not-enforced
-  finding_title: VPN Multi-Factor Authentication Not Enforced
-  vendors:
-    - all
+  finding_id: user-mfa-not-enforced
+  finding_title: Multi-Factor Authentication Not Enforced for Users
+
+  question: Is multi-factor authentication enforced for all users?
+
   expected_answer: compliant
 
-  question: Is multi-factor authentication enforced for all VPN users?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
-      Review the VPN authentication configuration and confirm
+      Review the remote access authentication configuration and confirm
       whether all users are required to complete MFA authentication
       during the VPN sign-in process.
 
@@ -54,13 +60,13 @@
       User & Authentication > User Groups
 
   description: >
-    Multi-factor authentication was not enforced for VPN users,
+    Multi-factor authentication was not enforced for remote access users,
     increasing the risk of account compromise through credential
     theft, password spraying, brute-force attacks, and credential
     reuse.
 
   commentary: >
-    VPN access relied solely on single-factor authentication.
+    Remote access relied solely on single-factor authentication.
     As a result, compromise of user credentials may provide an
     attacker with remote access to internal systems and services.
     Multi-factor authentication provides an additional layer of
@@ -68,50 +74,56 @@
     a password.
 
   solution: >
-    Enforce multi-factor authentication for all VPN users and
+    Enforce multi-factor authentication for all remote access users and
     administrators.
 
   positive: >
-    Multi-factor authentication is enforced for all VPN users.
+    Multi-factor authentication was enforced for all remote access users.
 
   good_value: >
-    MFA is mandatory for all VPN access.
+    Multi-factor authentication is mandatory for all remote access users.
 
   bad_value: >
-    VPN access is protected only by passwords.
+    Remote access is protected only by passwords.
 
 - id: 2
-  finding_id: vpn-shared-accounts-permitted
-  finding_title: Shared VPN Accounts Permitted
-  vendors:
-    - all
+  finding_id: shared-accounts-permitted
+  finding_title: Shared Accounts Permitted
+  
+  question: Are individual user accounts required for remote access?
+
   expected_answer: compliant
 
-  question: Are individual user accounts required for VPN access?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
-      Determine whether VPN users authenticate using individually
+      Determine whether remote access users authenticate using individually
       assigned accounts. Review authentication sources, user
       accounts, and account assignment processes to confirm shared
       accounts are not used.
 
   description: >
-    Shared VPN accounts were permitted, reducing accountability
+    Shared accounts were permitted, reducing accountability
     and increasing the difficulty of attributing activity to
     specific users.
 
   commentary: >
     The use of shared accounts limits auditability and may
     prevent accurate attribution of actions performed through
-    VPN connections.
+    remote access connections.
 
   solution: >
-    Require all VPN users to authenticate using unique
+    Require all remote access users to authenticate using unique
     individual accounts.
 
   positive: >
-    All VPN access is performed using uniquely assigned accounts.
+    All remote access was performed using uniquely assigned accounts.
 
   good_value: >
     Individual user accounts are required.
@@ -120,24 +132,29 @@
     Shared VPN accounts are permitted.
 
 - id: 3
-  finding_id: vpn-local-accounts-enabled
-  finding_title: Local VPN Accounts Enabled
-  vendors:
-    - all
+  finding_id: local-accounts-enabled
+  finding_title: Local Accounts Enabled
+
+  question: Is centralised identity management used instead of local accounts?
+
   expected_answer: compliant
 
-  question: Is centralised identity management used instead of local VPN 
-    accounts?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
-      Identify the source used to authenticate VPN users and
+      Identify the source used to authenticate remote access users and
       determine whether authentication is integrated with a central
       identity platform such as Entra ID, Active Directory, LDAP,
-      or RADIUS rather than locally managed VPN accounts.
+      or RADIUS rather than locally managed accounts.
 
   description: >
-    VPN authentication relied on locally managed accounts rather
+    Remote access authentication relied on locally managed accounts rather
     than an enterprise identity provider.
 
   commentary: >
@@ -146,33 +163,40 @@
     over account lifecycle management.
 
   solution: >
-    Integrate VPN authentication with a central identity source
+    Integrate remote access authentication with a central identity source
     such as Entra ID, Active Directory, LDAP, or RADIUS.
 
   positive: >
-    VPN authentication is integrated with a central identity
+    Remote access authentication was integrated with a central identity
     provider.
 
   good_value: >
     Centralised identity management is in use.
 
   bad_value: >
-    Local VPN accounts are used.
+    Local accounts are used.
 
 - id: 4
-  finding_id: vpn-weak-authentication-methods
+  finding_id: weak-authentication-methods
   finding_title: Weak Authentication Methods Allowed
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Are legacy authentication mechanisms disabled?
 
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
+
   hints:
     common: >
-      Review supported authentication methods and verify that legacy
-      or insecure authentication mechanisms such as PAP, CHAP,
-      MS-CHAPv1, or equivalent deprecated methods are not permitted.
+      Review configured authentication methods and confirm
+      deprecated or insecure authentication mechanisms are
+      not permitted where the platform supports stronger
+      alternatives.
 
   description: >
     Legacy authentication mechanisms were enabled, increasing
@@ -196,13 +220,19 @@
     Legacy authentication remains enabled.
 
 - id: 5
-  finding_id: vpn-admin-mfa-not-enforced
-  finding_title: VPN Administrator Multi-Factor Authentication Not Enforced
-  vendors:
-    - all
+  finding_id: admin-mfa-not-enforced
+  finding_title: Administrator Multi-Factor Authentication Not Enforced
+
+  question: Is multi-factor authentication enforced for administrators?
+
   expected_answer: compliant
 
-  question: Is multi-factor authentication enforced for VPN administrators?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -242,11 +272,16 @@
 - id: 6
   finding_id: vpn-insecure-protocol-enabled
   finding_title: Insecure VPN Protocols Enabled
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Are legacy VPN protocols such as PPTP disabled?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -276,15 +311,19 @@
     Legacy VPN protocols remain enabled.
 
 - id: 7
-  finding_id: vpn-weak-tls-configuration
+  finding_id: weak-tls-configuration
   finding_title: Weak TLS Configuration
-  vendors:
-    - all
+
+  question: Are only TLS 1.2 and TLS 1.3 permitted for remote access communications?
+
   expected_answer: compliant
 
-  question: Are only TLS 1.2 and TLS 1.3 permitted for VPN communications?
+  solution_types:
+    - vpn
+    - pra
 
-  hints:
+  vendors:
+    - all
 
   hints:
     common: >
@@ -315,13 +354,19 @@
     Deprecated TLS versions are permitted.
 
 - id: 8
-  finding_id: vpn-weak-cryptography
+  finding_id: weak-cryptography
   finding_title: Weak Cryptographic Algorithms Permitted
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Are deprecated ciphers and cryptographic algorithms disabled?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -355,13 +400,19 @@
 #-------------------------------------------------------------------------------
 
 - id: 9
-  finding_id: vpn-excessive-network-access
-  finding_title: Excessive VPN Network Access
-  vendors:
-    - all
+  finding_id: excessive-network-access
+  finding_title: Excessive Network Access
+
+  question: Is remote access restricted based on user or device role?
+
   expected_answer: compliant
 
-  question: Is VPN access restricted based on user or device role?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -398,11 +449,16 @@
 - id: 10
   finding_id: vpn-unrestricted-split-tunnelling
   finding_title: Unrestricted Split Tunnelling
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Is split tunnelling disabled or appropriately restricted?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -432,14 +488,20 @@
     Split tunnelling is unrestricted.
 
 - id: 11
-  finding_id: vpn-device-compliance-not-enforced
+  finding_id: device-compliance-not-enforced
   finding_title: Device Compliance Validation Not Enforced
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Are device compliance or health checks performed before granting 
-    VPN access?
+    remote access?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -474,13 +536,19 @@
     Unvalidated devices can connect.
 
 - id: 12
-  finding_id: vpn-unmanaged-devices-allowed
+  finding_id: unmanaged-devices-allowed
   finding_title: Unmanaged Devices Permitted
-  vendors:
-    - all
+
+  question: Is remote access restricted to managed or approved devices?
+
   expected_answer: compliant
 
-  question: Is VPN access restricted to managed or approved devices?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -510,13 +578,19 @@
     Unmanaged devices are permitted.
 
 - id: 13
-  finding_id: vpn-user-access-not-reviewed
-  finding_title: VPN User Access Not Periodically Reviewed
-  vendors:
-    - all
+  finding_id: user-access-not-reviewed
+  finding_title: User Access Not Periodically Reviewed
+
+  question: Is remote user access reviewed on a regular basis?
+
   expected_answer: compliant
 
-  question: Is VPN user access reviewed on a regular basis?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -557,13 +631,19 @@
 #-------------------------------------------------------------------------------
 
 - id: 14
-  finding_id: vpn-insufficient-logging
-  finding_title: Insufficient VPN Logging and Monitoring
-  vendors:
-    - all
+  finding_id: insufficient-logging
+  finding_title: Insufficient Remote Access Logging and Monitoring
+
+  question: Are remote authentication and connection events logged and monitored?
+
   expected_answer: compliant
 
-  question: Are VPN authentication and connection events logged and monitored?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -597,13 +677,19 @@
     VPN activity is not adequately monitored.
 
 - id: 15
-  finding_id: vpn-admin-activity-not-logged
+  finding_id: admin-activity-not-logged
   finding_title: Administrative Actions Not Logged
-  vendors:
-    - all
-  expected_answer: compliant
 
   question: Are administrative actions logged and retained?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -641,13 +727,19 @@
 #-------------------------------------------------------------------------------
 
 - id: 16
-  finding_id: vpn-excessive-admin-privileges
+  finding_id: excessive-admin-privileges
   finding_title: Excessive Administrative Privileges
-  vendors:
-    - all
+
+  question: Is role-based access control used for administration?
+
   expected_answer: compliant
 
-  question: Is role-based access control used for VPN administration?
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
 
   hints:
     common: >
@@ -690,13 +782,17 @@
 - id: 17
   finding_id: aovpn-device-authentication-not-enforced
   finding_title: Device Authentication Not Enforced
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
 
   question: Is machine certificate authentication required for Device Tunnel 
     connections?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+
+  vendors:
+    - Microsoft Always On VPN
 
   hints:
     common: >
@@ -737,13 +833,17 @@
 - id: 18
   finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
-  expected_answer: compliant
-
-  vendors:
-    - Microsoft Always On VPN
 
   question: Is Always On VPN connectivity enforced without requiring user 
     intervention?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+
+  vendors:
+    - Microsoft Always On VPN
 
   hints:
     common: >
@@ -781,12 +881,16 @@
 - id: 19
   finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
+
+  question: Are VPN routes restricted to approved destinations and networks?
+
   expected_answer: compliant
+
+  solution_types:
+    - vpn
 
   vendors:
     - Microsoft Always On VPN
-
-  question: Are VPN routes restricted to approved destinations and networks?
 
   hints:
     common: >
@@ -825,12 +929,16 @@
 - id: 20
   finding_id: aovpn-split-tunnel-not-controlled
   finding_title: Split Tunnel Configuration Not Adequately Controlled
+
+  question: Are split tunnel exclusions documented and approved?
+
   expected_answer: compliant
+
+  solution_types:
+    - vpn
 
   vendors:
     - Microsoft Always On VPN
-
-  question: Are split tunnel exclusions documented and approved?
 
   hints:
     common: >
@@ -870,371 +978,255 @@
     Split tunnel behaviour is uncontrolled.
 
 #-------------------------------------------------------------------------------
-# Extra Questions (to be reviewed)
+# BeyondTrust PRA Specific
 #-------------------------------------------------------------------------------
 
-# - id: ?
-#   finding_id: vpn-session-timeout-missing
-#   finding_title: Session Timeout Not Configured
-#   vendors:
-#     - all
-#   expected_answer: compliant
+- id: 21
+  finding_id: pra-session-recording-disabled
+  finding_title: Session Recording Not Enforced
 
-#   question: Are inactivity session timeouts configured for VPN connections?
+  question: Are privileged remote access sessions recorded?
 
-#   description: >
-#     VPN sessions remained active indefinitely during periods of
-#     inactivity.
+  expected_answer: compliant
 
-#   commentary: >
-#     Long-lived sessions may increase the risk of unauthorised
-#     access from unattended devices.
+  solution_types:
+    - pra
 
-#   solution: >
-#     Configure inactivity timeouts appropriate to business and
-#     security requirements.
+  vendors:
+    - BeyondTrust PRA
 
-#   positive: >
-#     Inactivity timeouts are enforced for VPN sessions.
+  hints:
+    common: >
+      Determine whether privileged remote access sessions are
+      recorded and whether recordings are retained for review,
+      incident investigation, and audit purposes.
 
-#   good_value: >
-#     Session inactivity timeouts are configured.
+    BeyondTrust PRA: >
+      Configuration > Security > Session Policies and
+      Reporting > Session Recordings.
 
-#   bad_value: >
-#     Session timeouts are not configured.
+  description: >
+    Privileged remote access sessions were not recorded.
 
-# - id: 22
-#   finding_id: vpn-client-updates-not-enforced
-#   finding_title: VPN Client Updates Not Enforced
-#   vendors:
-#     - all
-#   expected_answer: compliant
+  commentary: >
+    Session recording provides accountability and supports the
+    investigation of suspected misuse, unauthorised activity,
+    and security incidents involving privileged access.
 
-#   question: Are VPN clients automatically updated to supported versions?
+  solution: >
+    Enable session recording for privileged remote access
+    activities and retain recordings in accordance with
+    organisational requirements.
 
-#   description: >
-#     VPN client updates were not enforced.
+  positive: >
+    Privileged remote access sessions are recorded and retained.
 
-#   commentary: >
-#     Unsupported or outdated VPN clients may contain known
-#     vulnerabilities or configuration weaknesses.
+  good_value: >
+    Session recording is enabled.
 
-#   solution: >
-#     Enable automatic updates or implement a controlled update
-#     process for VPN client software.
+  bad_value: >
+    Sessions are not recorded.
 
-#   positive: >
-#     VPN clients are maintained on supported versions.
+- id: 22
+  finding_id: pra-session-review-not-performed
+  finding_title: Privileged Session Activity Not Reviewed
 
-#   good_value: >
-#     Client updates are enforced.
+  question: Are privileged sessions subject to periodic review?
 
-#   bad_value: >
-#     Outdated VPN clients are permitted.
+  expected_answer: compliant
 
+  solution_types:
+    - pra
 
-# - id: 24
-#   finding_id: vpn-kill-switch-disabled
-#   finding_title: VPN Kill Switch Not Enabled
-#   vendors:
-#     - all
-#   expected_answer: compliant
+  vendors:
+    - BeyondTrust PRA
 
-#   question: Is a VPN kill switch enabled where supported?
+  hints:
+    common: >
+      Determine whether recorded sessions, session logs, or
+      privileged access activity are periodically reviewed
+      by administrators or security personnel.
 
-#   description: >
-#     VPN kill switch functionality was not enabled.
+  description: >
+    Privileged remote access activity was not subject to
+    periodic review.
 
-#   commentary: >
-#     Loss of VPN connectivity may expose traffic to untrusted
-#     networks if connections continue outside the VPN tunnel.
+  commentary: >
+    Reviewing privileged access activity assists in identifying
+    inappropriate actions, policy violations, and potential
+    security incidents.
 
-#   solution: >
-#     Enable VPN kill switch functionality where supported by the
-#     platform and client software.
+  solution: >
+    Establish a process for periodically reviewing privileged
+    remote access activity and investigating anomalous behaviour.
 
-#   positive: >
-#     VPN kill switch functionality is enabled.
+  positive: >
+    Privileged access activity is reviewed regularly.
 
-#   good_value: >
-#     Kill switch protection is enabled.
+  good_value: >
+    Session reviews are performed.
 
-#   bad_value: >
-#     Kill switch protection is disabled.
+  bad_value: >
+    Session activity is not reviewed.
 
-# - id: 30
-#   finding_id: vpn-privileged-access-not-restricted
-#   finding_title: Privileged VPN Access Not Restricted
-#   vendors:
-#     - all
-#   expected_answer: compliant
+- id: 23
+  finding_id: pra-approval-workflow-not-required
+  finding_title: Remote Access Approval Workflow Not Enforced
 
-#   question: Is privileged VPN access restricted to authorised personnel only?
+  question: Is approval required before privileged remote access is granted?
 
-#   description: >
-#     Privileged VPN access was not adequately restricted.
+  expected_answer: compliant
 
-#   commentary: >
-#     Excessive privileged access increases the potential impact of
-#     compromised accounts and insider threats.
+  solution_types:
+    - pra
 
-#   solution: >
-#     Restrict privileged VPN access to authorised personnel with a
-#     documented business requirement.
+  vendors:
+    - BeyondTrust PRA
 
-#   positive: >
-#     Privileged VPN access is appropriately restricted.
+  hints:
+    common: >
+      Determine whether privileged remote access requests are
+      subject to an approval process before access is granted.
 
-#   good_value: >
-#     Privileged access is controlled.
+  description: >
+    Privileged remote access was granted without requiring
+    appropriate approval.
 
-#   bad_value: >
-#     Excessive privileged access exists.
+  commentary: >
+    Access approval workflows help ensure privileged access is
+    granted only when supported by a legitimate business need.
 
-# - id: 31
-#   finding_id: vpn-third-party-access-not-controlled
-#   finding_title: Third-Party VPN Access Not Adequately Controlled
-#   vendors:
-#     - all
-#   expected_answer: compliant
+  solution: >
+    Require appropriate authorisation before privileged remote
+    access sessions can be initiated.
 
-#   question: Are third-party VPN accounts subject to additional restrictions and review?
+  positive: >
+    Privileged remote access requires approval.
 
-#   description: >
-#     Third-party VPN access was not adequately governed.
+  good_value: >
+    Access approval is enforced.
 
-#   commentary: >
-#     External users may introduce additional security risks if
-#     access is not restricted, monitored, and reviewed.
+  bad_value: >
+    Access can be established without approval.
 
-#   solution: >
-#     Apply additional controls, monitoring, and review processes
-#     to third-party VPN accounts.
+- id: 24
+  finding_id: pra-jump-clients-not-restricted
+  finding_title: Jump Client Deployment Not Restricted
 
-#   positive: >
-#     Third-party VPN access is appropriately controlled.
+  question: Are Jump Clients restricted to approved systems?
 
-#   good_value: >
-#     Third-party access is governed.
+  expected_answer: compliant
 
-#   bad_value: >
-#     Third-party access is unrestricted.
+  solution_types:
+    - pra
 
-# - id: 32
-#   finding_id: vpn-account-deprovisioning-not-timely
-#   finding_title: VPN Accounts Not Promptly Deprovisioned
-#   vendors:
-#     - all
-#   expected_answer: compliant
+  vendors:
+    - BeyondTrust PRA
 
-#   question: Are VPN accounts disabled promptly when users leave the organisation or no longer require access?
+  hints:
+    common: >
+      Review the systems on which Jump Clients are deployed and
+      confirm deployment is restricted to approved devices and
+      supported business requirements.
 
-#   description: >
-#     VPN accounts were not disabled promptly when no longer required.
+  description: >
+    Jump Clients were deployed without appropriate governance
+    or restrictions.
 
-#   commentary: >
-#     Delays in account deprovisioning may allow former users to
-#     retain access to organisational resources.
+  commentary: >
+    Uncontrolled Jump Client deployment may introduce unintended
+    remote access paths into sensitive systems and environments.
 
-#   solution: >
-#     Implement procedures to promptly disable VPN accounts when
-#     users leave the organisation or access is no longer required.
+  solution: >
+    Restrict Jump Client deployment to approved systems and
+    review deployments periodically.
 
-#   positive: >
-#     VPN accounts are promptly deprovisioned when no longer required.
+  positive: >
+    Jump Client deployment is appropriately controlled.
 
-#   good_value: >
-#     Account deprovisioning is timely.
+  good_value: >
+    Jump Clients are restricted to approved systems.
 
-#   bad_value: >
-#     Former users retain VPN access.
+  bad_value: >
+    Jump Client deployment is unrestricted.
 
-# - id: 33
-#   finding_id: aovpn-device-tunnel-excessive-access
-#   finding_title: Device Tunnel Provides Excessive Network Access
-#   expected_answer: compliant
+- id: 25
+  finding_id: pra-credential-injection-not-used
+  finding_title: Credentials Disclosed to Users
 
-#   vendors:
-#     - Microsoft Always On VPN
+  question: Are credentials injected rather than disclosed to users?
 
-#   question: Is Device Tunnel access restricted to only the infrastructure and management services required for operation?
+  expected_answer: compliant
 
-#   hints:
-#     Microsoft Always On VPN: >
-#       RRAS > IPv4/IPv6 Routing Configuration, VPN Profile XML, and Route Configuration
+  solution_types:
+    - pra
 
-#   description: >
-#     The Always On VPN Device Tunnel provided access to resources
-#     beyond those required for device management and pre-logon
-#     connectivity.
+  vendors:
+    - BeyondTrust PRA
 
-#   commentary: >
-#     Device Tunnel connectivity is typically intended to provide
-#     access to core infrastructure services such as domain
-#     controllers, certificate services, DNS, and management
-#     platforms. Excessive access may increase the impact of
-#     device compromise and expose additional internal resources.
+  hints:
+    common: >
+      Determine whether privileged credentials are injected
+      into target systems or whether users are able to view
+      and handle the credentials directly.
 
-#   solution: >
-#     Restrict Device Tunnel access to only those services required
-#     for device management, authentication, and pre-logon
-#     connectivity.
+  description: >
+    Privileged credentials were exposed to end users rather
+    than being managed through credential injection.
 
-#   positive: >
-#     Device Tunnel connectivity is restricted to required
-#     infrastructure services.
+  commentary: >
+    Credential injection reduces the risk of password disclosure,
+    reuse, unauthorised storage, and misuse by privileged users.
 
-#   good_value: >
-#     Device Tunnel access is limited to infrastructure services.
+  solution: >
+    Where supported, use credential injection mechanisms to
+    avoid exposing privileged credentials to users.
 
-#   bad_value: >
-#     Device Tunnel provides unnecessary internal network access.
+  positive: >
+    Credential injection is used for privileged access.
 
-# - id: 35
-#   finding_id: aovpn-certificate-autoenrollment-disabled
-#   finding_title: Certificate Auto-Enrollment Not Configured
-#   expected_answer: compliant
+  good_value: >
+    Credentials are injected automatically.
 
-#   vendors:
-#     - Microsoft Always On VPN
+  bad_value: >
+    Users are provided with privileged credentials.
 
-#   question: Is certificate auto-enrollment configured for VPN devices?
+- id: 26
+  finding_id: pra-third-party-access-not-controlled
+  finding_title: Third-Party Privileged Access Not Controlled
 
-#   hints:
-#     Microsoft Always On VPN: >
-#       Group Policy Management > Computer Configuration > Public Key Policies > Certificate Services Client - Auto-Enrollment
+  question: Is third-party remote access subject to additional controls and monitoring?
 
-#   description: >
-#     Certificate auto-enrollment was not configured for VPN-enabled
-#     devices.
+  expected_answer: compliant
 
-#   commentary: >
-#     Manual certificate provisioning increases administrative
-#     overhead and may result in devices lacking valid certificates.
-#     Auto-enrollment helps ensure devices consistently receive
-#     required authentication certificates.
+  solution_types:
+    - pra
 
-#   solution: >
-#     Configure certificate auto-enrollment for VPN-enabled devices
-#     through Active Directory Certificate Services or an
-#     equivalent certificate management solution.
+  vendors:
+    - BeyondTrust PRA
 
-#   positive: >
-#     VPN authentication certificates are automatically enrolled.
+  hints:
+    common: >
+      Determine whether suppliers, contractors, or other
+      external users are subject to additional approval,
+      monitoring, review, or time-based access restrictions.
 
-#   good_value: >
-#     Certificate auto-enrollment is configured.
+  description: >
+    Third-party privileged access was not adequately controlled.
 
-#   bad_value: >
-#     Certificates must be deployed manually.
+  commentary: >
+    External users may present an elevated risk and should
+    typically be subject to enhanced governance and monitoring.
 
-# - id: 36
-#   finding_id: aovpn-certificate-renewal-not-configured
-#   finding_title: Certificate Renewal Not Automated
-#   expected_answer: compliant
+  solution: >
+    Implement additional controls, monitoring, and review
+    requirements for external privileged users.
 
-#   vendors:
-#     - Microsoft Always On VPN
+  positive: >
+    Third-party privileged access is appropriately governed.
 
-#   question: Are VPN authentication certificates automatically renewed before expiry?
+  good_value: >
+    Third-party access is controlled.
 
-#   hints:
-#     Microsoft Always On VPN: >
-#       Certificate Templates (certtmpl.msc) and issued computer certificates. Confirm automatic renewal settings.
-
-#   description: >
-#     VPN authentication certificates were not automatically renewed
-#     before expiration.
-
-#   commentary: >
-#     Expired certificates may prevent devices from establishing VPN
-#     connectivity, potentially affecting remote users and device
-#     management operations.
-
-#   solution: >
-#     Configure automatic certificate renewal and monitor upcoming
-#     certificate expirations.
-
-#   positive: >
-#     VPN authentication certificates are renewed automatically.
-
-#   good_value: >
-#     Certificate renewal is automated.
-
-#   bad_value: >
-#     Certificates require manual renewal.
-
-# - id: 37
-#   finding_id: aovpn-revocation-checking-disabled
-#   finding_title: Certificate Revocation Validation Disabled
-#   expected_answer: compliant
-
-#   vendors:
-#     - Microsoft Always On VPN
-
-#   question: Is certificate revocation checking enforced for VPN authentication?
-
-#   hints:
-#     Microsoft Always On VPN: >
-#       NPS Network Policies, RRAS authentication settings, CRL/OCSP configuration on the issuing CA.
-
-#   description: >
-#     Certificate revocation validation was not performed during VPN
-#     authentication.
-
-#   commentary: >
-#     Failing to validate certificate revocation status may allow
-#     compromised, revoked, or otherwise invalid certificates to be
-#     accepted for VPN access.
-
-#   solution: >
-#     Enable certificate revocation checking and ensure supporting
-#     CRL or OCSP infrastructure is available.
-
-#   positive: >
-#     Certificate revocation validation is enforced during VPN
-#     authentication.
-
-#   good_value: >
-#     Revocation checking is enabled.
-
-#   bad_value: >
-#     Revocation status is not validated.
-
-# - id: 40
-#   finding_id: aovpn-insecure-certificate-template
-#   finding_title: VPN Certificate Template Security Weaknesses
-#   expected_answer: compliant
-
-#   vendors:
-#     - Microsoft Always On VPN
-
-#   question: Are VPN authentication certificate templates secured and restricted to authorised devices?
-
-#   hints:
-#     Microsoft Always On VPN: >
-#       Certificate Templates (certtmpl.msc) > Security tab and Enrollment permissions.
-
-#   description: >
-#     Certificate templates used for VPN authentication contained
-#     overly permissive enrollment or security settings.
-
-#   commentary: >
-#     Weak certificate template security may allow unauthorised
-#     certificate enrollment and could facilitate impersonation of
-#     trusted devices. Certificate templates should be restricted
-#     according to least-privilege principles.
-
-#   solution: >
-#     Review certificate template permissions and restrict
-#     enrollment to authorised devices and security groups only.
-
-#   positive: >
-#     VPN authentication certificate templates are securely
-#     configured and access is restricted appropriately.
-
-#   good_value: >
-#     Certificate templates are securely restricted.
-
-#   bad_value: >
-#     Certificate template permissions are overly permissive.
+  bad_value: >
+    Third-party access is unrestricted.

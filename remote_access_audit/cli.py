@@ -1,11 +1,11 @@
 """
-Command-line interface for MDM-Audit.
+Command-line interface for Remote Access Audit.
 
-MDM-Audit is a guided assessment tool that assists security
-professionals in performing Mobile Device Management (MDM)
-security reviews. The tool collects environment information,
-conducts a structured control assessment, and generates
-findings, remediation guidance, and report outputs.
+Remote Access Audit is a guided assessment tool that assists
+security professionals in performing remote access security
+reviews. The tool collects environment information, conducts
+a structured control assessment, and generates findings,
+remediation guidance, and report outputs.
 """
 
 import argparse
@@ -20,11 +20,11 @@ from remote_access_audit.ui import console
 
 def main() -> None:
     """
-    Execute the VPN assessment workflow.
+    Execute the remote access assessment workflow.
     """
 
     parser = argparse.ArgumentParser(
-        description="Conduct Virtual Private Network (VPN) security reviews.",
+        description="Conduct remote access security reviews.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
