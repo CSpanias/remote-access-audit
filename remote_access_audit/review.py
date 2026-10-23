@@ -13,6 +13,8 @@ functionality to ensure the assessment logic remains independent from output
 formats.
 """
 
+
+from remote_access_audit.constants import INITIAL_CONTEXT_FIELDS
 from remote_access_audit.models import (
     AssessmentResults,
     AuditAnswer,
@@ -80,7 +82,7 @@ def get_applicable_questions(
 
 def collect_context(
     fields: list[ContextField],
-) -> ReviewContext:
+) -> dict:
     """
     Collect assessment context information.
     """
@@ -93,21 +95,28 @@ def collect_context(
         console.print()
 
         if field.type == "choice" and field.options:
+
             console.print(f"\n[bold]{field.label}[/bold]")
 
-            for index, option in enumerate(field.options, start=1):
+            for index, option in enumerate(
+                field.options,
+                start=1,
+            ):
                 console.print(f"[cyan]{index}.[/cyan] {option}")
 
             while True:
+
                 choice = input("> ").strip()
 
                 try:
                     value = field.options[int(choice) - 1]
                     break
+
                 except (ValueError, IndexError):
                     console.print("[red]Invalid selection.[/red]")
 
         else:
+
             console.print(f"[bold]{field.label}[/bold]")
 
             platform = responses.get("remote_access_solution")
@@ -128,32 +137,38 @@ def collect_context(
             while not value:
 
                 console.print("[red]This field is required.[/red]")
+
                 value = input("> ").strip()
 
         if field.type == "integer":
+
             while True:
+
                 try:
+
                     value = int(value)
 
                     if value < 0:
                         raise ValueError
 
                     break
-                
+
                 except ValueError:
+
                     value = input(f"{field.label} (enter a number): ")
 
         console.print("[bold]Notes (optional):[/bold]")
+
         notes = input("> ").strip() or None
 
         if notes:
             context_notes[field.id] = notes
-            
+
         responses[field.id] = value
 
-    responses["context_notes"] = context_notes
+    responses["_context_notes"] = context_notes
 
-    return ReviewContext(**responses)
+    return responses
 
 
 def ask_question(
@@ -366,14 +381,42 @@ def run_assessment() -> AssessmentResults:
     Execute a complete remote access assessment.
     """
 
-    context_fields = sorted(
-        load_context_fields(),
-        key=lambda field: field.order
+    all_fields = load_context_fields()
+
+    initial_fields = [
+        field
+        for field in all_fields
+        if field.id in INITIAL_CONTEXT_FIELDS
+    ]
+
+    initial_responses = collect_context(initial_fields)
+
+    platform = RemoteAccessPlatform(initial_responses["remote_access_solution"])
+
+    solution_type = platform.solution_type
+
+    remaining_fields = [
+        field
+        for field in all_fields
+        if field.id not in INITIAL_CONTEXT_FIELDS
+    ]
+
+    remaining_responses = collect_context(
+        get_applicable_context_fields(remaining_fields, solution_type)
     )
 
-    context = collect_context(context_fields)
+    context_notes = {
+        **initial_responses.pop("_context_notes", {}),
+        **remaining_responses.pop("_context_notes", {}),
+    }
 
-    solution_type = (context.remote_access_solution.solution_type)
+    responses = {
+        **initial_responses,
+        **remaining_responses,
+        "context_notes": context_notes,
+    }
+
+    context = ReviewContext(**responses)
 
     questions = get_applicable_questions(
         load_questions(),
@@ -381,7 +424,10 @@ def run_assessment() -> AssessmentResults:
         solution_type,
     )
 
-    responses = conduct_review(questions, context.remote_access_solution)
+    responses = conduct_review(
+        questions,
+        context.remote_access_solution,
+    )
 
     return build_assessment_results(
         context=context,

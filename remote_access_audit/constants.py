@@ -2,6 +2,12 @@
 Reporting and categorisation constants.
 """
 
+INITIAL_CONTEXT_FIELDS = {
+    "client_name",
+    "remote_access_solution",
+    "platform_version",
+}
+
 FINDING_THEMES = {
     "Authentication": {
         "vpn-mfa-not-enforced",

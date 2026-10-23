@@ -24,6 +24,25 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
+
+class SolutionType(str, Enum):
+    """
+    Supported remote access solution categories.
+
+    VPN:
+        Traditional remote network access solutions which
+        provide connectivity to internal networks and services.
+
+    PRA:
+        Privileged Remote Access solutions which broker,
+        control, and monitor access to individual systems
+        and resources.
+    """
+
+    VPN = "vpn"
+    PRA = "pra"
+
+
 class RemoteAccessPlatform(str, Enum):
     """
     Supported remote access platforms.
@@ -49,24 +68,6 @@ class RemoteAccessPlatform(str, Enum):
             return SolutionType.VPN
 
         raise ValueError(f"No solution type defined for {self}")
-
-
-class SolutionType(str, Enum):
-    """
-    Supported remote access solution categories.
-
-    VPN:
-        Traditional remote network access solutions which
-        provide connectivity to internal networks and services.
-
-    PRA:
-        Privileged Remote Access solutions which broker,
-        control, and monitor access to individual systems
-        and resources.
-    """
-
-    VPN = "vpn"
-    PRA = "pra"
 
 
 class AuditAnswer(str, Enum):
