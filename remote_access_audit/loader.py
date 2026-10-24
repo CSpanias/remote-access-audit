@@ -79,11 +79,10 @@ def load_questions() -> list[Question]:
         except ValidationError as exc:
             raise ValueError(
                 f"Invalid question definition "
-                f"(ID {item.get('id')}, "
-                f"Finding: {item.get('finding_id')})"
+                f"({item.get('finding_id')})"
             ) from exc
 
-    return sorted(questions, key=lambda question: question.id)
+    return questions
 
 
 def load_context_fields() -> list[ContextField]:
@@ -97,9 +96,7 @@ def load_context_fields() -> list[ContextField]:
     path = DATA_DIR / "context_fields.yaml"
     data = _load_yaml(path)
 
-    fields = [ContextField.model_validate(item) for item in data]
-
-    return sorted(fields, key=lambda field: field.order)
+    return [ContextField.model_validate(item) for item in data]
 
 
 if __name__ == "__main__":

@@ -42,14 +42,11 @@ def get_applicable_context_fields(
     Return all configured context fields.
     """
 
-    return sorted(
-        [
-            field
-            for field in fields
-            if solution_type in field.solution_types
-        ],
-        key=lambda field: field.order,
-    )
+    return [
+        field
+        for field in fields
+        if solution_type in field.solution_types
+    ]
 
 
 def get_applicable_questions(
@@ -77,7 +74,7 @@ def get_applicable_questions(
         elif platform.value in question.vendors:
             applicable_questions.append(question)
 
-    return sorted(applicable_questions, key=lambda q: q.id)
+    return applicable_questions
 
 
 def collect_context(
@@ -121,14 +118,22 @@ def collect_context(
 
             platform = responses.get("remote_access_solution")
 
-            if field.hints and platform:
+            if field.hints:
 
-                hint = field.hints.get(platform)
+                common_hint = field.hints.get("common")
 
-                if hint:
-                    console.print(
-                        f"[bold yellow]Location[/bold yellow]\n{hint}"
-                    )
+                if common_hint:
+                    console.print()
+                    console.print(f"[bold blue]Hint[/bold blue]\n{common_hint}")
+
+                if platform:
+                    platform_hint = field.hints.get(platform)
+
+                    if platform_hint:
+                        console.print(
+                            f"[bold yellow]Location[/bold yellow]\n"
+                            f"{platform_hint}"
+                        )
 
             value = input("> ").strip()
 
@@ -240,7 +245,7 @@ def ask_question(
     notes = input("> ").strip() or None
 
     return QuestionResponse(
-        question_id=question.id,
+        finding_id=question.finding_id,
         answer=answer,
         notes=notes,
     )
@@ -285,12 +290,12 @@ def generate_findings(
     findings = []
 
     questions_by_id = {
-        question.id: question
+        question.finding_id: question
         for question in questions
     }
 
     for response in responses:
-        question = questions_by_id[response.question_id]
+        question = questions_by_id[response.finding_id]
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,
@@ -303,6 +308,7 @@ def generate_findings(
                 Finding(
                     finding_id=question.finding_id,
                     title=question.finding_title,
+                    theme=question.theme,
                     description=question.description.strip(),
                     commentary=question.commentary.strip(),
                     solution=question.solution.strip(),
@@ -324,12 +330,12 @@ def generate_positive_observations(
     positives = []
 
     questions_by_id = {
-        question.id: question
+        question.finding_id: question
         for question in questions
     }
 
     for response in responses:
-        question = questions_by_id[response.question_id]
+        question = questions_by_id[response.finding_id]
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,

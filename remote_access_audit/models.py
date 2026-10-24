@@ -102,7 +102,6 @@ class ContextField(BaseModel):
     """
 
     id: str
-    order: int
 
     label: str
     type: str
@@ -130,18 +129,18 @@ class ReviewContext(BaseModel):
     client_name: str
 
     remote_access_solution: RemoteAccessPlatform
-    platform_version: str
 
-    authentication_method: str | None = None
     identity_provider: str | None = None
 
+    vpn_authentication_method: str | None = None
+
+    pra_authentication_source: str | None = None
+
     tunnel_type: str | None = None
+
     certificate_authority: str | None = None
 
-    user_control: str | None = None
     split_tunnel_mode: str | None = None
-
-    mfa_solution: str | None = None
 
     context_notes: dict[str, str] = Field(default_factory=dict)
 
@@ -151,7 +150,7 @@ class QuestionResponse(BaseModel):
     Represents the assessor's response to a single question.
     """
 
-    question_id: int
+    finding_id: str
 
     answer: AuditAnswer
 
@@ -175,10 +174,9 @@ class Question(BaseModel):
     hard-coded within the application.
     """
 
-    id: int
-
     finding_id: str
     finding_title: str
+    theme: str
 
     expected_answer: AuditAnswer
 
@@ -211,8 +209,8 @@ class Finding(BaseModel):
     """
 
     finding_id: str
-
     title: str
+    theme: str
 
     description: str
     commentary: str

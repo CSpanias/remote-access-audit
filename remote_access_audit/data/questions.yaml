@@ -23,12 +23,77 @@
 
 
 #-------------------------------------------------------------------------------
-# Authentication Controls
+# Platform Configuration
 #-------------------------------------------------------------------------------
 
-- id: 1
-  finding_id: user-mfa-not-enforced
+- finding_id: unsupported-or-unpatched-platform
+  finding_title: Remote Access Platform Not Supported or Fully Patched
+  theme: Platform Configuration
+
+  question: Are all remote access platform components running supported and fully patched software?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
+
+  hints:
+    common: >
+      Review the version and patch status of all components that provide
+      or support the remote access service. Confirm that the deployment
+      is running supported software versions and that security updates
+      are applied in accordance with organisational patch management
+      requirements.
+
+    Microsoft Always On VPN: >
+      Always On VPN does not have a standalone version number. Review the
+      operating system version and patch status of the infrastructure
+      providing the service, such as RRAS, NPS, VPN gateway, or
+      Azure-hosted VPN components.
+
+    BeyondTrust PRA: >
+      Review the appliance version, cloud release version, or installed
+      software version reported by the BeyondTrust administrative console.
+      Confirm the deployment is supported and fully patched.
+
+  description: >
+    One or more remote access platform components were running unsupported,
+    end-of-life, or insufficiently patched software.
+
+  commentary: >
+    Outdated remote access infrastructure may be exposed to publicly known
+    security vulnerabilities and may no longer receive security updates
+    from the vendor. As remote access platforms are typically internet-
+    facing services, exploitation of known vulnerabilities may result in
+    unauthorised access, service compromise, or disruption of remote
+    access capabilities.
+
+  solution: >
+    Establish a lifecycle management process to ensure remote access
+    infrastructure remains supported, maintained, and fully patched.
+
+  positive: >
+    All assessed remote access platform components were supported and
+    fully patched.
+
+  good_value: >
+    All remote access platform components are running supported and
+    fully patched software.
+
+  bad_value: >
+    One or more remote access platform components are outdated,
+    unsupported, or missing security updates.
+
+#-------------------------------------------------------------------------------
+# Authentication Controls
+#-------------------------------------------------------------------------------
+- finding_id: user-mfa-not-enforced
   finding_title: Multi-Factor Authentication Not Enforced for Users
+  theme: Authentication
 
   question: Is multi-factor authentication enforced for all users?
 
@@ -74,8 +139,8 @@
     a password.
 
   solution: >
-    Enforce multi-factor authentication for all remote access users and
-    administrators.
+    Configure multi-factor authentication as a mandatory requirement for
+    all remote access user accounts.
 
   positive: >
     Multi-factor authentication was enforced for all remote access users.
@@ -86,142 +151,9 @@
   bad_value: >
     Remote access is protected only by passwords.
 
-- id: 2
-  finding_id: shared-accounts-permitted
-  finding_title: Shared Accounts Permitted
-  
-  question: Are individual user accounts required for remote access?
-
-  expected_answer: compliant
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Determine whether remote access users authenticate using individually
-      assigned accounts. Review authentication sources, user
-      accounts, and account assignment processes to confirm shared
-      accounts are not used.
-
-  description: >
-    Shared accounts were permitted, reducing accountability
-    and increasing the difficulty of attributing activity to
-    specific users.
-
-  commentary: >
-    The use of shared accounts limits auditability and may
-    prevent accurate attribution of actions performed through
-    remote access connections.
-
-  solution: >
-    Require all remote access users to authenticate using unique
-    individual accounts.
-
-  positive: >
-    All remote access was performed using uniquely assigned accounts.
-
-  good_value: >
-    Individual user accounts are required.
-
-  bad_value: >
-    Shared VPN accounts are permitted.
-
-- id: 3
-  finding_id: local-accounts-enabled
-  finding_title: Local Accounts Enabled
-
-  question: Is centralised identity management used instead of local accounts?
-
-  expected_answer: compliant
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Identify the source used to authenticate remote access users and
-      determine whether authentication is integrated with a central
-      identity platform such as Entra ID, Active Directory, LDAP,
-      or RADIUS rather than locally managed accounts.
-
-  description: >
-    Remote access authentication relied on locally managed accounts rather
-    than an enterprise identity provider.
-
-  commentary: >
-    Locally managed authentication increases administrative
-    overhead and may reduce visibility, governance, and control
-    over account lifecycle management.
-
-  solution: >
-    Integrate remote access authentication with a central identity source
-    such as Entra ID, Active Directory, LDAP, or RADIUS.
-
-  positive: >
-    Remote access authentication was integrated with a central identity
-    provider.
-
-  good_value: >
-    Centralised identity management is in use.
-
-  bad_value: >
-    Local accounts are used.
-
-- id: 4
-  finding_id: weak-authentication-methods
-  finding_title: Weak Authentication Methods Allowed
-
-  question: Are legacy authentication mechanisms disabled?
-
-  expected_answer: compliant
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Review configured authentication methods and confirm
-      deprecated or insecure authentication mechanisms are
-      not permitted where the platform supports stronger
-      alternatives.
-
-  description: >
-    Legacy authentication mechanisms were enabled, increasing
-    exposure to credential attacks and authentication bypass.
-
-  commentary: >
-    Older authentication methods may not provide sufficient
-    protection against modern attack techniques.
-
-  solution: >
-    Disable legacy authentication protocols and require modern,
-    supported authentication methods.
-
-  positive: >
-    Legacy authentication mechanisms have been disabled.
-
-  good_value: >
-    Only modern authentication methods are permitted.
-
-  bad_value: >
-    Legacy authentication remains enabled.
-
-- id: 5
-  finding_id: admin-mfa-not-enforced
+- finding_id: admin-mfa-not-enforced
   finding_title: Administrator Multi-Factor Authentication Not Enforced
+  theme: Authentication
 
   question: Is multi-factor authentication enforced for administrators?
 
@@ -252,8 +184,8 @@
     controls, or establish persistent access.
 
   solution: >
-    Enforce multi-factor authentication for all VPN
-    administrative accounts.
+    Configure multi-factor authentication as a mandatory control for all
+    administrative and privileged accounts.
 
   positive: >
     Multi-factor authentication is enforced for VPN
@@ -265,13 +197,146 @@
   bad_value: >
     Administrative accounts rely solely on passwords.
 
+- finding_id: shared-accounts-permitted
+  finding_title: Shared Accounts Permitted
+  theme: Authentication
+  
+  question: Are individual user accounts required for remote access?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
+
+  hints:
+    common: >
+      Determine whether remote access users authenticate using individually
+      assigned accounts. Review authentication sources, user
+      accounts, and account assignment processes to confirm shared
+      accounts are not used.
+
+  description: >
+    Shared accounts were permitted, reducing accountability
+    and increasing the difficulty of attributing activity to
+    specific users.
+
+  commentary: >
+    The use of shared accounts limits auditability and may
+    prevent accurate attribution of actions performed through
+    remote access connections.
+
+  solution: >
+    Replace shared accounts with uniquely assigned user accounts to
+    improve accountability and auditability.
+
+  positive: >
+    All remote access was performed using uniquely assigned accounts.
+
+  good_value: >
+    Individual user accounts are required.
+
+  bad_value: >
+    Shared VPN accounts are permitted.
+
+- finding_id: local-accounts-enabled
+  finding_title: Local Accounts Enabled
+  theme: Authentication
+
+  question: Is centralised identity management used instead of local accounts?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
+
+  hints:
+    common: >
+      Identify the source used to authenticate remote access users and
+      determine whether authentication is integrated with a central
+      identity platform such as Entra ID, Active Directory, LDAP,
+      or RADIUS rather than locally managed accounts.
+
+  description: >
+    Remote access authentication relied on locally managed accounts rather
+    than an enterprise identity provider.
+
+  commentary: >
+    Locally managed authentication increases administrative
+    overhead and may reduce visibility, governance, and control
+    over account lifecycle management.
+
+  solution: >
+    Migrate remote access authentication to a centrally managed identity
+    platform such as Entra ID, Active Directory, LDAP, or RADIUS.
+
+  positive: >
+    Remote access authentication was integrated with a central identity
+    provider.
+
+  good_value: >
+    Centralised identity management is in use.
+
+  bad_value: >
+    Local accounts are used.
+
+- finding_id: weak-authentication-methods
+  finding_title: Weak Authentication Methods Allowed
+  theme: Authentication
+
+  question: Are legacy authentication mechanisms disabled?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+    - pra
+
+  vendors:
+    - all
+
+  hints:
+    common: >
+      Review configured authentication methods and confirm
+      deprecated or insecure authentication mechanisms are
+      not permitted where the platform supports stronger
+      alternatives.
+
+  description: >
+    Legacy authentication mechanisms were enabled, increasing
+    exposure to credential attacks and authentication bypass.
+
+  commentary: >
+    Older authentication methods may not provide sufficient
+    protection against modern attack techniques.
+
+  solution: >
+    Retire legacy authentication mechanisms and standardise on modern,
+    vendor-supported authentication methods.
+
+  positive: >
+    Legacy authentication mechanisms have been disabled.
+
+  good_value: >
+    Only modern authentication methods are permitted.
+
+  bad_value: >
+    Legacy authentication remains enabled.
+
 #-------------------------------------------------------------------------------
-# Protocol & Cryptography Controls
+# Cryptography Controls
 #-------------------------------------------------------------------------------
 
-- id: 6
-  finding_id: vpn-insecure-protocol-enabled
+- finding_id: vpn-insecure-protocol-enabled
   finding_title: Insecure VPN Protocols Enabled
+  theme: Cryptography
 
   question: Are legacy VPN protocols such as PPTP disabled?
 
@@ -298,8 +363,8 @@
     protecting sensitive organisational communications.
 
   solution: >
-    Disable insecure VPN protocols and require modern encrypted
-    alternatives.
+    Remove support for deprecated VPN protocols and permit only modern,
+    security-approved alternatives.
 
   positive: >
     Legacy VPN protocols have been disabled.
@@ -310,9 +375,9 @@
   bad_value: >
     Legacy VPN protocols remain enabled.
 
-- id: 7
-  finding_id: weak-tls-configuration
+- finding_id: weak-tls-configuration
   finding_title: Weak TLS Configuration
+  theme: Cryptography
 
   question: Are only TLS 1.2 and TLS 1.3 permitted for remote access communications?
 
@@ -342,7 +407,8 @@
     attacks.
 
   solution: >
-    Disable TLS 1.0 and TLS 1.1 and require TLS 1.2 or TLS 1.3.
+    Enforce the use of TLS 1.2 and TLS 1.3 for remote access communications by 
+    removing support for older protocol versions.
 
   positive: >
     VPN communications are restricted to supported TLS versions.
@@ -353,9 +419,9 @@
   bad_value: >
     Deprecated TLS versions are permitted.
 
-- id: 8
-  finding_id: weak-cryptography
+- finding_id: weak-cryptography
   finding_title: Weak Cryptographic Algorithms Permitted
+  theme: Cryptography
 
   question: Are deprecated ciphers and cryptographic algorithms disabled?
 
@@ -374,7 +440,6 @@
       encryption algorithms, integrity algorithms, and key exchange
       settings. Confirm deprecated or weak algorithms are disabled.
 
-
   description: >
     Weak or deprecated cryptographic algorithms remained enabled.
 
@@ -383,8 +448,8 @@
     confidentiality and integrity of VPN communications.
 
   solution: >
-    Disable deprecated cipher suites and follow vendor security
-    recommendations for cryptographic configuration.
+    Align the cryptographic configuration with current vendor guidance and 
+    industry best practice.
 
   positive: >
     Strong, modern cryptographic algorithms are enforced.
@@ -399,9 +464,9 @@
 # Access Control Controls
 #-------------------------------------------------------------------------------
 
-- id: 9
-  finding_id: excessive-network-access
+- finding_id: excessive-network-access
   finding_title: Excessive Network Access
+  theme: Access Control
 
   question: Is remote access restricted based on user or device role?
 
@@ -434,7 +499,7 @@
     account compromise and insider misuse.
 
   solution: >
-    Restrict VPN access according to business requirements and
+    Align remote access permissions with business requirements and
     least-privilege principles.
 
   positive: >
@@ -446,9 +511,9 @@
   bad_value: >
     Excessive network access is permitted.
 
-- id: 10
-  finding_id: vpn-unrestricted-split-tunnelling
+- finding_id: vpn-unrestricted-split-tunnelling
   finding_title: Unrestricted Split Tunnelling
+  theme: Access Control
 
   question: Is split tunnelling disabled or appropriately restricted?
 
@@ -475,8 +540,8 @@
     resources.
 
   solution: >
-    Disable split tunnelling where possible or implement
-    documented restrictions and monitoring controls.
+    Minimise the use of split tunnelling and, where it remains necessary, 
+    implement appropriate restrictions, monitoring, and governance controls.
 
   positive: >
     Split tunnelling is disabled or appropriately controlled.
@@ -487,9 +552,9 @@
   bad_value: >
     Split tunnelling is unrestricted.
 
-- id: 11
-  finding_id: device-compliance-not-enforced
+- finding_id: device-compliance-not-enforced
   finding_title: Device Compliance Validation Not Enforced
+  theme: Access Control
 
   question: Are device compliance or health checks performed before granting 
     remote access?
@@ -523,8 +588,8 @@
     access to organisational systems and services.
 
   solution: >
-    Require device compliance checks before VPN access is
-    granted.
+    Introduce device compliance validation to ensure security
+    requirements are satisfied before access is granted.
 
   positive: >
     Device compliance validation is enforced prior to access.
@@ -535,9 +600,9 @@
   bad_value: >
     Unvalidated devices can connect.
 
-- id: 12
-  finding_id: unmanaged-devices-allowed
+- finding_id: unmanaged-devices-allowed
   finding_title: Unmanaged Devices Permitted
+  theme: Access Control
 
   question: Is remote access restricted to managed or approved devices?
 
@@ -566,7 +631,8 @@
     requirements and may increase security risk.
 
   solution: >
-    Restrict VPN access to managed and approved devices.
+    Limit remote access connectivity to trusted, managed, and approved
+    devices.
 
   positive: >
     Only managed devices are permitted to access the VPN.
@@ -577,9 +643,9 @@
   bad_value: >
     Unmanaged devices are permitted.
 
-- id: 13
-  finding_id: user-access-not-reviewed
+- finding_id: user-access-not-reviewed
   finding_title: User Access Not Periodically Reviewed
+  theme: Access Control
 
   question: Is remote user access reviewed on a regular basis?
 
@@ -614,8 +680,8 @@
     assigned following role changes.
 
   solution: >
-    Perform periodic access reviews and remove unnecessary VPN
-    access.
+    Establish a formal access review process to validate ongoing business
+    need and remove unnecessary permissions.
 
   positive: >
     VPN user access is reviewed regularly.
@@ -626,13 +692,71 @@
   bad_value: >
     User access is not reviewed.
 
+- finding_id: users-can-modify-vpn-configuration
+  finding_title: Users Able to Modify VPN Security Settings
+  theme: Access Control
+
+  question: Are users prevented from modifying security-critical VPN configuration settings?
+
+  expected_answer: compliant
+
+  solution_types:
+    - vpn
+
+  vendors:
+    - all
+
+  hints:
+    common: >
+      Review the VPN client configuration and determine whether end users
+      can modify security-relevant settings such as authentication
+      methods, connection profiles, routing behaviour, or always-on
+      functionality.
+
+    Microsoft Always On VPN: >
+      Review the deployed VPN profile configuration and verify whether
+      users are permitted to modify, disable, or remove the VPN profile.
+      Confirm whether Always On behaviour can be disabled by end users.
+
+  description: >
+    End users were able to modify security-relevant VPN configuration
+    settings. Unrestricted modification of VPN settings may allow users
+    to weaken security protections, bypass organisational controls, or
+    establish connections that do not comply with corporate security
+    requirements.
+
+  commentary: >
+    The assessment identified that end users were permitted to alter
+    security-critical VPN settings. Depending on the configuration,
+    users may be able to disable Always On functionality, modify
+    authentication parameters, alter traffic routing behaviour, or
+    otherwise weaken the security posture of the remote access solution.
+    Restricting modification of security-relevant settings helps ensure
+    that organisational security requirements are applied consistently
+    across all remote access users.
+
+  solution: >
+    Centrally manage VPN configuration settings and prevent end users
+    from modifying security-critical parameters that could weaken
+    organisational security controls.
+
+  positive: >
+    Security-critical VPN settings were centrally managed and could not
+    be modified by standard users.
+
+  good_value: >
+    Users cannot modify security-critical VPN settings.
+
+  bad_value: >
+    Users can modify, disable, or remove security-critical VPN settings.
+
 #-------------------------------------------------------------------------------
-# Session & Monitoring Controls
+# Monitoring Controls
 #-------------------------------------------------------------------------------
 
-- id: 14
-  finding_id: insufficient-logging
+- finding_id: insufficient-logging
   finding_title: Insufficient Remote Access Logging and Monitoring
+  theme: Monitoring and Detection
 
   question: Are remote authentication and connection events logged and monitored?
 
@@ -664,8 +788,8 @@
     authentication abuse, and security incidents.
 
   solution: >
-    Enable logging of authentication, connection, and administrative events and 
-    integrate logs with monitoring processes.
+    Enhance monitoring capabilities by collecting and reviewing
+    authentication, connection, and administrative activity logs.
 
   positive: >
     VPN activity is logged and monitored.
@@ -676,9 +800,9 @@
   bad_value: >
     VPN activity is not adequately monitored.
 
-- id: 15
-  finding_id: admin-activity-not-logged
+- finding_id: admin-activity-not-logged
   finding_title: Administrative Actions Not Logged
+  theme: Monitoring and Detection
 
   question: Are administrative actions logged and retained?
 
@@ -710,8 +834,8 @@
     privileged accounts.
 
   solution: >
-    Enable logging and retention of administrative actions and regularly review 
-    logged events.
+    Implement comprehensive audit logging for administrative activity and
+    establish regular log review procedures.
 
   positive: >
     Administrative actions are logged and retained appropriately.
@@ -726,9 +850,9 @@
 # Administrative Security Controls
 #-------------------------------------------------------------------------------
 
-- id: 16
-  finding_id: excessive-admin-privileges
+- finding_id: excessive-admin-privileges
   finding_title: Excessive Administrative Privileges
+  theme: Administrative Security
 
   question: Is role-based access control used for administration?
 
@@ -762,8 +886,8 @@
     security controls.
 
   solution: >
-    Implement role-based access control and ensure administrative permissions 
-    are limited to the minimum required for each role.
+    Review administrative permissions and implement role-based access
+    controls to support least-privilege administration.
 
   positive: >
     Administrative access is controlled through role-based access control and 
@@ -779,9 +903,9 @@
 # Microsoft AOVPN Specific
 #-------------------------------------------------------------------------------
 
-- id: 17
-  finding_id: aovpn-device-authentication-not-enforced
+- finding_id: aovpn-device-authentication-not-enforced
   finding_title: Device Authentication Not Enforced
+  theme: Authentication
 
   question: Is machine certificate authentication required for Device Tunnel 
     connections?
@@ -818,8 +942,8 @@
     that connecting systems are trusted and managed.
 
   solution: >
-    Configure Device Tunnel connections to use machine certificate 
-    authentication only.
+    Restrict Device Tunnel authentication to machine certificates to
+    ensure connectivity is limited to trusted and managed devices.
 
   positive: >
     Device Tunnel connectivity requires machine certificates.
@@ -830,9 +954,9 @@
   bad_value: >
     Device authentication is not enforced.
 
-- id: 18
-  finding_id: aovpn-prelogon-connectivity-disabled
+- finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
+  theme: Platform Configuration
 
   question: Is Always On VPN connectivity enforced without requiring user 
     intervention?
@@ -866,8 +990,9 @@
     this capability.
 
   solution: >
-    Configure Device Tunnel connectivity to establish VPN access before user 
-    authentication where operationally required.
+    Consider enabling pre-logon connectivity where organisational
+    requirements rely on device management or machine-based services
+    prior to user authentication.
 
   positive: >
     VPN connectivity is available prior to user logon.
@@ -878,9 +1003,9 @@
   bad_value: >
     VPN connectivity requires user sign-in.
 
-- id: 19
-  finding_id: aovpn-route-validation-not-enforced
+- finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
+  theme: Access Control
 
   question: Are VPN routes restricted to approved destinations and networks?
 
@@ -914,8 +1039,8 @@
     security controls.
 
   solution: >
-    Implement route validation controls and restrict VPN traffic to approved 
-    routes and destinations.
+    Validate configured VPN routes and enforce route validation controls to 
+    limit connectivity to approved destinations.
 
   positive: >
     Route validation controls are implemented and enforced.
@@ -926,64 +1051,13 @@
   bad_value: >
     VPN routes are not validated.
 
-- id: 20
-  finding_id: aovpn-split-tunnel-not-controlled
-  finding_title: Split Tunnel Configuration Not Adequately Controlled
-
-  question: Are split tunnel exclusions documented and approved?
-
-  expected_answer: compliant
-
-  solution_types:
-    - vpn
-
-  vendors:
-    - Microsoft Always On VPN
-
-  hints:
-    common: >
-      Determine whether split tunnel exclusions have been
-      formally reviewed, approved, and documented. Assess
-      whether excluded destinations are supported by a
-      legitimate business requirement and align with the
-      organisation's remote access security model.
-
-    Microsoft Always On VPN: >
-      VPN Profile XML > RoutingPolicyType,
-      Traffic Filters, Exclusion Routes,
-      and Split Tunnel configuration.
-      Review supporting documentation or change
-      records evidencing approval of exclusions.
-
-  description: >
-    Split tunnel behaviour was not adequately documented, governed or 
-    restricted.
-
-  commentary: >
-    Poorly controlled split tunnel configurations may allow traffic to bypass 
-    organisational monitoring and security controls, potentially increasing 
-    security risk.
-
-  solution: >
-    Document and review split tunnel requirements and restrict exclusions to 
-    approved business use cases.
-
-  positive: >
-    Split tunnel behaviour is documented and appropriately controlled.
-
-  good_value: >
-    Split tunnel configuration is governed and restricted.
-
-  bad_value: >
-    Split tunnel behaviour is uncontrolled.
-
 #-------------------------------------------------------------------------------
 # BeyondTrust PRA Specific
 #-------------------------------------------------------------------------------
 
-- id: 21
-  finding_id: pra-session-recording-disabled
+- finding_id: pra-session-recording-disabled
   finding_title: Session Recording Not Enforced
+  theme: Monitoring and Detection
 
   question: Are privileged remote access sessions recorded?
 
@@ -1014,9 +1088,9 @@
     and security incidents involving privileged access.
 
   solution: >
-    Enable session recording for privileged remote access
-    activities and retain recordings in accordance with
-    organisational requirements.
+    Implement session recording for privileged remote access activities
+    and retain recordings in accordance with organisational retention
+    and audit requirements.
 
   positive: >
     Privileged remote access sessions are recorded and retained.
@@ -1027,9 +1101,9 @@
   bad_value: >
     Sessions are not recorded.
 
-- id: 22
-  finding_id: pra-session-review-not-performed
+- finding_id: pra-session-review-not-performed
   finding_title: Privileged Session Activity Not Reviewed
+  theme: Monitoring and Detection
 
   question: Are privileged sessions subject to periodic review?
 
@@ -1069,9 +1143,9 @@
   bad_value: >
     Session activity is not reviewed.
 
-- id: 23
-  finding_id: pra-approval-workflow-not-required
+- finding_id: pra-approval-workflow-not-required
   finding_title: Remote Access Approval Workflow Not Enforced
+  theme: Access Control
 
   question: Is approval required before privileged remote access is granted?
 
@@ -1097,8 +1171,9 @@
     granted only when supported by a legitimate business need.
 
   solution: >
-    Require appropriate authorisation before privileged remote
-    access sessions can be initiated.
+    Establish an approval workflow to ensure privileged remote access
+    is granted only following appropriate authorisation and business
+    justification.
 
   positive: >
     Privileged remote access requires approval.
@@ -1109,9 +1184,9 @@
   bad_value: >
     Access can be established without approval.
 
-- id: 24
-  finding_id: pra-jump-clients-not-restricted
+- finding_id: pra-jump-clients-not-restricted
   finding_title: Jump Client Deployment Not Restricted
+  theme: Access Control
 
   question: Are Jump Clients restricted to approved systems?
 
@@ -1150,9 +1225,9 @@
   bad_value: >
     Jump Client deployment is unrestricted.
 
-- id: 25
-  finding_id: pra-credential-injection-not-used
+- finding_id: pra-credential-injection-not-used
   finding_title: Credentials Disclosed to Users
+  theme: Administrative Security
 
   question: Are credentials injected rather than disclosed to users?
 
@@ -1191,9 +1266,9 @@
   bad_value: >
     Users are provided with privileged credentials.
 
-- id: 26
-  finding_id: pra-third-party-access-not-controlled
+- finding_id: pra-third-party-access-not-controlled
   finding_title: Third-Party Privileged Access Not Controlled
+  theme: Access Control
 
   question: Is third-party remote access subject to additional controls and monitoring?
 
@@ -1219,8 +1294,8 @@
     typically be subject to enhanced governance and monitoring.
 
   solution: >
-    Implement additional controls, monitoring, and review
-    requirements for external privileged users.
+    Apply enhanced governance, monitoring, and periodic review controls
+    to third-party privileged access arrangements.
 
   positive: >
     Third-party privileged access is appropriately governed.

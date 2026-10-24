@@ -1,0 +1,17 @@
+remote-access-audit
+user-mfa-not-enforced
+admin-mfa-not-enforced
+shared-accounts-permitted
+local-accounts-enabled
+weak-authentication-methods
+vpn-insecure-protocol-enabled
+weak-tls-configuration
+excessive-network-access
+device-compliance-not-enforced
+user-access-not-reviewed
+insufficient-logging
+admin-activity-not-logged
+excessive-admin-privileges
+aovpn-device-authentication-not-enforced
+aovpn-prelogon-connectivity-disabled
+aovpn-route-validation-not-enforced

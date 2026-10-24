@@ -2,122 +2,92 @@
 Reporting and categorisation constants.
 """
 
+# Contextual Information
 INITIAL_CONTEXT_FIELDS = {
     "client_name",
     "remote_access_solution",
-    "platform_version",
-}
-
-FINDING_THEMES = {
-    "Authentication": {
-        "vpn-mfa-not-enforced",
-        "vpn-shared-accounts-permitted",
-        "vpn-local-accounts-enabled",
-        "vpn-certificate-authentication-disabled",
-        "vpn-weak-authentication-methods",
-        "vpn-admin-mfa-not-enforced",
-    },
-
-    "Access Control": {
-        "vpn-excessive-network-access",
-        "vpn-unrestricted-split-tunnelling",
-        "vpn-device-compliance-not-enforced",
-        "vpn-unmanaged-devices-allowed",
-        "vpn-privileged-access-not-restricted",
-        "vpn-third-party-access-not-controlled",
-        "vpn-user-access-not-reviewed",
-        "vpn-account-deprovisioning-not-timely",
-    },
-
-    "Cryptography": {
-        "vpn-insecure-protocol-enabled",
-        "vpn-weak-tls-configuration",
-        "vpn-weak-cryptography",
-    },
-
-    "Monitoring and Detection": {
-        "vpn-insufficient-logging",
-        "vpn-logs-not-centralised",
-        "vpn-authentication-failure-alerting-missing",
-        "vpn-anomalous-login-alerting-missing",
-        "vpn-dormant-accounts-not-reviewed",
-    },
-
-    "Administrative Security": {
-        "vpn-excessive-admin-privileges",
-        "vpn-admin-activity-not-logged",
-    },
-
-    "Client Security": {
-        "vpn-client-versions-unmanaged",
-        "vpn-client-updates-not-enforced",
-        "vpn-always-on-vpn-disabled",
-        "vpn-kill-switch-disabled",
-    },
-
-    "Resilience and Availability": {
-        "vpn-configuration-backups-missing",
-        "vpn-no-high-availability",
-        "vpn-failover-not-tested",
-    },
 }
 
 
-COMMENTARY_GROUPS = {
-    "Authentication": {
-        "vpn-mfa-not-enforced",
-        "vpn-shared-accounts-permitted",
-        "vpn-local-accounts-enabled",
-        "vpn-certificate-authentication-disabled",
-        "vpn-weak-authentication-methods",
-        "vpn-admin-mfa-not-enforced",
-    },
+# Grouped Findings
+THEMES = [
+    "Authentication",
+    "Cryptography",
+    "Access Control",
+    "Monitoring and Detection",
+    "Administrative Security",
+    "Platform Configuration",
+]
 
-    "Access Control": {
-        "vpn-excessive-network-access",
-        "vpn-unrestricted-split-tunnelling",
-        "vpn-device-compliance-not-enforced",
-        "vpn-unmanaged-devices-allowed",
-        "vpn-privileged-access-not-restricted",
-        "vpn-third-party-access-not-controlled",
-        "vpn-user-access-not-reviewed",
-        "vpn-account-deprovisioning-not-timely",
-    },
 
-    "Cryptography": {
-        "vpn-insecure-protocol-enabled",
-        "vpn-weak-tls-configuration",
-        "vpn-weak-cryptography",
-    },
+# Executive Summary Stock Text
+COMMENTARIES = {
 
-    "Monitoring and Detection": {
-        "vpn-insufficient-logging",
-        "vpn-logs-not-centralised",
-        "vpn-authentication-failure-alerting-missing",
-        "vpn-anomalous-login-alerting-missing",
-        "vpn-dormant-accounts-not-reviewed",
-    },
+    "Authentication": (
+        "Weaknesses affecting authentication controls were observed, "
+        "reducing assurance that remote access is restricted to authorised "
+        "users and trusted devices."
+    ),
 
-    "Administrative Security": {
-        "vpn-excessive-admin-privileges",
-        "vpn-admin-activity-not-logged",
-    },
+    "Cryptography": (
+        "Several opportunities existed to strengthen the "
+        "cryptographic controls protecting remote access communications."
+    ),
 
-    "Client Security": {
-        "vpn-client-versions-unmanaged",
-        "vpn-client-updates-not-enforced",
-        "vpn-always-on-vpn-disabled",
-        "vpn-kill-switch-disabled",
-    },
+    "Access Control": (
+        "Access control measures could be further refined to align "
+        "permissions with business requirements and least-privilege "
+        "principles."
+    ),
 
-    "Resilience and Availability": {
-        "vpn-configuration-backups-missing",
-        "vpn-no-high-availability",
-        "vpn-failover-not-tested",
-    },
+    "Monitoring and Detection": (
+        "Logging and monitoring capabilities could be enhanced to "
+        "improve visibility of security-relevant activity."
+    ),
+
+    "Administrative Security": (
+        "Opportunities were noted to strengthen the governance of "
+        "privileged access and administrative functions."
+    ),
+
+    "Platform Configuration": (
+        "Platform configuration and lifecycle management practices could "
+        "be improved to further strengthen the resilience of the remote "
+        "access environment."
+    ),
 }
 
 
+GROUP_INTROS = {
+
+    "Authentication":
+        "Weaknesses were noted in the controls used to verify the "
+        "identity of remote access users and devices:",
+
+    "Cryptography":
+        "Several cryptographic weaknesses were identified that may reduce "
+        "the confidentiality and integrity of remote access communications:",
+
+    "Access Control":
+        "The assessment highlighted opportunities to strengthen the controls "
+        "used to govern access to organisational resources:",
+
+    "Monitoring and Detection":
+        "Visibility of remote access activity could be improved through "
+        "enhanced logging, monitoring, and audit capabilities:",
+
+    "Administrative Security":
+        "Several observations related to the management of privileged "
+        "accounts and administrative permissions:",
+
+    "Platform Configuration":
+        "The review found opportunities to improve the configuration "
+        "and maintenance of the remote access platform and supporting "
+        "infrastructure:",
+}
+
+
+# References Used in the Remediation Section
 REFERENCES = {
     "Generic": {
         "NCSC VPN Security Guidance":
@@ -125,39 +95,12 @@ REFERENCES = {
         "NIST Remote Access Guidance":
             "https://csrc.nist.gov/projects/zero-trust-architecture",
     },
-
-    "Cisco Secure Client": {
-        "Cisco Secure Client Documentation":
-            "https://www.cisco.com/c/en/us/support/security/secure-client/products-installation-and-configuration-guides-list.html",
-    },
-
-    "Palo Alto GlobalProtect": {
-        "GlobalProtect Administration Guide":
-            "https://docs.paloaltonetworks.com/globalprotect",
-    },
-
-    "Fortinet FortiClient": {
-        "FortiClient Administration Guide":
-            "https://docs.fortinet.com/product/forticlient",
-    },
-
-    "Check Point Remote Access VPN": {
-        "Check Point Remote Access VPN Guide":
-            "https://sc1.checkpoint.com/documents",
-    },
-
     "Microsoft Always On VPN": {
         "Always On VPN Deployment Guide":
             "https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/",
     },
-
-    "OpenVPN": {
-        "OpenVPN Documentation":
-            "https://openvpn.net/community-resources/",
-    },
-
-    "WireGuard": {
-        "WireGuard Documentation":
-            "https://www.wireguard.com/",
-    },
+    "BeyondTrust PRA": {
+        "BeyondTrust PRA Documentation":
+            "https://www.beyondtrust.com/docs/remote-support"
+    }
 }
