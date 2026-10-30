@@ -253,21 +253,14 @@ def ask_question(
     )
     console.print()
 
-    if common_hint:
+    hint = platform_hint or common_hint
+
+    if hint:
         console.print(
             Panel.fit(
-                common_hint.strip(),
+                hint.strip(),
                 title="Evidence",
                 border_style="blue",
-            )
-        )
-
-    if platform_hint:
-        console.print(
-            Panel.fit(
-                platform_hint.strip(),
-                title="Location",
-                border_style="yellow",
             )
         )
 
@@ -330,10 +323,7 @@ def conduct_review(
 
     total = len(questions)
 
-    for current, question in enumerate(
-        questions,
-        start=1,
-    ):
+    for current, question in enumerate(questions, start=1):
         response = ask_question(
             question,
             platform,
@@ -432,15 +422,9 @@ def build_assessment_results(
     Build the final assessment results object.
     """
 
-    findings = generate_findings(
-        questions,
-        responses,
-    )
+    findings = generate_findings(questions, responses)
 
-    positives = generate_positive_observations(
-        questions,
-        responses,
-    )
+    positives = generate_positive_observations(questions, responses)
 
     return AssessmentResults(
         context=context,
@@ -469,10 +453,7 @@ def run_assessment() -> AssessmentResults:
 
     all_fields = load_context_fields()
 
-    setup_fields = get_fields_by_phase(
-        all_fields,
-        "setup",
-    )
+    setup_fields = get_fields_by_phase(all_fields, "setup")
 
     setup_responses = collect_context(setup_fields)
 
@@ -482,10 +463,7 @@ def run_assessment() -> AssessmentResults:
 
     solution_type = platform.solution_type
 
-    context_fields = get_fields_by_phase(
-        all_fields,
-        "context",
-    )
+    context_fields = get_fields_by_phase(all_fields, "context")
 
     applicable_context_fields = get_applicable_context_fields(
         context_fields,
@@ -502,10 +480,7 @@ def run_assessment() -> AssessmentResults:
         {},
     )
 
-    responses = {
-        **context_responses,
-        "context_notes": context_notes,
-    }
+    responses = {**context_responses, "context_notes": context_notes}
 
     context = ReviewContext(**responses)
 

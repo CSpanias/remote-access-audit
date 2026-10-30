@@ -12,7 +12,9 @@ import argparse
 
 from rich.panel import Panel
 
-from remote_access_audit.exporters.json import export_findings_json
+from remote_access_audit.exporters.json import (
+    export_findings_json, export_assessment_responses_json
+)
 from remote_access_audit.exporters.markdown import export_markdown
 from remote_access_audit.review import run_assessment
 from remote_access_audit.ui import console
@@ -38,8 +40,9 @@ def main() -> None:
     console.print(f"[red]Findings:[/red] {len(results.findings)}")
     console.print(f"[green]Positive Observations:[/green] {len(results.positives)}")
 
-    export_findings_json(results, "assessment.json")
-    export_markdown(results, "assessment.md")
+    export_findings_json(results, "remote-access-review-findings.json")
+    export_markdown(results, "remote-access-review-report.md")
+    export_assessment_responses_json(results, "remote-access-review-notes.json")
 
 
 if __name__ == "__main__":

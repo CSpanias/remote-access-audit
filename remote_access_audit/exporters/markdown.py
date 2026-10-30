@@ -10,7 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from remote_access_audit.constants import(
-    THEMES, REFERENCES, COMMENTARIES, GROUP_INTROS
+    THEMES, REFERENCES, COMMENTARIES
 )
 from remote_access_audit.models import AssessmentResults
 
@@ -27,6 +27,33 @@ def _get_review_scope(
 #-------------------------------------------------------------------------------
 # Executive Summary
 #-------------------------------------------------------------------------------
+def _format_count(
+    count: int,
+    singular: str,
+    plural: str,
+) -> str:
+
+    NUMBER_WORDS = {
+        0: "no",
+        1: "one",
+        2: "two",
+        3: "three",
+        4: "four",
+        5: "five",
+        6: "six",
+        7: "seven",
+        8: "eight",
+        9: "nine",
+    }
+
+    value = NUMBER_WORDS.get(count, str(count))
+
+    if count == 1:
+        return f"{value} {singular}"
+
+    return f"{value} {plural}"
+
+
 def _generate_assessment_context(
     results: AssessmentResults,
 ) -> list[str]:
@@ -37,6 +64,9 @@ def _generate_assessment_context(
     context = results.context
 
     lines = []
+
+    lines.append("The assessed remote access environment is summarised below:")
+    lines.append("")
 
     lines.extend([
         "| Property | Value |",
@@ -139,10 +169,15 @@ def _generate_executive_summary(
 
     themes = _get_identified_themes(results)
 
-    theme_text = _format_list([
-        theme.lower()
-        for theme in themes
-    ])
+    finding_count = len(results.findings)
+    positive_count = len(results.positives)
+
+    finding_text = _format_count(finding_count, "finding", "findings")
+    positive_text = _format_count(
+        positive_count,
+        "positive observation",
+        "positive observations",
+    )
 
     lines.append("## Executive Summary")
     lines.append("")
@@ -151,23 +186,28 @@ def _generate_executive_summary(
     # Introductory Paragraph
     #---------------------------------------------------------------------------
     if posture == "strong":
+
         finding_summary = (
-            "The assessed remote access environment demonstrated a "
-            "generally mature and well-managed security posture. However, "
-            "a small number of opportunities were identified for improvement."
+            f"The assessment identified {finding_text} and {positive_text}. "
+            "Security controls were generally well implemented and operating "
+            "as intended across the assessed remote access environment."
         )
 
     elif posture == "moderate":
+
         finding_summary = (
-            "The assessed remote access environment demonstrated a mixture of "
-            "effective controls as well as opportunities for improvement."
+            f"The assessment identified {finding_text} and {positive_text}. A "
+            "mixture of effective controls and opportunities for improvement "
+            "was observed across the assessed remote access environment."
         )
 
     else:
+
         finding_summary = (
-            "The assessed remote access environment demonstrated several "
-            "weaknesses affecting the operation and enforcement of remote "
-            "access security controls."
+            f"The assessment identified {finding_text} and {positive_text}. "
+            "Weaknesses were identified across multiple security domains, "
+            "indicating that expected controls were not consistently "
+            "implemented or enforced."
         )
 
     lines.append(
@@ -186,6 +226,8 @@ def _generate_executive_summary(
     #---------------------------------------------------------------------------
     theme_commentaries = []
 
+    theme_text = _format_list([theme.lower() for theme in themes])
+
     for theme in themes:
 
         commentary = COMMENTARIES.get(theme)
@@ -193,14 +235,21 @@ def _generate_executive_summary(
         if commentary:
             theme_commentaries.append(commentary)
 
-    if theme_commentaries:
+    if results.findings:
 
         lines.append(
-            "The review identified observations across several control areas. "
+            f"The most significant observations related to {theme_text}. "
             + " ".join(theme_commentaries)
         )
 
-        lines.append("")
+    else:
+
+        lines.append(
+            "No significant weaknesses were identified during the review. "
+            "The assessed controls were operating as intended..."
+        )
+
+    lines.append("")
 
     #---------------------------------------------------------------------------
     # Conclusion
@@ -244,6 +293,275 @@ def _generate_executive_summary(
 # Technical Commentary
 #-------------------------------------------------------------------------------
 
+def _build_authentication_commentary(
+    findings: list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    paragraph = (
+        "Several weaknesses were identified in the authentication controls "
+        "protecting the remote access environment. "
+    )
+
+    if (
+        "user-mfa-not-enforced" in finding_ids
+        and "admin-mfa-not-enforced" in finding_ids
+    ):
+        paragraph += (
+            "Multi-factor authentication was not enforced consistently for "
+            "either remote access users or administrative accounts. "
+        )
+
+    elif "user-mfa-not-enforced" in finding_ids:
+        paragraph += (
+            "Multi-factor authentication was not enforced for remote "
+            "access users. "
+        )
+
+    elif "admin-mfa-not-enforced" in finding_ids:
+        paragraph += (
+            "Administrative accounts were not protected through mandatory "
+            "multi-factor authentication. "
+        )
+
+    if "pra-phishing-resistant-mfa-not-enforced" in finding_ids:
+        paragraph += (
+            "In addition, privileged users were not protected through "
+            "phishing-resistant authentication mechanisms. "
+        )
+
+    if "shared-accounts-permitted" in finding_ids:
+        paragraph += (
+            "The review also identified the use of shared accounts, "
+            "reducing accountability and auditability of user activity. "
+        )
+
+    if "local-accounts-enabled" in finding_ids:
+        paragraph += (
+            "Furthermore, authentication relied on locally managed "
+            "accounts rather than a centrally managed identity "
+            "provider, limiting the consistent enforcement of "
+            "organisational authentication controls. "
+        )
+
+    paragraph += (
+        "Collectively, these observations may reduce assurance that "
+        "users are appropriately authenticated and increase the risk "
+        "of account compromise."
+    )
+
+    return paragraph
+
+
+def _build_cryptography_commentary(
+    findings: list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    if not finding_ids:
+        return ""
+
+    paragraph = (
+        "The configuration of cryptographic controls did not align fully with "
+        "current security best practice. "
+    )
+
+    if (
+        "weak-tls-configuration" in finding_ids
+        and "weak-cryptography" in finding_ids
+    ):
+        paragraph += (
+            "Deprecated TLS configurations and weak cryptographic algorithms "
+            "remained enabled within the assessed environment. "
+        )
+
+    elif "weak-tls-configuration" in finding_ids:
+        paragraph += (
+            "Deprecated TLS configurations remained enabled. "
+        )
+
+    elif "weak-cryptography" in finding_ids:
+        paragraph += (
+            "Weak or deprecated cryptographic algorithms remained enabled. "
+        )
+
+    paragraph += (
+        "These weaknesses may reduce the confidentiality and integrity of "
+        "remote access communications."
+    )
+
+    return paragraph
+
+
+def _build_monitoring_commentary(
+    findings: list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    if not finding_ids:
+        return ""
+
+    paragraph = (
+        "The review highlighted opportunities to improve visibility, "
+        "monitoring, and audit capabilities associated with remote "
+        "access services. "
+    )
+
+    if (
+        "insufficient-logging" in finding_ids
+        and "pra-session-review-not-performed" in finding_ids
+    ):
+        paragraph += (
+            "Remote access activity was not being logged and monitored "
+            "to the extent expected, and privileged session activity "
+            "was not consistently available for review and investigation. "
+        )
+
+    elif "insufficient-logging" in finding_ids:
+        paragraph += (
+            "Authentication, connection, and security-relevant events "
+            "were not being logged and monitored to the extent expected. "
+        )
+
+    elif "pra-session-review-not-performed" in finding_ids:
+        paragraph += (
+            "Privileged session activity was not consistently available "
+            "for review and investigation. "
+        )
+
+    paragraph += (
+        "As a result, visibility of security events may be reduced and "
+        "the investigation of suspicious or privileged activity may be "
+        "more difficult."
+    )
+
+    return paragraph
+
+
+def _build_access_control_commentary(
+    findings: list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    if not finding_ids:
+        return ""
+
+    paragraph = (
+        "Several opportunities were identified to strengthen access "
+        "control and governance arrangements associated with remote "
+        "access services. "
+    )
+
+    if "user-access-not-reviewed" in finding_ids:
+        paragraph += (
+            "Remote access permissions were not subject to periodic "
+            "review. "
+        )
+
+    if "pra-jump-clients-not-restricted" in finding_ids:
+        paragraph += (
+            "In addition, Jump Client deployments were not subject "
+            "to sufficient governance controls. "
+        )
+
+    if "pra-gateway-access-not-restricted" in finding_ids:
+        paragraph += (
+            "Gateway access permissions were also not adequately "
+            "restricted. "
+        )
+
+    paragraph += (
+        "These observations may increase the likelihood of excessive "
+        "access and reduce assurance that remote access permissions "
+        "remain aligned to business requirements."
+    )
+
+    return paragraph
+
+
+def _build_admin_security_commentary(
+        findings:list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    observations = []
+
+    if "pra-credential-injection-not-used" in finding_ids:
+        observations.append(
+            "privileged credentials were disclosed directly to users rather "
+            "than protected through credential injection controls"
+        )
+
+    if "pra-vault-password-rotation-not-enforced" in finding_ids:
+        observations.append(
+            "privileged credentials were not rotated automatically"
+        )
+
+    if "pra-credential-association-not-restricted" in finding_ids:
+        observations.append(
+            "credential association controls were not sufficiently restricted"
+        )
+
+    if not observations:
+        return ""
+
+    paragraph = (
+        "The review identified weaknesses affecting the management and "
+        "governance of privileged credentials. "
+    )
+
+    paragraph += (
+        observations[0].capitalize()
+        if len(observations) == 1
+        else ", ".join(observations[:-1]) + f", and {observations[-1]}"
+    )
+
+    paragraph += (
+        ". As a result, the risk of credential disclosure, inappropriate "
+        "credential use, unauthorised access, and long-term compromise may be "
+        "increased. Strengthening privileged credential management controls "
+        "would improve assurance that administrative access is appropriately "
+        "governed and protected."
+    )
+
+    return paragraph
+
+
+def _build_platform_commentary(
+        findings: list,
+) -> str:
+
+    finding_ids = {f.finding_id for f in findings}
+
+    paragraph = (
+        "A number of observations were made regarding the "
+        "management and operation of the remote access platform. "
+    )
+
+    if "unsupported-or-unpatched-platform" in finding_ids:
+        paragraph += (
+            "One or more platform components were unsupported or "
+            "insufficiently patched. "
+        )
+
+    if "aovpn-prelogon-connectivity-disabled" in finding_ids:
+        paragraph += (
+            "In addition, pre-logon VPN connectivity was not available. "
+        )
+
+    paragraph += (
+        "These observations may reduce the effectiveness, resilience, or "
+        "manageability of the remote access service."
+    )
+
+    return paragraph
+
+
 def _group_findings(
     findings,
 ) -> dict[str, list]:
@@ -283,23 +601,37 @@ def _generate_commentary(
     lines.append("")
 
     # Findings
+    builders = {
+        "Platform Configuration": _build_platform_commentary,
+        "Authentication": _build_authentication_commentary,
+        "Cryptography": _build_cryptography_commentary,
+        "Access Control": _build_access_control_commentary,
+        "Monitoring and Detection": _build_monitoring_commentary,
+        "Administrative Security": _build_admin_security_commentary,
+    }
+
     grouped_findings = _group_findings(results.findings)
 
-    for group_name, findings in grouped_findings.items():
+    for theme, findings in grouped_findings.items():
 
-        intro = GROUP_INTROS.get(group_name)
+        builder = builders.get(theme)
 
-        if intro:
-            lines.append(intro)
+        if builder:
+            lines.append(builder(findings))
             lines.append("")
 
-        for finding in findings:
+    # Positive Observations
+    if results.positives:
 
-            lines.append(
-                f"- **{finding.title}** - {finding.commentary.strip()}"
-            )
+        lines.append("## Positive Observations")
+        lines.append("")
 
-            lines.append("")
+        for positive in results.positives:
+            lines.append(f"- {positive.text}")
+
+        lines.append("")
+
+    lines.append("")
 
     return lines
 
@@ -326,12 +658,16 @@ def _generate_remediation(
         lines.append("The following remediation actions are recommended:")
         lines.append("")
 
-        recommendations = set()
+        recommendations = []
 
         for finding in results.findings:
-            recommendations.add(finding.solution.strip())
 
-        for recommendation in sorted(recommendations):
+            solution = finding.solution.strip()
+
+            if solution not in recommendations:
+                recommendations.append(solution)
+
+        for recommendation in recommendations:
             lines.append(f"- {recommendation}")
 
         lines.append("")
@@ -340,13 +676,13 @@ def _generate_remediation(
     lines.append("")
 
     for title, url in REFERENCES["Generic"].items():
-        lines.append(f"- [{title}]({url})")
+        lines.append(f"- [{url}]({url})")
 
     platform = results.context.remote_access_solution.value
 
     if platform in REFERENCES:
         for title, url in REFERENCES[platform].items():
-            lines.append(f"- [{title}]({url})")
+            lines.append(f"- [{url}]({url})")
 
 
     return lines

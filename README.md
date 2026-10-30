@@ -1,6 +1,6 @@
 # Remote-Access-Audit
 
-A Python-based tool designed to make Remote Access security reviews more efficient.
+A Python-based tool for conducting structured remote access security reviews and generating consultant-ready assessment reports.
 
 Developed as an educational tool to accompany [Remote Access Network Security Explained](https://mollysec.com/posts/remote-access-security-explained/). 
 
@@ -11,8 +11,15 @@ Configuration Review
         ↓
 Structured Assessment
         ↓
-Markdown Report + JSON Export
+Markdown Report + Findings Export
 ```
+
+## Supported Platforms
+
+- Microsoft Always On VPN
+- BeyondTrust PRA
+
+Additional platforms can be added through the YAML-driven assessment framework.
 
 ## Installation
 
@@ -52,26 +59,26 @@ uv venv
 uv pip install -e .
 
 # Verify installation
-python -m remote_access_audit.review
+python -m remote_access_audit.cli
 ```
 
 ## Features
 
-WIP
+- Guided remote access solution assessment workflow
+- Markdown-formatted report generation
+- JSON findings export
+- JSON assessment notes export
+- YAML-driven assessment content
 
 ## Usage
 
-WIP
+Just launch the tool!
 
-## Example Output
-
-WIP
+```bash
+remote-access-audit
+```
 
 ## Requirements
 
 - Python 3.11+
 - UV (recommended)
-
-## Roadmap
-
-WIP

@@ -189,8 +189,8 @@
     administrative and privileged accounts.
 
   positive: >
-    Multi-factor authentication is enforced for VPN
-    administrators.
+    Multi-factor authentication was enforced for administrative and
+    privileged accounts.
 
 - finding_id: pra-phishing-resistant-mfa-not-enforced
   finding_title: Phishing-Resistant MFA Not Enforced for Privileged Users
@@ -247,8 +247,8 @@
     sensitive systems and infrastructure.
 
   positive: >
-    Privileged users were protected by phishing-resistant
-    MFA controls such as FIDO2 authentication.
+    Privileged users were protected by phishing-resistant MFA controls 
+    such as FIDO2 authentication.
 
 - finding_id: shared-accounts-permitted
   finding_title: Shared Accounts Permitted
@@ -384,7 +384,7 @@
     vendor-supported authentication methods.
 
   positive: >
-    Legacy authentication mechanisms have been disabled.
+    Legacy authentication mechanisms was disabled.
 
 #-------------------------------------------------------------------------------
 # Cryptography Controls
@@ -475,7 +475,7 @@
     removing support for older protocol versions.
 
   positive: >
-    VPN communications are restricted to supported TLS versions.
+    VPN communications were restricted to supported TLS versions.
 
 - finding_id: weak-cryptography
   finding_title: Weak Cryptographic Algorithms Permitted
@@ -519,109 +519,11 @@
     industry best practice.
 
   positive: >
-    Strong, modern cryptographic algorithms are enforced.
+    Strong, modern cryptographic algorithms were enforced.
 
 #-------------------------------------------------------------------------------
 # Access Control Controls
 #-------------------------------------------------------------------------------
-
-- finding_id: excessive-network-access
-  finding_title: Excessive Network Access
-  theme: Access Control
-
-  question: Is remote access restricted based on user or device role?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Remote access permissions are restricted according to business requirements 
-    and least-privilege principles.
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Determine whether users and devices receive access based on
-      business requirements. Review security groups, access
-      policies, network segmentation controls, firewall rules, and
-      access restrictions where applicable.
-
-    Microsoft Always On VPN: >
-      RRAS Policies, NPS Policies, Firewall Rules,
-      Security Groups, and Network Segmentation Controls.
-
-  description: >
-    VPN users were granted unnecessary access to internal
-    resources.
-
-  commentary: >
-    Excessive network access increases the potential impact of
-    account compromise and insider misuse.
-
-  solution: >
-    Align remote access permissions with business requirements and
-    least-privilege principles.
-
-  positive: >
-    VPN access is restricted according to business requirements.
-
-- finding_id: pra-asset-group-access-not-restricted
-  finding_title: Asset Group Access Not Restricted
-  theme: Access Control
-
-  question: Is access to Asset Groups restricted according to business requirements and least-privilege principles?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Access to Asset Groups is restricted according to business
-    requirements and users are granted access only to the
-    systems necessary for their role.
-
-  solution_types:
-    - pra
-
-  vendors:
-    - BeyondTrust PRA
-
-  hints:
-    common: >
-      Review Asset Group membership and determine whether
-      access to managed assets is restricted according to
-      operational responsibilities and business requirements.
-
-    BeyondTrust PRA: >
-      /login > Asset Management > Asset Groups.
-
-      Review Asset Group membership, associated users,
-      Group Policies, and Asset Roles. Confirm users
-      receive access only to systems required for their role.
-
-  description: >
-    Access to Asset Groups was not restricted according to
-    business requirements, resulting in excessive privileged
-    access to managed systems.
-
-  commentary: >
-    Asset Groups are a primary mechanism for controlling
-    access to managed systems within PRA. Excessive access
-    increases the potential impact of account compromise,
-    insider misuse, and administrative error.
-
-  solution: >
-    Review Asset Group memberships and align access with
-    business requirements and least-privilege principles.
-    Remove unnecessary access and implement periodic access
-    reviews.
-
-  positive: >
-    Asset Group access was appropriately restricted and
-    aligned to business requirements.
 
 - finding_id: vpn-unrestricted-split-tunnelling
   finding_title: Unrestricted Split Tunnelling
@@ -660,7 +562,7 @@
     implement appropriate restrictions, monitoring, and governance controls.
 
   positive: >
-    Split tunnelling is disabled or appropriately controlled.
+    Split tunnelling was disabled or appropriately controlled.
 
 - finding_id: device-compliance-not-enforced
   finding_title: Device Trust Validation Not Enforced
@@ -705,13 +607,13 @@
     requirements are satisfied before access is granted.
 
   positive: >
-    Device compliance validation is enforced prior to access.
+    Device compliance validation was enforced prior to access.
 
 - finding_id: user-access-not-reviewed
   finding_title: User Access Not Periodically Reviewed
   theme: Access Control
 
-  question: Is remote user access reviewed on a regular basis?
+  question: Are remote access permissions reviewed on a regular basis?
 
   expected_answer: compliant
 
@@ -728,17 +630,18 @@
 
   hints:
     common: >
-      Ask how VPN access is reviewed, who performs the review, how
-      often it occurs, and whether evidence of recent reviews can
-      be provided. Examples include access review records,
+      Ask how remote access permissions are reviewed, who performs the
+      review, how often it occurs, and whether evidence of recent
+      reviews can be provided. Examples include access review records,
       approval workflows, tickets, or entitlement reviews.
+
 
     Microsoft Always On VPN: >
       Active Directory or Entra ID VPN access groups,
       access review records, and entitlement reviews.
 
   description: >
-    VPN user access was not subject to periodic review.
+    Remote access permissions were not subject to periodic review.
 
   commentary: >
     Access reviews help ensure that users retain only the access
@@ -752,7 +655,7 @@
     need and remove unnecessary permissions.
 
   positive: >
-    VPN user access is reviewed regularly.
+    Remote access permissions were reviewed regularly.
 
 - finding_id: users-can-modify-vpn-configuration
   finding_title: Users Able to Modify VPN Security Settings
@@ -811,69 +714,6 @@
     Security-critical VPN settings were centrally managed and could not
     be modified by standard users.
 
-- finding_id: pra-time-based-access-not-enforced
-  finding_title: Time-Based Access Restrictions Not Enforced
-  theme: Access Control
-
-  question: Is privileged access restricted to approved operating windows?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Privileged access is restricted to approved days and
-    hours unless a documented business requirement or
-    authorised exception exists.
-
-  solution_types:
-    - pra
-
-  vendors:
-    - BeyondTrust PRA
-
-  hints:
-    common: >
-      Determine whether privileged access can be restricted
-      to approved operating hours or maintenance windows.
-      Review access governance controls and identify whether
-      users, administrators, contractors, or third parties
-      can establish privileged sessions outside authorised
-      periods.
-
-    BeyondTrust PRA: >
-      /login > Asset Management > Asset Policies.
-
-      Review time-based restrictions configured within Asset Policies and 
-      determine whether access is limited to approved days, hours, maintenance 
-      windows, or contractor engagement periods.
-
-  description: >
-    Privileged access was available without appropriate
-    time-based restrictions, allowing users to establish
-    sessions outside approved operating periods.
-
-  commentary: >
-    Unrestricted privileged access increases the opportunity
-    for unauthorised activity outside normal business hours
-    and may reduce the effectiveness of operational oversight.
-    Time-based restrictions provide an additional governance
-    control by limiting privileged access to approved periods
-    that align with operational requirements and business
-    need. Such controls are particularly valuable for
-    contractors, suppliers, and infrequently used privileged
-    accounts.
-
-  solution: >
-    Implement time-based access restrictions through Asset
-    Policies and limit privileged access to approved days,
-    hours, maintenance windows, or documented exceptions.
-    Review exceptions periodically to ensure ongoing business
-    justification.
-
-  positive: >
-    Privileged access was restricted to approved operating
-    windows and any exceptions were appropriately authorised
-    and documented.
-
 #-------------------------------------------------------------------------------
 # Monitoring Controls
 #-------------------------------------------------------------------------------
@@ -899,17 +739,18 @@
 
   hints:
     common: >
-      Review whether VPN authentication attempts, connection events,
-      and security-relevant activity are logged and monitored.
-      Determine whether logs are regularly reviewed or integrated
-      with a central monitoring platform.
+      Review whether authentication attempts, connection events,
+      administrative actions, and other security-relevant remote
+      access activity are logged and monitored. Determine whether
+      logs are regularly reviewed or integrated with a central
+      monitoring platform.
 
     Microsoft Always On VPN: >
       Event Viewer > Microsoft > Windows > RemoteAccess,
       RRAS Logs, NPS Logs, and SIEM Integration.
 
   description: >
-    VPN activity was not adequately logged or monitored.
+    Remote access activity was not adequately logged or monitored.
 
   commentary: >
     Insufficient logging reduces visibility of suspicious activity, 
@@ -920,7 +761,8 @@
     authentication, connection, and administrative activity logs.
 
   positive: >
-    VPN activity is logged and monitored.
+    Authentication events, connection activity, and administrative
+    actions were logged and monitored appropriately.
 
 - finding_id: admin-activity-not-logged
   finding_title: Administrative Actions Not Logged
@@ -964,58 +806,7 @@
     establish regular log review procedures.
 
   positive: >
-    Administrative actions are logged and retained appropriately.
-
-#-------------------------------------------------------------------------------
-# Administrative Security Controls
-#-------------------------------------------------------------------------------
-
-- finding_id: excessive-admin-privileges
-  finding_title: Excessive Administrative Privileges
-  theme: Administrative Security
-
-  question: Is role-based access control used for administration?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Administrative permissions are assigned using role-based access control and 
-    least-privilege principles.
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Review administrative accounts, roles, and permissions.
-      Determine whether administrators receive only the privileges
-      required for their responsibilities and whether permissions
-      are assigned using defined roles.
-
-    Microsoft Always On VPN: >
-      Local Administrators Group, Server Administration Roles, Entra Roles, 
-      and Delegated Permissions.
-
-  description: >
-    Administrative access to the VPN platform was not restricted according to 
-    role-based access control principles.
-
-  commentary: >
-    Granting unnecessary administrative privileges increases the risk of 
-    accidental misconfiguration, malicious abuse, and unauthorised changes to 
-    security controls.
-
-  solution: >
-    Review administrative permissions and implement role-based access
-    controls to support least-privilege administration.
-
-  positive: >
-    Administrative access is controlled through role-based access control and 
-    least-privilege principles.
+    Administrative actions were logged and retained appropriately.
 
 #-------------------------------------------------------------------------------
 # Microsoft AOVPN Specific
@@ -1067,7 +858,7 @@
     ensure connectivity is limited to trusted and managed devices.
 
   positive: >
-    Device Tunnel connectivity requires machine certificates.
+    Device Tunnel connectivity required machine certificates.
 
 - finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
@@ -1114,7 +905,7 @@
     prior to user authentication.
 
   positive: >
-    VPN connectivity is available prior to user logon.
+    VPN connectivity was available prior to user logon.
 
 - finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
@@ -1159,7 +950,7 @@
     limit connectivity to approved destinations.
 
   positive: >
-    Route validation controls are implemented and enforced.
+    Route validation controls were implemented and enforced.
 
 #-------------------------------------------------------------------------------
 # BeyondTrust PRA Specific
@@ -1206,60 +997,7 @@
     and audit requirements.
 
   positive: >
-    Privileged remote access sessions are recorded and retained.
-
-- finding_id: pra-unrestricted-session-capabilities
-  finding_title: Unrestricted Privileged Session Capabilities
-  theme: Monitoring and Detection
-
-  question: Are privileged session capabilities restricted according to business requirements?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Session capabilities such as file transfer, clipboard
-    access, command execution, shell access, and screen
-    sharing are restricted according to operational
-    requirements.
-
-  solution_types:
-    - pra
-
-  vendors:
-    - BeyondTrust PRA
-
-  hints:
-    common: >
-      Review which actions users are permitted to perform
-      during privileged sessions and determine whether
-      permissions are aligned to business requirements.
-
-    BeyondTrust PRA: >
-      /login > Users & Security > Session Policies.
-
-      Review permissions relating to file transfer,
-      clipboard use, shell access, command execution,
-      screen sharing, and other privileged session actions.
-
-  description: >
-    Privileged users were permitted to perform unnecessary
-    actions during remote access sessions.
-
-  commentary: >
-    Excessive session permissions may increase the risk of
-    unauthorised activity, data exfiltration, malware
-    transfer, and misuse of privileged access. Session
-    capabilities should be restricted according to
-    operational requirements and least-privilege principles.
-
-  solution: >
-    Review Session Policies and restrict capabilities such
-    as file transfer, clipboard access, shell access, and
-    command execution where they are not required.
-
-  positive: >
-    Privileged session capabilities were restricted in
-    accordance with business and operational requirements.
+    Privileged remote access sessions were recorded and retained.
 
 - finding_id: pra-session-review-not-performed
   finding_title: Privileged Session Activity Not Available for Review
@@ -1314,46 +1052,8 @@
     compliance purposes.
 
   positive: >
-    Privileged session activity was retained and available
-    for review and investigation when required.
-
-- finding_id: pra-approval-workflow-not-required
-  finding_title: Remote Access Approval Workflow Not Enforced
-  theme: Access Control
-
-  question: Is approval required before privileged remote access is granted?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Privileged remote access requires approval prior to access being granted.
-
-  solution_types:
-    - pra
-
-  vendors:
-    - BeyondTrust PRA
-
-  hints:
-    common: >
-      Determine whether privileged remote access requests are
-      subject to an approval process before access is granted.
-
-  description: >
-    Privileged remote access was granted without requiring
-    appropriate approval.
-
-  commentary: >
-    Access approval workflows help ensure privileged access is
-    granted only when supported by a legitimate business need.
-
-  solution: >
-    Establish an approval workflow to ensure privileged remote access
-    is granted only following appropriate authorisation and business
-    justification.
-
-  positive: >
-    Privileged remote access requires approval.
+    Privileged session activity was retained and available for review and 
+    investigation when required.
 
 - finding_id: pra-jump-clients-not-restricted
   finding_title: Jump Client Deployment Not Restricted
@@ -1375,8 +1075,8 @@
 
   hints:
     common: >
-      Review the systems on which Jump Clients are deployed and confirm 
-      deployment is restricted to approved devices and supported business 
+      Review the systems on which Jump Clients are deployed and confirm
+      deployment is restricted to approved devices and supported business
       requirements.
 
     BeyondTrust PRA: >
@@ -1398,13 +1098,14 @@
     review deployments periodically.
 
   positive: >
-    Jump Client deployment is appropriately controlled.
+    Jump Client deployment was appropriately controlled.
 
 - finding_id: pra-gateway-access-not-restricted
   finding_title: Gateway Access Not Adequately Restricted
   theme: Access Control
 
-  question: Are PRA Gateways restricted to approved systems, protocols, and users?
+  question: Are PRA Gateway access permissions restricted through Asset Groups,
+    user assignments, and protocol controls?
 
   expected_answer: compliant
 
@@ -1492,7 +1193,7 @@
     avoid exposing privileged credentials to users.
 
   positive: >
-    Credential injection is used for privileged access.
+    Credential injection was used for privileged access.
 
 - finding_id: pra-vault-password-rotation-not-enforced
   finding_title: Privileged Credential Rotation Not Enforced
@@ -1595,45 +1296,5 @@
     Asset Groups that require them.
 
   positive: >
-    Vault credentials were restricted to authorised Assets
-    and Asset Groups through Asset Association controls.
-
-- finding_id: pra-third-party-access-not-controlled
-  finding_title: Third-Party Privileged Access Not Controlled
-  theme: Access Control
-
-  question: Is third-party remote access subject to additional controls and 
-    monitoring?
-
-  expected_answer: compliant
-
-  expected_value: >
-    Third-party access is subject to enhanced approval, monitoring, periodic 
-    review, and time-based access restrictions where appropriate.
-
-  solution_types:
-    - pra
-
-  vendors:
-    - BeyondTrust PRA
-
-  hints:
-    common: >
-      Determine whether suppliers, contractors, or other
-      external users are subject to additional approval,
-      monitoring, review, or time-based access restrictions.
-
-  description: >
-    Third-party privileged access was not adequately controlled.
-
-  commentary: >
-    External users typically present an elevated risk and should be subject to 
-    enhanced governance, approval, monitoring, periodic review, and time-bound 
-    access controls.
-
-  solution: >
-    Apply enhanced governance, monitoring, and periodic review controls
-    to third-party privileged access arrangements.
-
-  positive: >
-    Third-party privileged access is appropriately governed.
+    Vault credentials were restricted to authorised Assets and Asset Groups 
+    through Asset Association controls.

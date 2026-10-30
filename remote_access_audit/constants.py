@@ -2,18 +2,6 @@
 Reporting and categorisation constants.
 """
 
-
-# Grouped Findings
-THEMES = [
-    "Authentication",
-    "Cryptography",
-    "Access Control",
-    "Monitoring and Detection",
-    "Administrative Security",
-    "Platform Configuration",
-]
-
-
 # Executive Summary Stock Text
 COMMENTARIES = {
 
@@ -52,33 +40,15 @@ COMMENTARIES = {
 }
 
 
-GROUP_INTROS = {
-
-    "Authentication":
-        "Weaknesses were noted in the controls used to verify the "
-        "identity of remote access users and devices:",
-
-    "Cryptography":
-        "Several cryptographic weaknesses were identified that may reduce "
-        "the confidentiality and integrity of remote access communications:",
-
-    "Access Control":
-        "The assessment highlighted opportunities to strengthen the controls "
-        "used to govern access to organisational resources:",
-
-    "Monitoring and Detection":
-        "Visibility of remote access activity could be improved through "
-        "enhanced logging, monitoring, and audit capabilities:",
-
-    "Administrative Security":
-        "Several observations related to the management of privileged "
-        "accounts and administrative permissions:",
-
-    "Platform Configuration":
-        "The review found opportunities to improve the configuration "
-        "and maintenance of the remote access platform and supporting "
-        "infrastructure:",
-}
+# Grouped Findings
+THEMES = [
+    "Authentication",
+    "Cryptography",
+    "Access Control",
+    "Monitoring and Detection",
+    "Administrative Security",
+    "Platform Configuration",
+]
 
 
 # References Used in the Remediation Section
