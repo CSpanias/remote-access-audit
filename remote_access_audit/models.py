@@ -108,6 +108,8 @@ class ContextField(BaseModel):
 
     required: bool = True
 
+    phase: str = "context"
+
     solution_types: list[SolutionType] = Field(
         default_factory=lambda: [
             SolutionType.VPN,
@@ -142,6 +144,10 @@ class ReviewContext(BaseModel):
 
     split_tunnel_mode: str | None = None
 
+    platform_version: str | None = None
+
+    deployment_type: str | None = None
+
     context_notes: dict[str, str] = Field(default_factory=dict)
 
 
@@ -151,9 +157,9 @@ class QuestionResponse(BaseModel):
     """
 
     finding_id: str
+    theme: str | None = None
 
     answer: AuditAnswer
-
     notes: str | None = None
 
 
@@ -164,6 +170,7 @@ class Question(BaseModel):
     Each question contains:
     - The review question presented to the assessor
     - Expected compliance state
+    - Expected configuration value
     - Vulnerability mapping
     - Positive observation text
     - Remediation guidance
@@ -194,8 +201,7 @@ class Question(BaseModel):
     solution: str
     positive: str
 
-    good_value: str
-    bad_value: str
+    expected_value: str
 
     hints: dict[str, str] | None = None
 
@@ -212,6 +218,8 @@ class Finding(BaseModel):
     title: str
     theme: str
 
+    expected_value: str
+
     description: str
     commentary: str
     solution: str
@@ -226,6 +234,10 @@ class PositiveObservation(BaseModel):
 
     finding_id: str
     text: str
+
+    platform: str | None = None
+    theme: str | None = None
+
     notes: str | None = None
 
 

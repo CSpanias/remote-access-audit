@@ -17,16 +17,26 @@ dependencies = [
 ]
 
 keywords = [
-    "security",
     "vpn",
-    "intune",
-    "jamf",
-    "workspaceone",
-    "android",
-    "ios",
-    "mobile",
-    "audit",
-    "compliance"
+    "always-on-vpn",
+    "aovpn",
+    "remote-access",
+    "remote-access-audit",
+    "security-audit",
+    "security-assessment",
+    "compliance",
+    "authentication",
+    "mfa",
+    "cryptography",
+    "access-control",
+    "network-security",
+    "logging",
+    "monitoring",
+    "privileged-access",
+    "rras",
+    "nps",
+    "entra-id",
+    "active-directory"
 ]
 
 [project.scripts]

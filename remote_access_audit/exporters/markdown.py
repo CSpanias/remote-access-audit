@@ -39,6 +39,8 @@ def _generate_assessment_context(
     lines = []
 
     lines.extend([
+        "| Property | Value |",
+        "|----------|-------|",
         f"| Organisation | {context.client_name} |",
         f"| Remote Access Solution | {context.remote_access_solution.value} |",
     ])

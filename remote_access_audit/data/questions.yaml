@@ -30,9 +30,13 @@
   finding_title: Remote Access Platform Not Supported or Fully Patched
   theme: Platform Configuration
 
-  question: Are all remote access platform components running supported and fully patched software?
+  question: Are all remote access platform components running supported and 
+    fully patched software?
 
   expected_answer: compliant
+
+  expected_value: >
+    All remote access platform components are vendor-supported and fully patched.
 
   solution_types:
     - vpn
@@ -80,14 +84,6 @@
     All assessed remote access platform components were supported and
     fully patched.
 
-  good_value: >
-    All remote access platform components are running supported and
-    fully patched software.
-
-  bad_value: >
-    One or more remote access platform components are outdated,
-    unsupported, or missing security updates.
-
 #-------------------------------------------------------------------------------
 # Authentication Controls
 #-------------------------------------------------------------------------------
@@ -99,6 +95,10 @@
 
   expected_answer: compliant
 
+  expected_value: >
+    MFA is mandatory for all remote access users and enforced through the 
+    configured identity provider or platform policy.
+
   solution_types:
     - vpn
     - pra
@@ -108,21 +108,18 @@
 
   hints:
     common: >
-      Review the remote access authentication configuration and confirm
-      whether all users are required to complete MFA authentication
-      during the VPN sign-in process.
+      Review the authentication configuration and determine whether all users 
+      are required to complete multi-factor authentication before remote access 
+      is granted.
+
+    BeyondTrust PRA: >
+      /login > Users & Security > Group Policies > Account Settings.
+      
+      Review whether TOTP or FIDO2 authentication is required for users through 
+      assigned Group Policies.
 
     Microsoft Always On VPN: >
       NPS > Network Policies > Authentication Configuration
-
-    Cisco Secure Client: >
-      ASA / Secure Firewall > Remote Access VPN > Connection Profiles
-
-    Palo Alto GlobalProtect: >
-      Network > GlobalProtect > Portals/Gateways > Authentication
-
-    Fortinet FortiClient: >
-      User & Authentication > User Groups
 
   description: >
     Multi-factor authentication was not enforced for remote access users,
@@ -132,11 +129,11 @@
 
   commentary: >
     Remote access relied solely on single-factor authentication.
-    As a result, compromise of user credentials may provide an
-    attacker with remote access to internal systems and services.
-    Multi-factor authentication provides an additional layer of
-    protection by requiring a second form of verification beyond
-    a password.
+    Compromise of user credentials may allow an attacker to
+    obtain privileged access to organisational systems and
+    services. Multi-factor authentication provides an
+    additional layer of protection by requiring users to
+    present a second authentication factor beyond a password.
 
   solution: >
     Configure multi-factor authentication as a mandatory requirement for
@@ -145,12 +142,6 @@
   positive: >
     Multi-factor authentication was enforced for all remote access users.
 
-  good_value: >
-    Multi-factor authentication is mandatory for all remote access users.
-
-  bad_value: >
-    Remote access is protected only by passwords.
-
 - finding_id: admin-mfa-not-enforced
   finding_title: Administrator Multi-Factor Authentication Not Enforced
   theme: Authentication
@@ -158,6 +149,9 @@
   question: Is multi-factor authentication enforced for administrators?
 
   expected_answer: compliant
+
+  expected_value: >
+    MFA is mandatory for all administrative and privileged accounts.
 
   solution_types:
     - vpn
@@ -168,10 +162,15 @@
 
   hints:
     common: >
-      Review the authentication requirements for administrative
-      access to the VPN platform and confirm whether privileged
-      users are required to complete multi-factor authentication.
+      Review authentication requirements for privileged and
+      administrative accounts and verify that MFA is required.
 
+    BeyondTrust PRA: >
+      /login > Users & Security > Group Policies > Account Settings.
+
+      Review Group Policies assigned to administrators and verify MFA 
+      requirements such as TOTP or FIDO2 are enforced.
+  
   description: >
     Multi-factor authentication was not enforced for VPN
     administrators, increasing the risk of administrative
@@ -179,9 +178,11 @@
 
   commentary: >
     Administrative accounts provide highly privileged access to
-    the VPN environment. Compromise of such accounts may allow
-    an attacker to modify configurations, weaken security
-    controls, or establish persistent access.
+    the remote access platform. Compromise of such accounts may
+    allow an attacker to modify configurations, weaken
+    security controls, access sensitive systems, or establish
+    persistent access. Multi-factor authentication helps reduce
+    the risk of administrative account compromise.
 
   solution: >
     Configure multi-factor authentication as a mandatory control for all
@@ -191,11 +192,63 @@
     Multi-factor authentication is enforced for VPN
     administrators.
 
-  good_value: >
-    Administrative MFA is enforced.
+- finding_id: pra-phishing-resistant-mfa-not-enforced
+  finding_title: Phishing-Resistant MFA Not Enforced for Privileged Users
+  theme: Authentication
 
-  bad_value: >
-    Administrative accounts rely solely on passwords.
+  question: Are phishing-resistant MFA methods enforced for privileged users 
+    where operationally feasible?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Privileged users are required to use phishing-resistant MFA methods such as 
+    FIDO2 security keys where supported.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Review the MFA methods used by privileged users and
+      determine whether phishing-resistant authentication
+      mechanisms such as FIDO2 security keys are available
+      and enforced where operationally feasible.
+
+    BeyondTrust PRA: >
+      /login > Users & Security > Group Policies > Account Settings.
+
+      Review the configured MFA requirements and determine whether FIDO2 
+      authentication is enforced for privileged users instead of relying solely 
+      on weaker MFA methods.
+
+  description: >
+    Administrative access relied on MFA methods that may be
+    vulnerable to phishing, social engineering, or session
+    theft attacks.
+
+  commentary: >
+    While traditional MFA methods provide significantly
+    stronger protection than password-only authentication,
+    certain mechanisms remain susceptible to phishing and
+    credential interception attacks. Phishing-resistant MFA
+    methods such as FIDO2 security keys provide stronger
+    assurance of user identity and help reduce the risk of
+    account compromise affecting privileged access.
+
+  solution: >
+    Where operationally feasible, implement phishing-resistant
+    MFA technologies such as FIDO2 security keys for
+    privileged and administrative users. Prioritise
+    administrative accounts and users with access to
+    sensitive systems and infrastructure.
+
+  positive: >
+    Privileged users were protected by phishing-resistant
+    MFA controls such as FIDO2 authentication.
 
 - finding_id: shared-accounts-permitted
   finding_title: Shared Accounts Permitted
@@ -204,6 +257,9 @@
   question: Are individual user accounts required for remote access?
 
   expected_answer: compliant
+
+  expected_value: >
+    All remote access users are assigned unique individual accounts.
 
   solution_types:
     - vpn
@@ -236,19 +292,18 @@
   positive: >
     All remote access was performed using uniquely assigned accounts.
 
-  good_value: >
-    Individual user accounts are required.
-
-  bad_value: >
-    Shared VPN accounts are permitted.
-
 - finding_id: local-accounts-enabled
   finding_title: Local Accounts Enabled
   theme: Authentication
 
-  question: Is centralised identity management used instead of local accounts?
+  question: Is remote access authentication integrated with a centrally managed 
+    identity provider?
 
   expected_answer: compliant
+
+  expected_value: >
+    Authentication is integrated with a central identity provider and local 
+    accounts are not routinely used.
 
   solution_types:
     - vpn
@@ -259,19 +314,25 @@
 
   hints:
     common: >
-      Identify the source used to authenticate remote access users and
-      determine whether authentication is integrated with a central
-      identity platform such as Entra ID, Active Directory, LDAP,
-      or RADIUS rather than locally managed accounts.
+      Review the configured authentication source and determine
+      whether users authenticate through a centrally managed
+      identity platform such as Microsoft Entra ID, Active
+      Directory, LDAP, Kerberos, OpenID Connect, SAML, or
+      RADIUS. Confirm reliance on locally managed platform
+      accounts is minimised and restricted to approved
+      administrative or break-glass use cases.
 
   description: >
     Remote access authentication relied on locally managed accounts rather
     than an enterprise identity provider.
 
   commentary: >
-    Locally managed authentication increases administrative
-    overhead and may reduce visibility, governance, and control
-    over account lifecycle management.
+    The remote access platform relied primarily on locally
+    managed accounts rather than a centrally managed identity
+    provider. This may reduce visibility, governance,
+    lifecycle management, access review capabilities, and the
+    consistent enforcement of controls such as multi-factor
+    authentication and conditional access policies.
 
   solution: >
     Migrate remote access authentication to a centrally managed identity
@@ -281,41 +342,42 @@
     Remote access authentication was integrated with a central identity
     provider.
 
-  good_value: >
-    Centralised identity management is in use.
-
-  bad_value: >
-    Local accounts are used.
-
-- finding_id: weak-authentication-methods
+- finding_id: vpn-weak-authentication-methods
   finding_title: Weak Authentication Methods Allowed
   theme: Authentication
 
-  question: Are legacy authentication mechanisms disabled?
+  question: Are only modern and secure authentication methods permitted?
 
   expected_answer: compliant
 
+  expected_value: >
+    Authentication relies on centrally managed identity services, MFA-enabled 
+    authentication, and vendor-supported authentication protocols. Deprecated, 
+    insecure, or password-only authentication methods are disabled.
+
   solution_types:
     - vpn
-    - pra
 
   vendors:
     - all
 
   hints:
     common: >
-      Review configured authentication methods and confirm
-      deprecated or insecure authentication mechanisms are
-      not permitted where the platform supports stronger
-      alternatives.
+      Review configured authentication methods and confirm deprecated or 
+      insecure authentication mechanisms are not permitted where the platform 
+      supports stronger alternatives. Examples may include PAP, CHAP, 
+      password-only authentication, or other legacy authentication methods.
 
   description: >
     Legacy authentication mechanisms were enabled, increasing
     exposure to credential attacks and authentication bypass.
 
   commentary: >
-    Older authentication methods may not provide sufficient
-    protection against modern attack techniques.
+    Legacy authentication mechanisms may be susceptible to password attacks, 
+    credential interception, replay attacks, and other forms of authentication 
+    abuse. Modern authentication methods provide stronger protection and
+    typically support additional security controls such as multi-factor 
+    authentication and centralised identity integration.
 
   solution: >
     Retire legacy authentication mechanisms and standardise on modern,
@@ -323,12 +385,6 @@
 
   positive: >
     Legacy authentication mechanisms have been disabled.
-
-  good_value: >
-    Only modern authentication methods are permitted.
-
-  bad_value: >
-    Legacy authentication remains enabled.
 
 #-------------------------------------------------------------------------------
 # Cryptography Controls
@@ -341,6 +397,9 @@
   question: Are legacy VPN protocols such as PPTP disabled?
 
   expected_answer: compliant
+
+  expected_value: >
+    Legacy VPN protocols such as PPTP are disabled.
 
   solution_types:
     - vpn
@@ -369,19 +428,17 @@
   positive: >
     Legacy VPN protocols have been disabled.
 
-  good_value: >
-    Only modern VPN protocols are permitted.
-
-  bad_value: >
-    Legacy VPN protocols remain enabled.
-
 - finding_id: weak-tls-configuration
   finding_title: Weak TLS Configuration
   theme: Cryptography
 
-  question: Are only TLS 1.2 and TLS 1.3 permitted for remote access communications?
+  question: Are only TLS 1.2 and TLS 1.3 permitted for remote access 
+    communications?
 
   expected_answer: compliant
+
+  expected_value: >
+    TLS 1.0 and TLS 1.1 are disabled. Only TLS 1.2 and TLS 1.3 are permitted.
 
   solution_types:
     - vpn
@@ -398,6 +455,13 @@
     Microsoft Always On VPN: >
       RRAS Server, SCHANNEL TLS Configuration, NPS and Windows Security Settings
 
+    BeyondTrust PRA: >
+      /appliance > Security > Certificates.
+
+      Review the SSL/TLS certificate configuration and associated TLS settings. 
+      Confirm the deployment uses supported TLS versions and valid certificates 
+      issued by a trusted certificate authority.
+
   description: >
     Older TLS versions were permitted for VPN connections.
 
@@ -413,12 +477,6 @@
   positive: >
     VPN communications are restricted to supported TLS versions.
 
-  good_value: >
-    TLS 1.2 and TLS 1.3 only.
-
-  bad_value: >
-    Deprecated TLS versions are permitted.
-
 - finding_id: weak-cryptography
   finding_title: Weak Cryptographic Algorithms Permitted
   theme: Cryptography
@@ -426,6 +484,9 @@
   question: Are deprecated ciphers and cryptographic algorithms disabled?
 
   expected_answer: compliant
+
+  expected_value: >
+    Deprecated cryptographic algorithms and weak cipher suites are disabled.
 
   solution_types:
     - vpn
@@ -439,6 +500,12 @@
       Review cryptographic configuration including cipher suites,
       encryption algorithms, integrity algorithms, and key exchange
       settings. Confirm deprecated or weak algorithms are disabled.
+
+    BeyondTrust PRA: >
+      /appliance > Security > Certificates.
+
+      Review certificate configuration, supported cryptographic settings, 
+      certificate key lengths, certificate algorithms, and TLS configuration.
 
   description: >
     Weak or deprecated cryptographic algorithms remained enabled.
@@ -454,12 +521,6 @@
   positive: >
     Strong, modern cryptographic algorithms are enforced.
 
-  good_value: >
-    Deprecated cryptography is disabled.
-
-  bad_value: >
-    Weak cryptographic algorithms remain enabled.
-
 #-------------------------------------------------------------------------------
 # Access Control Controls
 #-------------------------------------------------------------------------------
@@ -471,6 +532,10 @@
   question: Is remote access restricted based on user or device role?
 
   expected_answer: compliant
+
+  expected_value: >
+    Remote access permissions are restricted according to business requirements 
+    and least-privilege principles.
 
   solution_types:
     - vpn
@@ -505,11 +570,58 @@
   positive: >
     VPN access is restricted according to business requirements.
 
-  good_value: >
-    Least-privilege access is enforced.
+- finding_id: pra-asset-group-access-not-restricted
+  finding_title: Asset Group Access Not Restricted
+  theme: Access Control
 
-  bad_value: >
-    Excessive network access is permitted.
+  question: Is access to Asset Groups restricted according to business requirements and least-privilege principles?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Access to Asset Groups is restricted according to business
+    requirements and users are granted access only to the
+    systems necessary for their role.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Review Asset Group membership and determine whether
+      access to managed assets is restricted according to
+      operational responsibilities and business requirements.
+
+    BeyondTrust PRA: >
+      /login > Asset Management > Asset Groups.
+
+      Review Asset Group membership, associated users,
+      Group Policies, and Asset Roles. Confirm users
+      receive access only to systems required for their role.
+
+  description: >
+    Access to Asset Groups was not restricted according to
+    business requirements, resulting in excessive privileged
+    access to managed systems.
+
+  commentary: >
+    Asset Groups are a primary mechanism for controlling
+    access to managed systems within PRA. Excessive access
+    increases the potential impact of account compromise,
+    insider misuse, and administrative error.
+
+  solution: >
+    Review Asset Group memberships and align access with
+    business requirements and least-privilege principles.
+    Remove unnecessary access and implement periodic access
+    reviews.
+
+  positive: >
+    Asset Group access was appropriately restricted and
+    aligned to business requirements.
 
 - finding_id: vpn-unrestricted-split-tunnelling
   finding_title: Unrestricted Split Tunnelling
@@ -518,6 +630,10 @@
   question: Is split tunnelling disabled or appropriately restricted?
 
   expected_answer: compliant
+
+  expected_value: >
+    Split tunnelling is disabled or restricted to approved routes and 
+    destinations.
 
   solution_types:
     - vpn
@@ -546,14 +662,8 @@
   positive: >
     Split tunnelling is disabled or appropriately controlled.
 
-  good_value: >
-    Split tunnelling is controlled.
-
-  bad_value: >
-    Split tunnelling is unrestricted.
-
 - finding_id: device-compliance-not-enforced
-  finding_title: Device Compliance Validation Not Enforced
+  finding_title: Device Trust Validation Not Enforced
   theme: Access Control
 
   question: Are device compliance or health checks performed before granting 
@@ -561,26 +671,29 @@
 
   expected_answer: compliant
 
+  expected_value: >
+    Device compliance or health validation is performed before remote access is 
+    granted.
+
   solution_types:
     - vpn
-    - pra
 
   vendors:
     - all
 
   hints:
     common: >
-      Determine whether devices are evaluated against security
-      requirements before VPN access is granted. Examples include
-      compliance policies, health checks, certificates, patch
-      validation, or endpoint security requirements.
+      Determine whether devices are evaluated against security requirements 
+      before remote access is granted. Examples include compliance policies, 
+      health checks, certificates, patch validation, or endpoint security 
+      requirements.
 
     Microsoft Always On VPN: >
       Device certificates, Intune compliance policies, or computer-group 
       restrictions.
 
   description: >
-    VPN access was granted without validating device security
+    Remote access was granted without validating device security
     posture.
 
   commentary: >
@@ -594,55 +707,6 @@
   positive: >
     Device compliance validation is enforced prior to access.
 
-  good_value: >
-    Device health is validated.
-
-  bad_value: >
-    Unvalidated devices can connect.
-
-- finding_id: unmanaged-devices-allowed
-  finding_title: Unmanaged Devices Permitted
-  theme: Access Control
-
-  question: Is remote access restricted to managed or approved devices?
-
-  expected_answer: compliant
-
-  solution_types:
-    - vpn
-    - pra
-
-  vendors:
-    - all
-
-  hints:
-    common: >
-      Determine whether VPN access is restricted to approved or
-      organisationally managed devices. Review device enrollment,
-      device certificates, management platforms, or access policies
-      enforcing device trust requirements.
-
-  description: >
-    Unmanaged devices were permitted to establish VPN
-    connections.
-
-  commentary: >
-    Unmanaged devices may not meet organisational security
-    requirements and may increase security risk.
-
-  solution: >
-    Limit remote access connectivity to trusted, managed, and approved
-    devices.
-
-  positive: >
-    Only managed devices are permitted to access the VPN.
-
-  good_value: >
-    Managed devices only.
-
-  bad_value: >
-    Unmanaged devices are permitted.
-
 - finding_id: user-access-not-reviewed
   finding_title: User Access Not Periodically Reviewed
   theme: Access Control
@@ -650,6 +714,10 @@
   question: Is remote user access reviewed on a regular basis?
 
   expected_answer: compliant
+
+  expected_value: >
+    Remote access permissions are reviewed periodically and evidence of reviews 
+    is retained.
 
   solution_types:
     - vpn
@@ -686,19 +754,18 @@
   positive: >
     VPN user access is reviewed regularly.
 
-  good_value: >
-    Access reviews are performed.
-
-  bad_value: >
-    User access is not reviewed.
-
 - finding_id: users-can-modify-vpn-configuration
   finding_title: Users Able to Modify VPN Security Settings
   theme: Access Control
 
-  question: Are users prevented from modifying security-critical VPN configuration settings?
+  question: Are users prevented from modifying security-critical VPN 
+    configuration settings?
 
   expected_answer: compliant
+
+  expected_value: >
+    Security-critical VPN settings are centrally managed and cannot be modified 
+    by standard users.
 
   solution_types:
     - vpn
@@ -744,11 +811,68 @@
     Security-critical VPN settings were centrally managed and could not
     be modified by standard users.
 
-  good_value: >
-    Users cannot modify security-critical VPN settings.
+- finding_id: pra-time-based-access-not-enforced
+  finding_title: Time-Based Access Restrictions Not Enforced
+  theme: Access Control
 
-  bad_value: >
-    Users can modify, disable, or remove security-critical VPN settings.
+  question: Is privileged access restricted to approved operating windows?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Privileged access is restricted to approved days and
+    hours unless a documented business requirement or
+    authorised exception exists.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Determine whether privileged access can be restricted
+      to approved operating hours or maintenance windows.
+      Review access governance controls and identify whether
+      users, administrators, contractors, or third parties
+      can establish privileged sessions outside authorised
+      periods.
+
+    BeyondTrust PRA: >
+      /login > Asset Management > Asset Policies.
+
+      Review time-based restrictions configured within Asset Policies and 
+      determine whether access is limited to approved days, hours, maintenance 
+      windows, or contractor engagement periods.
+
+  description: >
+    Privileged access was available without appropriate
+    time-based restrictions, allowing users to establish
+    sessions outside approved operating periods.
+
+  commentary: >
+    Unrestricted privileged access increases the opportunity
+    for unauthorised activity outside normal business hours
+    and may reduce the effectiveness of operational oversight.
+    Time-based restrictions provide an additional governance
+    control by limiting privileged access to approved periods
+    that align with operational requirements and business
+    need. Such controls are particularly valuable for
+    contractors, suppliers, and infrequently used privileged
+    accounts.
+
+  solution: >
+    Implement time-based access restrictions through Asset
+    Policies and limit privileged access to approved days,
+    hours, maintenance windows, or documented exceptions.
+    Review exceptions periodically to ensure ongoing business
+    justification.
+
+  positive: >
+    Privileged access was restricted to approved operating
+    windows and any exceptions were appropriately authorised
+    and documented.
 
 #-------------------------------------------------------------------------------
 # Monitoring Controls
@@ -761,6 +885,10 @@
   question: Are remote authentication and connection events logged and monitored?
 
   expected_answer: compliant
+
+  expected_value: >
+    Authentication events, connection activity, and security-relevant actions 
+    are logged and monitored.
 
   solution_types:
     - vpn
@@ -794,12 +922,6 @@
   positive: >
     VPN activity is logged and monitored.
 
-  good_value: >
-    Logging and monitoring are implemented.
-
-  bad_value: >
-    VPN activity is not adequately monitored.
-
 - finding_id: admin-activity-not-logged
   finding_title: Administrative Actions Not Logged
   theme: Monitoring and Detection
@@ -807,6 +929,10 @@
   question: Are administrative actions logged and retained?
 
   expected_answer: compliant
+
+  expected_value: >
+    Administrative activity is logged and retained in accordance with 
+    organisational requirements.
 
   solution_types:
     - vpn
@@ -840,12 +966,6 @@
   positive: >
     Administrative actions are logged and retained appropriately.
 
-  good_value: >
-    Administrative activity is logged.
-
-  bad_value: >
-    Administrative activity is not logged.
-
 #-------------------------------------------------------------------------------
 # Administrative Security Controls
 #-------------------------------------------------------------------------------
@@ -857,6 +977,10 @@
   question: Is role-based access control used for administration?
 
   expected_answer: compliant
+
+  expected_value: >
+    Administrative permissions are assigned using role-based access control and 
+    least-privilege principles.
 
   solution_types:
     - vpn
@@ -893,12 +1017,6 @@
     Administrative access is controlled through role-based access control and 
     least-privilege principles.
 
-  good_value: >
-    Administrative privileges are role-based.
-
-  bad_value: >
-    Excessive administrative privileges are assigned.
-
 #-------------------------------------------------------------------------------
 # Microsoft AOVPN Specific
 #-------------------------------------------------------------------------------
@@ -911,6 +1029,9 @@
     connections?
 
   expected_answer: compliant
+
+  expected_value: >
+    Device Tunnel connections authenticate using machine certificates only.
 
   solution_types:
     - vpn
@@ -948,12 +1069,6 @@
   positive: >
     Device Tunnel connectivity requires machine certificates.
 
-  good_value: >
-    Machine certificate authentication is enforced.
-
-  bad_value: >
-    Device authentication is not enforced.
-
 - finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
   theme: Platform Configuration
@@ -962,6 +1077,10 @@
     intervention?
 
   expected_answer: compliant
+
+  expected_value: >
+    Always On VPN connectivity is established automatically without user 
+    intervention.
 
   solution_types:
     - vpn
@@ -997,12 +1116,6 @@
   positive: >
     VPN connectivity is available prior to user logon.
 
-  good_value: >
-    Pre-logon VPN connectivity is available.
-
-  bad_value: >
-    VPN connectivity requires user sign-in.
-
 - finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
   theme: Access Control
@@ -1010,6 +1123,9 @@
   question: Are VPN routes restricted to approved destinations and networks?
 
   expected_answer: compliant
+
+  expected_value: >
+    VPN routes are restricted to approved networks and destinations only.
 
   solution_types:
     - vpn
@@ -1045,12 +1161,6 @@
   positive: >
     Route validation controls are implemented and enforced.
 
-  good_value: >
-    Route validation is enforced.
-
-  bad_value: >
-    VPN routes are not validated.
-
 #-------------------------------------------------------------------------------
 # BeyondTrust PRA Specific
 #-------------------------------------------------------------------------------
@@ -1062,6 +1172,9 @@
   question: Are privileged remote access sessions recorded?
 
   expected_answer: compliant
+
+  expected_value: >
+    Session recording is enabled for privileged remote access sessions.
 
   solution_types:
     - pra
@@ -1095,19 +1208,19 @@
   positive: >
     Privileged remote access sessions are recorded and retained.
 
-  good_value: >
-    Session recording is enabled.
-
-  bad_value: >
-    Sessions are not recorded.
-
-- finding_id: pra-session-review-not-performed
-  finding_title: Privileged Session Activity Not Reviewed
+- finding_id: pra-unrestricted-session-capabilities
+  finding_title: Unrestricted Privileged Session Capabilities
   theme: Monitoring and Detection
 
-  question: Are privileged sessions subject to periodic review?
+  question: Are privileged session capabilities restricted according to business requirements?
 
   expected_answer: compliant
+
+  expected_value: >
+    Session capabilities such as file transfer, clipboard
+    access, command execution, shell access, and screen
+    sharing are restricted according to operational
+    requirements.
 
   solution_types:
     - pra
@@ -1117,31 +1230,92 @@
 
   hints:
     common: >
-      Determine whether recorded sessions, session logs, or
-      privileged access activity are periodically reviewed
-      by administrators or security personnel.
+      Review which actions users are permitted to perform
+      during privileged sessions and determine whether
+      permissions are aligned to business requirements.
+
+    BeyondTrust PRA: >
+      /login > Users & Security > Session Policies.
+
+      Review permissions relating to file transfer,
+      clipboard use, shell access, command execution,
+      screen sharing, and other privileged session actions.
 
   description: >
-    Privileged remote access activity was not subject to
-    periodic review.
+    Privileged users were permitted to perform unnecessary
+    actions during remote access sessions.
 
   commentary: >
-    Reviewing privileged access activity assists in identifying
-    inappropriate actions, policy violations, and potential
-    security incidents.
+    Excessive session permissions may increase the risk of
+    unauthorised activity, data exfiltration, malware
+    transfer, and misuse of privileged access. Session
+    capabilities should be restricted according to
+    operational requirements and least-privilege principles.
 
   solution: >
-    Establish a process for periodically reviewing privileged
-    remote access activity and investigating anomalous behaviour.
+    Review Session Policies and restrict capabilities such
+    as file transfer, clipboard access, shell access, and
+    command execution where they are not required.
 
   positive: >
-    Privileged access activity is reviewed regularly.
+    Privileged session capabilities were restricted in
+    accordance with business and operational requirements.
 
-  good_value: >
-    Session reviews are performed.
+- finding_id: pra-session-review-not-performed
+  finding_title: Privileged Session Activity Not Available for Review
+  theme: Monitoring and Detection
 
-  bad_value: >
-    Session activity is not reviewed.
+  question: Is privileged session activity retained and available for review and investigation?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Privileged session recordings, logs, and associated audit
+    data are retained and available for review, investigation,
+    and audit purposes.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Determine whether privileged session recordings,
+      session logs, and audit data are retained and can be
+      retrieved for investigation, compliance, or security
+      review purposes.
+
+    BeyondTrust PRA: >
+      Reporting > Session Recordings.
+
+      Review session retention settings and confirm
+      recordings and associated audit data can be
+      retrieved when required.
+
+  description: >
+    Privileged session activity was not retained or could
+    not be readily reviewed for investigation and audit
+    purposes.
+
+  commentary: >
+    Recorded session activity provides accountability and
+    supports incident investigation, forensic analysis,
+    compliance activities, and the review of suspected
+    misuse of privileged access. Failure to retain or make
+    session activity available for review may limit an
+    organisation's ability to investigate security events.
+
+  solution: >
+    Retain privileged session recordings and associated
+    audit data for an appropriate period and ensure they
+    can be retrieved for investigation, audit, and
+    compliance purposes.
+
+  positive: >
+    Privileged session activity was retained and available
+    for review and investigation when required.
 
 - finding_id: pra-approval-workflow-not-required
   finding_title: Remote Access Approval Workflow Not Enforced
@@ -1150,6 +1324,9 @@
   question: Is approval required before privileged remote access is granted?
 
   expected_answer: compliant
+
+  expected_value: >
+    Privileged remote access requires approval prior to access being granted.
 
   solution_types:
     - pra
@@ -1178,12 +1355,6 @@
   positive: >
     Privileged remote access requires approval.
 
-  good_value: >
-    Access approval is enforced.
-
-  bad_value: >
-    Access can be established without approval.
-
 - finding_id: pra-jump-clients-not-restricted
   finding_title: Jump Client Deployment Not Restricted
   theme: Access Control
@@ -1191,6 +1362,10 @@
   question: Are Jump Clients restricted to approved systems?
 
   expected_answer: compliant
+
+  expected_value: >
+    Jump Clients are deployed only to approved systems, assigned to appropriate 
+    Asset Groups, and reviewed periodically.
 
   solution_types:
     - pra
@@ -1200,9 +1375,15 @@
 
   hints:
     common: >
-      Review the systems on which Jump Clients are deployed and
-      confirm deployment is restricted to approved devices and
-      supported business requirements.
+      Review the systems on which Jump Clients are deployed and confirm 
+      deployment is restricted to approved devices and supported business 
+      requirements.
+
+    BeyondTrust PRA: >
+      /login > Asset Management > Jump Clients.
+
+      Review Jump Client deployments, associated Asset Groups,
+      assigned Asset Policies, and evidence of periodic review.
 
   description: >
     Jump Clients were deployed without appropriate governance
@@ -1219,11 +1400,61 @@
   positive: >
     Jump Client deployment is appropriately controlled.
 
-  good_value: >
-    Jump Clients are restricted to approved systems.
+- finding_id: pra-gateway-access-not-restricted
+  finding_title: Gateway Access Not Adequately Restricted
+  theme: Access Control
 
-  bad_value: >
-    Jump Client deployment is unrestricted.
+  question: Are PRA Gateways restricted to approved systems, protocols, and users?
+
+  expected_answer: compliant
+
+  expected_value: >
+    PRA Gateways are deployed only where required, restricted
+    to approved users and systems, and configured to permit
+    only authorised protocols and access paths.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Review how PRA Gateways are deployed and determine
+      whether access through Gateways is restricted according
+      to business requirements and least-privilege principles.
+
+    BeyondTrust PRA: >
+      /login > Asset Management > Gateways.
+
+      Review Gateway placement, authorised users,
+      accessible Asset Groups, supported protocols,
+      and associated access restrictions.
+
+  description: >
+    PRA Gateways were not adequately restricted, providing
+    broader access to systems, networks, or services than
+    required.
+
+  commentary: >
+    Gateways can provide access to large numbers of systems
+    within managed environments. Excessive Gateway access may
+    increase the impact of account compromise or privileged
+    misuse and may expose systems that do not require remote
+    access. Gateway deployments should be aligned to business
+    requirements and restricted according to least-privilege
+    principles.
+
+  solution: >
+    Review Gateway deployments and restrict access to
+    authorised users, systems, Asset Groups, and protocols.
+    Remove unnecessary Gateway connectivity and implement
+    periodic reviews of Gateway access.
+
+  positive: >
+    Gateway access was appropriately restricted and aligned
+    to operational requirements.
 
 - finding_id: pra-credential-injection-not-used
   finding_title: Credentials Disclosed to Users
@@ -1232,6 +1463,9 @@
   question: Are credentials injected rather than disclosed to users?
 
   expected_answer: compliant
+
+  expected_value: >
+    Privileged credentials are injected and are not disclosed to end users.
 
   solution_types:
     - pra
@@ -1260,19 +1494,122 @@
   positive: >
     Credential injection is used for privileged access.
 
-  good_value: >
-    Credentials are injected automatically.
+- finding_id: pra-vault-password-rotation-not-enforced
+  finding_title: Privileged Credential Rotation Not Enforced
+  theme: Administrative Security
 
-  bad_value: >
-    Users are provided with privileged credentials.
+  question: Are privileged credentials rotated automatically?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Privileged credentials are rotated automatically on a
+    scheduled basis and/or following checkout where
+    supported.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Review credential lifecycle management processes and
+      determine whether privileged credentials are rotated
+      automatically.
+
+    BeyondTrust PRA: >
+      /login > Vault > Account Policies.
+
+      Review password rotation schedules, rotation after
+      checkout settings, and Vault account governance
+      controls.
+
+  description: >
+    Privileged credentials were not automatically rotated,
+    increasing the risk associated with credential
+    disclosure, reuse, and long-term compromise.
+
+  commentary: >
+    Automatic password rotation limits the usefulness of
+    compromised credentials and reduces the likelihood of
+    unauthorised access through reused or previously exposed
+    passwords.
+
+  solution: >
+    Implement automated credential rotation through Vault
+    Account Policies and ensure credentials are changed
+    regularly and following checkout where appropriate.
+
+  positive: >
+    Privileged credentials were rotated automatically using
+    defined Vault governance controls.
+
+- finding_id: pra-credential-association-not-restricted
+  finding_title: Credential Association Restrictions Not Enforced
+  theme: Administrative Security
+
+  question: Are Vault credentials restricted to authorised Assets and Asset Groups?
+
+  expected_answer: compliant
+
+  expected_value: >
+    Vault credentials are associated only with authorised
+    Assets and Asset Groups and are not broadly available
+    across the environment.
+
+  solution_types:
+    - pra
+
+  vendors:
+    - BeyondTrust PRA
+
+  hints:
+    common: >
+      Determine whether privileged credentials are restricted
+      to the systems on which they are intended to be used.
+
+    BeyondTrust PRA: >
+      /login > Vault > Accounts.
+
+      Review Asset Association settings and determine whether
+      credentials are limited to approved Assets and Asset
+      Groups.
+
+  description: >
+    Privileged credentials were not appropriately restricted
+    through Asset Association controls and could be used
+    across a broader range of systems than necessary.
+
+  commentary: >
+    Broad credential availability increases the risk of
+    inappropriate credential use and may allow privileged
+    accounts to be used on systems for which they were not
+    intended. Asset Association helps enforce least-privilege
+    principles by limiting where credentials may be injected.
+
+  solution: >
+    Configure Asset Association controls to ensure
+    credentials are available only for approved Assets and
+    Asset Groups that require them.
+
+  positive: >
+    Vault credentials were restricted to authorised Assets
+    and Asset Groups through Asset Association controls.
 
 - finding_id: pra-third-party-access-not-controlled
   finding_title: Third-Party Privileged Access Not Controlled
   theme: Access Control
 
-  question: Is third-party remote access subject to additional controls and monitoring?
+  question: Is third-party remote access subject to additional controls and 
+    monitoring?
 
   expected_answer: compliant
+
+  expected_value: >
+    Third-party access is subject to enhanced approval, monitoring, periodic 
+    review, and time-based access restrictions where appropriate.
 
   solution_types:
     - pra
@@ -1290,8 +1627,9 @@
     Third-party privileged access was not adequately controlled.
 
   commentary: >
-    External users may present an elevated risk and should
-    typically be subject to enhanced governance and monitoring.
+    External users typically present an elevated risk and should be subject to 
+    enhanced governance, approval, monitoring, periodic review, and time-bound 
+    access controls.
 
   solution: >
     Apply enhanced governance, monitoring, and periodic review controls
@@ -1299,9 +1637,3 @@
 
   positive: >
     Third-party privileged access is appropriately governed.
-
-  good_value: >
-    Third-party access is controlled.
-
-  bad_value: >
-    Third-party access is unrestricted.

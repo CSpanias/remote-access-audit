@@ -13,6 +13,8 @@
   type: string
   required: true
 
+  phase: setup
+
   solution_types:
     - vpn
     - pra
@@ -21,6 +23,8 @@
   label: Which remote access solution is being reviewed?
   type: choice
   required: true
+
+  phase: setup
 
   solution_types:
     - vpn
@@ -36,19 +40,47 @@
   type: choice
   required: true
 
+  phase: context
+
   solution_types:
     - pra
 
   options:
-    - Cloud Hosted
-    - Virtual Appliance
-    - Physical Appliance
+    - BeyondTrust Cloud
+    - On-Premises Physical Appliance
+    - On-Premises Virtual Appliance
     - Other
+
+  context_description: >
+    The PRA deployment model determines responsibility for
+    platform maintenance, security updates, backup, disaster
+    recovery, networking, and infrastructure management.
+
+  option_descriptions:
+
+    BeyondTrust Cloud: >
+      BeyondTrust manages the underlying platform infrastructure and
+      applies critical platform updates. Connectivity is typically
+      limited to TCP 443.
+
+    On-Premises Virtual Appliance: >
+      The organisation is responsible for appliance updates,
+      backups, networking, disaster recovery, and infrastructure
+      security. The platform is hosted on customer-managed
+      virtualisation infrastructure.
+
+    On-Premises Physical Appliance: >
+      The organisation is responsible for appliance updates,
+      backups, networking, disaster recovery, and infrastructure
+      security. The platform is hosted on dedicated B Series
+      appliance hardware.
 
 - id: vpn_authentication_method
   label: What is the primary VPN authentication method?
   type: choice
   required: true
+
+  phase: context
 
   solution_types:
     - vpn
@@ -67,6 +99,8 @@
   type: choice
   required: true
 
+  phase: context
+
   solution_types:
     - vpn
     - pra
@@ -75,15 +109,75 @@
     - Microsoft Entra ID
     - Active Directory
     - LDAP
-    - RADIUS
+    - Kerberos
+    - OpenID Connect
+    - SAML
+    - RADIUS (VPN-only)
     - Local Accounts
-    - SAML / SSO
     - Other
+
+  context_description: >
+    The identity provider determines how users authenticate
+    to the remote access solution and influences the
+    availability of security controls such as multi-factor
+    authentication, conditional access, user lifecycle
+    management, identity governance, and access reviews.
+
+  option_descriptions:
+
+    Microsoft Entra ID: >
+      Users authenticate through Microsoft Entra ID, enabling
+      centralised identity management and integration with
+      security controls such as Conditional Access, MFA,
+      identity protection, and access reviews.
+
+    Active Directory: >
+      Users authenticate through on-premises Active Directory.
+      Authentication and access management are controlled
+      through domain-based identities, groups, and policies.
+
+    LDAP: >
+      Users authenticate through an LDAP directory service.
+      User identities, groups, and authentication policies
+      are managed centrally within the directory platform.
+
+    Kerberos: >
+      Authentication is performed using the Kerberos protocol,
+      typically within an Active Directory environment,
+      providing integrated and ticket-based authentication.
+
+    OpenID Connect: >
+      Authentication is federated through an OpenID Connect
+      identity provider, enabling modern web-based
+      authentication and single sign-on capabilities.
+
+    SAML: >
+      Authentication is federated through a SAML identity
+      provider, enabling single sign-on and centralised
+      identity management across multiple services.
+
+    RADIUS (VPN-only): >
+      Authentication requests are processed through a RADIUS
+      server, commonly used by VPN solutions to integrate
+      with enterprise authentication services and MFA
+      platforms.
+
+    Local Accounts: >
+      Authentication relies on accounts managed directly
+      within the remote access platform rather than a central
+      identity provider. This may reduce visibility,
+      governance, and lifecycle management capabilities.
+
+    Other: >
+      Authentication is performed using an alternative
+      identity source not captured by the predefined options.
 
 - id: tunnel_type
   label: Which VPN tunnel type is deployed?
   type: choice
   required: true
+
+  phase: context
 
   solution_types:
     - vpn
@@ -97,6 +191,8 @@
   label: Which Certificate Authority is used for VPN authentication?
   type: choice
   required: true
+
+  phase: context
 
   solution_types:
     - vpn
@@ -112,6 +208,8 @@
   label: How is VPN traffic routed?
   type: choice
   required: true
+
+  phase: context
 
   solution_types:
     - vpn

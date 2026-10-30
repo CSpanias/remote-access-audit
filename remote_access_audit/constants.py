@@ -2,12 +2,6 @@
 Reporting and categorisation constants.
 """
 
-# Contextual Information
-INITIAL_CONTEXT_FIELDS = {
-    "client_name",
-    "remote_access_solution",
-}
-
 
 # Grouped Findings
 THEMES = [
@@ -91,9 +85,9 @@ GROUP_INTROS = {
 REFERENCES = {
     "Generic": {
         "NCSC VPN Security Guidance":
-            "https://www.ncsc.gov.uk/collection/device-security-guidance/virtual-private-networks",
+            "https://www.ncsc.gov.uk/collection/device-security-guidance/infrastructure/virtual-private-networks",
         "NIST Remote Access Guidance":
-            "https://csrc.nist.gov/projects/zero-trust-architecture",
+            "https://pages.nist.gov/zero-trust-architecture/index.html",
     },
     "Microsoft Always On VPN": {
         "Always On VPN Deployment Guide":

@@ -14,7 +14,8 @@ formats.
 """
 
 
-from remote_access_audit.constants import INITIAL_CONTEXT_FIELDS
+from rich.panel import Panel
+
 from remote_access_audit.models import (
     AssessmentResults,
     AuditAnswer,
@@ -32,6 +33,21 @@ from remote_access_audit.loader import (
     load_questions,
 )
 from remote_access_audit.ui import console
+
+
+def get_fields_by_phase(
+    fields: list[ContextField],
+    phase: str,
+) -> list[ContextField]:
+    """
+    Return context fields belonging to the specified phase.
+    """
+
+    return [
+        field
+        for field in fields
+        if field.phase == phase
+    ]
 
 
 def get_applicable_context_fields(
@@ -79,21 +95,37 @@ def get_applicable_questions(
 
 def collect_context(
     fields: list[ContextField],
+    responses: dict | None = None,
+    start: int = 1,
+    overall_total: int | None = None,
 ) -> dict:
     """
     Collect assessment context information.
     """
 
-    responses = {}
-    context_notes = {}
+    responses = responses or {}
+    context_notes = responses.pop("_context_notes", {})
 
-    for field in fields:
+    overall_total = overall_total or len(fields)
+
+    for current, field in enumerate(fields, start=start):
+
+        progress = max(1, int((current / overall_total) * 20))
+        
+        bar = (
+            f"[green]{'█' * progress}[/green]"
+            f"[dim]{'░' * (20 - progress)}[/dim]"
+        )
+
+        console.print(
+            f"[bold cyan][CONTEXT {current}/{overall_total}][/bold cyan] "
+            f"{bar} "
+            f"[bold]{field.label}[/bold]"
+        )
 
         console.print()
 
         if field.type == "choice" and field.options:
-
-            console.print(f"\n[bold]{field.label}[/bold]")
 
             for index, option in enumerate(
                 field.options,
@@ -103,7 +135,7 @@ def collect_context(
 
             while True:
 
-                choice = input("> ").strip()
+                choice = console.input("> ").strip()
 
                 try:
                     value = field.options[int(choice) - 1]
@@ -114,8 +146,6 @@ def collect_context(
 
         else:
 
-            console.print(f"[bold]{field.label}[/bold]")
-
             platform = responses.get("remote_access_solution")
 
             if field.hints:
@@ -124,18 +154,27 @@ def collect_context(
 
                 if common_hint:
                     console.print()
-                    console.print(f"[bold blue]Hint[/bold blue]\n{common_hint}")
+                    console.print(
+                        Panel.fit(
+                            common_hint.strip(),
+                            title="Evidence",
+                            border_style="blue",
+                        )
+                    )
 
                 if platform:
                     platform_hint = field.hints.get(platform)
 
                     if platform_hint:
                         console.print(
-                            f"[bold yellow]Location[/bold yellow]\n"
-                            f"{platform_hint}"
+                            Panel.fit(
+                                platform_hint.strip(),
+                                title="Location",
+                                border_style="yellow",
+                            )
                         )
 
-            value = input("> ").strip()
+            value = console.input("> ").strip()
 
         if field.required:
 
@@ -143,7 +182,7 @@ def collect_context(
 
                 console.print("[red]This field is required.[/red]")
 
-                value = input("> ").strip()
+                value = console.input("> ").strip()
 
         if field.type == "integer":
 
@@ -160,11 +199,13 @@ def collect_context(
 
                 except ValueError:
 
-                    value = input(f"{field.label} (enter a number): ")
+                    value = console.input("> ").strip()
 
-        console.print("[bold]Notes (optional):[/bold]")
+        console.print()
+        console.print("[dim]Notes (optional)[/dim]")
 
-        notes = input("> ").strip() or None
+        notes = console.input("> ").strip() or None
+        console.print()
 
         if notes:
             context_notes[field.id] = notes
@@ -191,24 +232,51 @@ def ask_question(
 
     if question.hints:
         common_hint = question.hints.get("common")
+
+        if common_hint:
+            common_hint = common_hint.strip()
+
         platform_hint = question.hints.get(platform.value)
 
     console.print()
+    progress = max(1, int((current / total) * 20))
+
+    bar = (
+        f"[green]{'█' * progress}[/green]"
+        f"[dim]{'░' * (20 - progress)}[/dim]"
+    )
+
     console.print(
-        f"[bold cyan]Question {current}/{total}:[/bold cyan] "
+        f"[bold cyan][QUESTION {current}/{total}][/bold cyan] "
+        f"{bar} "
         f"[bold]{question.question}[/bold]"
     )
     console.print()
 
     if common_hint:
-        console.print(f"[bold blue]Evidence[/bold blue]\n{common_hint}")
+        console.print(
+            Panel.fit(
+                common_hint.strip(),
+                title="Evidence",
+                border_style="blue",
+            )
+        )
 
     if platform_hint:
-        console.print(f"[bold yellow]Location[/bold yellow]\n{platform_hint}")
+        console.print(
+            Panel.fit(
+                platform_hint.strip(),
+                title="Location",
+                border_style="yellow",
+            )
+        )
 
     console.print(
-        f"[green]✓ {question.good_value}[/green]"
-        f"[red]✗ {question.bad_value}[/red]"
+        Panel.fit(
+            question.expected_value.strip(),
+            title="Expected Value",
+            border_style="green",
+        )
     )
 
     console.print("1. Compliant")
@@ -217,7 +285,7 @@ def ask_question(
     console.print("4. Unknown")
 
     while True:
-        choice = input("> ").strip()
+        choice = console.input("> ").strip()
 
         match choice:
             case "1":
@@ -237,12 +305,11 @@ def ask_question(
                 break
 
             case _:
-                console.print(
-                    "[red]Invalid selection.[/red]"
-                )
+                console.print("[red]Invalid selection.[/red]")
 
-    console.print("[bold]Notes (optional):[/bold]")
-    notes = input("> ").strip() or None
+    console.print()
+    console.print("[dim]Notes (optional)[/dim]")
+    notes = console.input("> ").strip() or None
 
     return QuestionResponse(
         finding_id=question.finding_id,
@@ -312,6 +379,7 @@ def generate_findings(
                     description=question.description.strip(),
                     commentary=question.commentary.strip(),
                     solution=question.solution.strip(),
+                    expected_value=question.expected_value.strip(),
                     notes=response.notes,
                 )
             )
@@ -385,40 +453,57 @@ def build_assessment_results(
 def run_assessment() -> AssessmentResults:
     """
     Execute a complete remote access assessment.
+
+    The assessment workflow consists of:
+
+    - Collecting setup information required to determine the
+      remote access solution under review.
+    - Collecting solution-specific context fields applicable
+      to the selected deployment type.
+    - Executing the assessment questionnaire.
+    - Generating findings and positive observations.
+
+    The completed assessment results are returned for
+    reporting and export.
     """
 
     all_fields = load_context_fields()
 
-    initial_fields = [
-        field
-        for field in all_fields
-        if field.id in INITIAL_CONTEXT_FIELDS
-    ]
+    setup_fields = get_fields_by_phase(
+        all_fields,
+        "setup",
+    )
 
-    initial_responses = collect_context(initial_fields)
+    setup_responses = collect_context(setup_fields)
 
-    platform = RemoteAccessPlatform(initial_responses["remote_access_solution"])
+    platform = RemoteAccessPlatform(
+        setup_responses["remote_access_solution"]
+    )
 
     solution_type = platform.solution_type
 
-    remaining_fields = [
-        field
-        for field in all_fields
-        if field.id not in INITIAL_CONTEXT_FIELDS
-    ]
-
-    remaining_responses = collect_context(
-        get_applicable_context_fields(remaining_fields, solution_type)
+    context_fields = get_fields_by_phase(
+        all_fields,
+        "context",
     )
 
-    context_notes = {
-        **initial_responses.pop("_context_notes", {}),
-        **remaining_responses.pop("_context_notes", {}),
-    }
+    applicable_context_fields = get_applicable_context_fields(
+        context_fields,
+        solution_type,
+    )
+
+    context_responses = collect_context(
+        applicable_context_fields,
+        setup_responses,
+    )
+
+    context_notes = context_responses.pop(
+        "_context_notes",
+        {},
+    )
 
     responses = {
-        **initial_responses,
-        **remaining_responses,
+        **context_responses,
         "context_notes": context_notes,
     }
 
@@ -430,7 +515,7 @@ def run_assessment() -> AssessmentResults:
         solution_type,
     )
 
-    responses = conduct_review(
+    question_responses = conduct_review(
         questions,
         context.remote_access_solution,
     )
@@ -438,5 +523,5 @@ def run_assessment() -> AssessmentResults:
     return build_assessment_results(
         context=context,
         questions=questions,
-        responses=responses,
+        responses=question_responses,
     )
