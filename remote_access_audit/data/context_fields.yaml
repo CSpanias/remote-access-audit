@@ -36,7 +36,7 @@
     - Other
 
 - id: deployment_type
-  label: How is the PRA solution is deployed?
+  label: How is the PRA solution deployed?
   type: choice
   required: true
 
@@ -47,33 +47,37 @@
 
   options:
     - BeyondTrust Cloud
+    - Hybrid
     - On-Premises Physical Appliance
     - On-Premises Virtual Appliance
     - Other
 
   context_description: >
-    The PRA deployment model determines responsibility for
-    platform maintenance, security updates, backup, disaster
-    recovery, networking, and infrastructure management.
+    The deployment model helps determine responsibility for appliance 
+    management, platform maintenance, security updates, backup and disaster 
+    recovery arrangements, and supporting infrastructure components.
 
   option_descriptions:
 
     BeyondTrust Cloud: >
-      BeyondTrust manages the underlying platform infrastructure and
-      applies critical platform updates. Connectivity is typically
-      limited to TCP 443.
+      BeyondTrust manages the underlying platform infrastructure and applies 
+      critical platform updates. Connectivity is typically limited to TCP 443.
+
+    Hybrid: >
+      The PRA appliance is cloud-hosted or externally managed, but supporting 
+      components such as identity providers, Gateways, Jump Clients, managed 
+      assets, or supporting infrastructure are hosted within the organisation's
+      environment.
 
     On-Premises Virtual Appliance: >
-      The organisation is responsible for appliance updates,
-      backups, networking, disaster recovery, and infrastructure
-      security. The platform is hosted on customer-managed
-      virtualisation infrastructure.
+      The organisation is responsible for appliance updates, backups, 
+      networking, disaster recovery, and infrastructure security. The platform 
+      is hosted on customer-managed virtualisation infrastructure.
 
     On-Premises Physical Appliance: >
-      The organisation is responsible for appliance updates,
-      backups, networking, disaster recovery, and infrastructure
-      security. The platform is hosted on dedicated B Series
-      appliance hardware.
+      The organisation is responsible for appliance updates, backups, 
+      networking, disaster recovery, and infrastructure security. The platform 
+      is hosted on dedicated B Series appliance hardware.
 
 - id: vpn_authentication_method
   label: What is the primary VPN authentication method?
@@ -108,69 +112,41 @@
   options:
     - Microsoft Entra ID
     - Active Directory
-    - LDAP
-    - Kerberos
-    - OpenID Connect
-    - SAML
-    - RADIUS (VPN-only)
+    - LDAP Directory
     - Local Accounts
     - Other
 
   context_description: >
-    The identity provider determines how users authenticate
-    to the remote access solution and influences the
-    availability of security controls such as multi-factor
-    authentication, conditional access, user lifecycle
+    The identity provider determines how users authenticate to the remote 
+    access solution and influences the availability of security controls such 
+    as multi-factor authentication, conditional access, user lifecycle
     management, identity governance, and access reviews.
 
   option_descriptions:
 
     Microsoft Entra ID: >
-      Users authenticate through Microsoft Entra ID, enabling
-      centralised identity management and integration with
-      security controls such as Conditional Access, MFA,
-      identity protection, and access reviews.
+      Users authenticate through Microsoft Entra ID, enabling centralised 
+      identity management and integration with controls such as multi-factor 
+      authentication, Conditional Access, identity governance, and access 
+      reviews.
 
     Active Directory: >
-      Users authenticate through on-premises Active Directory.
-      Authentication and access management are controlled
-      through domain-based identities, groups, and policies.
+      Users authenticate through on-premises Active Directory. Authentication 
+      and access management are controlled through domain-based identities, 
+      groups, and policies.
 
-    LDAP: >
-      Users authenticate through an LDAP directory service.
-      User identities, groups, and authentication policies
-      are managed centrally within the directory platform.
-
-    Kerberos: >
-      Authentication is performed using the Kerberos protocol,
-      typically within an Active Directory environment,
-      providing integrated and ticket-based authentication.
-
-    OpenID Connect: >
-      Authentication is federated through an OpenID Connect
-      identity provider, enabling modern web-based
-      authentication and single sign-on capabilities.
-
-    SAML: >
-      Authentication is federated through a SAML identity
-      provider, enabling single sign-on and centralised
-      identity management across multiple services.
-
-    RADIUS (VPN-only): >
-      Authentication requests are processed through a RADIUS
-      server, commonly used by VPN solutions to integrate
-      with enterprise authentication services and MFA
-      platforms.
+    LDAP Directory: >
+      Users authenticate through a central LDAP-based directory service. User 
+      identities, groups, and authentication policies are managed within the 
+      directory platform.
 
     Local Accounts: >
-      Authentication relies on accounts managed directly
-      within the remote access platform rather than a central
-      identity provider. This may reduce visibility,
-      governance, and lifecycle management capabilities.
+      Authentication relies on accounts managed directly within the remote 
+      access platform rather than a central identity provider.
 
     Other: >
-      Authentication is performed using an alternative
-      identity source not captured by the predefined options.
+      Authentication is performed using an alternative identity source not 
+      captured by the predefined options.
 
 - id: tunnel_type
   label: Which VPN tunnel type is deployed?
@@ -218,3 +194,22 @@
     - Full Tunnel
     - Split Tunnel
     - Split-by-Exception
+
+- id: product_version
+  label: What version of BeyondTrust PRA is deployed?
+  type: string
+  required: true
+
+  phase: context
+
+  solution_types:
+    - pra
+
+  context_description: >
+    The product version provides useful assessment context and may assist with 
+    validating feature availability, release lifecycle status, and vendor 
+    guidance during the review.
+
+  hints:
+    BeyondTrust PRA: |
+      /appliance > Status > Information > Site Status > Product Version

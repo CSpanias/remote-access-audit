@@ -42,12 +42,12 @@ COMMENTARIES = {
 
 # Grouped Findings
 THEMES = [
+    "Platform Configuration",
     "Authentication",
     "Cryptography",
     "Access Control",
     "Monitoring and Detection",
     "Administrative Security",
-    "Platform Configuration",
 ]
 
 
@@ -65,6 +65,6 @@ REFERENCES = {
     },
     "BeyondTrust PRA": {
         "BeyondTrust PRA Documentation":
-            "https://www.beyondtrust.com/docs/remote-support"
+            "https://docs.beyondtrust.com/pra/docs/welcome-to-privileged-remote-access"
     }
 }

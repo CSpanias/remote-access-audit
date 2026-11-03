@@ -80,6 +80,16 @@ def _generate_assessment_context(
             f"| Authentication Method | {context.vpn_authentication_method} |"
         )
 
+    if context.deployment_type:
+        lines.append(
+            f"| Deployment Type | {context.deployment_type} |"
+        )
+
+    if context.product_version:
+        lines.append(
+            f"| Product Version | {context.product_version} |"
+        )
+
     if context.identity_provider:
         lines.append(f"| Identity Provider | {context.identity_provider} |")
 
@@ -325,12 +335,6 @@ def _build_authentication_commentary(
             "multi-factor authentication. "
         )
 
-    if "pra-phishing-resistant-mfa-not-enforced" in finding_ids:
-        paragraph += (
-            "In addition, privileged users were not protected through "
-            "phishing-resistant authentication mechanisms. "
-        )
-
     if "shared-accounts-permitted" in finding_ids:
         paragraph += (
             "The review also identified the use of shared accounts, "
@@ -343,6 +347,12 @@ def _build_authentication_commentary(
             "accounts rather than a centrally managed identity "
             "provider, limiting the consistent enforcement of "
             "organisational authentication controls. "
+        )
+
+    if "pra-vendor-authentication-not-secure" in finding_ids:
+        paragraph += (
+            "Vendor authentication controls were not configured "
+            "in accordance with organisational security requirements. "
         )
 
     paragraph += (
@@ -410,26 +420,32 @@ def _build_monitoring_commentary(
         "access services. "
     )
 
-    if (
-        "insufficient-logging" in finding_ids
-        and "pra-session-review-not-performed" in finding_ids
-    ):
-        paragraph += (
-            "Remote access activity was not being logged and monitored "
-            "to the extent expected, and privileged session activity "
-            "was not consistently available for review and investigation. "
-        )
-
-    elif "insufficient-logging" in finding_ids:
+    if "insufficient-logging" in finding_ids:
         paragraph += (
             "Authentication, connection, and security-relevant events "
             "were not being logged and monitored to the extent expected. "
         )
 
-    elif "pra-session-review-not-performed" in finding_ids:
+    if "admin-activity-not-retained-or-reviewed" in finding_ids:
         paragraph += (
-            "Privileged session activity was not consistently available "
-            "for review and investigation. "
+            "Administrative audit activity was not retained or "
+            "reviewed appropriately. "
+        )
+
+    if "pra-session-recording-disabled" in finding_ids:
+        paragraph += (
+            "Privileged session recording was not enforced. "
+        )
+
+    if "pra-session-recording-can-be-disabled" in finding_ids:
+        paragraph += (
+            "Asset policies permitted session recording controls "
+            "to be bypassed. "
+        )
+
+    if "pra-session-inactivity-timeout-not-configured" in finding_ids:
+        paragraph += (
+            "Inactive sessions were not terminated automatically. "
         )
 
     paragraph += (
@@ -468,10 +484,16 @@ def _build_access_control_commentary(
             "to sufficient governance controls. "
         )
 
-    if "pra-gateway-access-not-restricted" in finding_ids:
+    if "pra-vendor-account-expiration-not-enforced" in finding_ids:
         paragraph += (
-            "Gateway access permissions were also not adequately "
-            "restricted. "
+            "Vendor account lifecycle controls did not automatically "
+            "expire third-party access. "
+        )
+
+    if "pra-network-restrictions-not-configured" in finding_ids:
+        paragraph += (
+            "Administrative and remote access interfaces were not "
+            "restricted to approved source networks. "
         )
 
     paragraph += (
@@ -502,17 +524,30 @@ def _build_admin_security_commentary(
             "privileged credentials were not rotated automatically"
         )
 
-    if "pra-credential-association-not-restricted" in finding_ids:
+    if "pra-session-context-not-required" in finding_ids:
         observations.append(
-            "credential association controls were not sufficiently restricted"
+            "privileged sessions could be initiated without requiring business "
+            "justification"
+        )
+
+    if "pra-simultaneous-vault-checkout-allowed" in finding_ids:
+        observations.append(
+            "multiple users could simultaneously check out privileged "
+            "credentials"
+        )
+
+    if "pra-file-transfer-malware-scanning-not-enabled" in finding_ids:
+        observations.append(
+            "file transfers were not inspected using integrated malware "
+            "scanning controls"
         )
 
     if not observations:
         return ""
 
     paragraph = (
-        "The review identified weaknesses affecting the management and "
-        "governance of privileged credentials. "
+        "The review identified weaknesses affecting privileged access "
+        "governance and administrative security controls. "
     )
 
     paragraph += (
@@ -543,10 +578,9 @@ def _build_platform_commentary(
         "management and operation of the remote access platform. "
     )
 
-    if "unsupported-or-unpatched-platform" in finding_ids:
+    if "pra-update-management-not-defined" in finding_ids:
         paragraph += (
-            "One or more platform components were unsupported or "
-            "insufficiently patched. "
+            "Appliance updates were not governed by a defined update process. "
         )
 
     if "aovpn-prelogon-connectivity-disabled" in finding_ids:
@@ -612,7 +646,12 @@ def _generate_commentary(
 
     grouped_findings = _group_findings(results.findings)
 
-    for theme, findings in grouped_findings.items():
+    for theme in THEMES:
+
+        findings = grouped_findings.get(theme)
+
+        if not findings:
+            continue
 
         builder = builders.get(theme)
 

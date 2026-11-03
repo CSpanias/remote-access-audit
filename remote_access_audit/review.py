@@ -352,7 +352,10 @@ def generate_findings(
     }
 
     for response in responses:
-        question = questions_by_id[response.finding_id]
+        question = questions_by_id.get(response.finding_id)
+
+        if not question:
+            continue
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,
@@ -393,7 +396,10 @@ def generate_positive_observations(
     }
 
     for response in responses:
-        question = questions_by_id[response.finding_id]
+        question = questions_by_id.get(response.finding_id)
+
+        if not question:
+            continue
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,
