@@ -144,7 +144,7 @@ class ReviewContext(BaseModel):
 
     split_tunnel_mode: str | None = None
 
-    platform_version: str | None = None
+    product_version: str | None = None
 
     deployment_type: str | None = None
 
