@@ -49,22 +49,3 @@ THEMES = [
     "Monitoring and Detection",
     "Administrative Security",
 ]
-
-
-# References Used in the Remediation Section
-REFERENCES = {
-    "Generic": {
-        "NCSC VPN Security Guidance":
-            "https://www.ncsc.gov.uk/collection/device-security-guidance/infrastructure/virtual-private-networks",
-        "NIST Remote Access Guidance":
-            "https://pages.nist.gov/zero-trust-architecture/index.html",
-    },
-    "Microsoft Always On VPN": {
-        "Always On VPN Deployment Guide":
-            "https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/",
-    },
-    "BeyondTrust PRA": {
-        "BeyondTrust PRA Documentation":
-            "https://docs.beyondtrust.com/pra/docs/welcome-to-privileged-remote-access"
-    }
-}

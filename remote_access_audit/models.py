@@ -24,6 +24,12 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
+class ReferenceSet(BaseModel):
+
+    generic: list[str] = Field(default_factory=list)
+
+    vendors: dict[str, list[str]] = Field(default_factory=dict)
+
 
 class SolutionType(str, Enum):
     """
@@ -207,6 +213,8 @@ class Question(BaseModel):
 
     vendors: list[str] = Field(default_factory=lambda: ["all"])
 
+    references: ReferenceSet = Field(default_factory=ReferenceSet)
+
 
 class Finding(BaseModel):
     """
@@ -223,6 +231,8 @@ class Finding(BaseModel):
     description: str
     commentary: str
     solution: str
+
+    references: ReferenceSet = Field(default_factory=ReferenceSet)
 
     notes: str | None = None
 

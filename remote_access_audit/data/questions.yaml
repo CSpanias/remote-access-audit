@@ -61,13 +61,25 @@
     process helps maintain platform security, stability, and vendor 
     supportability.
 
+  positive: >
+    Appliance updates were managed through a defined update process.
+
   solution: >
     Establish and maintain a documented update process for the BeyondTrust 
     appliance, including update monitoring, maintenance windows, testing, 
     approval, and deployment activities.
 
-  positive: >
-    Appliance updates were managed through a defined update process.
+  references:
+
+    generic: [
+      https://docs.beyondtrust.com/pra/docs/welcome-to-privileged-remote-access,
+    ]
+
+    vendors: 
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-updates,
+      ]
 
 - finding_id: aovpn-prelogon-connectivity-disabled
   finding_title: Pre-Logon VPN Connectivity Not Available
@@ -107,13 +119,25 @@
     before user sign-in. Environments relying on device tunnels may require 
     this capability.
 
+  positive: >
+    VPN connectivity was available prior to user logon.
+
   solution: >
     Consider enabling pre-logon connectivity where organisational requirements 
     rely on device management or machine-based services prior to user 
     authentication.
 
-  positive: >
-    VPN connectivity was available prior to user logon.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: []
 
 #-------------------------------------------------------------------------------
 # AUTHENTICATION
@@ -175,6 +199,20 @@
     Configure multi-factor authentication as a mandatory requirement for
     all remote access user accounts.
 
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-group-policies#group-policy-settings,
+      ]
+
 - finding_id: admin-mfa-not-enforced
   finding_title: Administrator Multi-Factor Authentication Not Enforced
   theme: Authentication
@@ -203,7 +241,7 @@
       remote access solution.
 
     BeyondTrust PRA: |
-      /login > Users & Security > Group Policies > Account Settings.
+      /login > Users & Security > Group Policies > Account Settings
 
       Review Group Policies assigned to administrators and verify MFA 
       requirements such as TOTP or FIDO2 are enforced.
@@ -220,13 +258,27 @@
     or establish persistent access. Multi-factor authentication helps reduce
     the risk of administrative account compromise.
 
+  positive: >
+    Multi-factor authentication was enforced for administrative and privileged 
+    accounts.
+
   solution: >
     Configure multi-factor authentication as a mandatory control for all
     administrative and privileged accounts.
 
-  positive: >
-    Multi-factor authentication was enforced for administrative and privileged 
-    accounts.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-group-policies#group-policy-settings,
+      ]
 
 - finding_id: aovpn-device-authentication-not-enforced
   finding_title: Device Authentication Not Enforced
@@ -278,6 +330,16 @@
     Restrict Device Tunnel authentication to machine certificates to
     ensure connectivity is limited to trusted and managed devices.
 
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
 - finding_id: pra-vendor-authentication-not-secure
   finding_title: Vendor Authentication Controls Not Sufficiently Configured
   theme: Authentication
@@ -325,15 +387,25 @@
     that third-party access is governed and protected in line with 
     organisational security requirements.
 
+  positive: >
+    Vendor authentication controls were configured in accordance with 
+    organisational security requirements.
+
   solution: >
     Review and strengthen vendor authentication controls. Ensure that 
     appropriate security settings such as MFA, password complexity, account 
     lockout protections, and secure account management controls are enforced 
     for all vendor accounts.
 
-  positive: >
-    Vendor authentication controls were configured in accordance with 
-    organisational security requirements.
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-security#vendor-authentication,
+      ]
 
 - finding_id: shared-accounts-permitted
   finding_title: Shared Accounts Permitted
@@ -373,12 +445,24 @@
     The use of shared accounts limits auditability and may prevent accurate 
     attribution of actions performed through remote access connections.
 
+  positive: >
+    All remote access was performed using uniquely assigned accounts.
+
   solution: >
     Replace shared accounts with uniquely assigned user accounts to improve 
     accountability and auditability.
 
-  positive: >
-    All remote access was performed using uniquely assigned accounts.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: []
 
 - finding_id: local-accounts-enabled
   finding_title: Local Accounts Enabled
@@ -428,13 +512,27 @@
     consistent enforcement of controls such as multi-factor
     authentication and conditional access policies.
 
+  positive: >
+    Remote access authentication was integrated with a central identity
+    provider.
+
   solution: >
     Migrate remote access authentication to a centrally managed identity
     platform such as Entra ID, Active Directory, LDAP, or RADIUS.
 
-  positive: >
-    Remote access authentication was integrated with a central identity
-    provider.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-security-providers,
+      ]
 
 - finding_id: vpn-weak-authentication-methods
   finding_title: Weak Authentication Methods Allowed
@@ -473,12 +571,22 @@
     typically support additional security controls such as multi-factor 
     authentication and centralised identity integration.
 
+  positive: >
+    Legacy authentication mechanisms were disabled.
+
   solution: >
     Retire legacy authentication mechanisms and standardise on modern,
     vendor-supported authentication methods.
 
-  positive: >
-    Legacy authentication mechanisms were disabled.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 #-------------------------------------------------------------------------------
 # ADMINISTRATIVE SECURITY
@@ -528,6 +636,14 @@
     Where supported, use credential injection mechanisms to avoid exposing 
     privileged credentials to users.
 
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: []
+
 - finding_id: pra-file-transfer-malware-scanning-not-enabled
   finding_title: File Transfer Malware Scanning Not Enabled
   theme: Administrative Security
@@ -571,6 +687,16 @@
     Consider integrating PRA file transfers with an ICAP-compatible malware
     scanning platform where additional inspection and content filtering
     capabilities are required.
+
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-security#icap-configuration,
+      ]
 
 - finding_id: pra-session-context-not-required
   finding_title: Session Context Not Required
@@ -621,6 +747,16 @@
     Configure Asset Policies to require a ticket reference, business 
     justification, or equivalent access context before privileged sessions are 
     initiated.
+
+  references:
+
+    generic: []
+
+    vendors: 
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-jump-policies#context-requirement,
+      ]
 
 - finding_id: pra-vault-password-rotation-not-enforced
   finding_title: Privileged Credential Rotation Not Enforced
@@ -673,6 +809,18 @@
     ensure credentials are rotated regularly and following credential check-in
     where appropriate.
 
+  references:
+
+    generic: []
+
+    vendors: 
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-account-policies,
+        https://docs.beyondtrust.com/pra/docs/pf-vault-options#scheduled-password-rotation-rules
+      ]
+    
+
 - finding_id: pra-simultaneous-vault-checkout-allowed
   finding_title: Simultaneous Credential Checkout Permitted
   theme: Administrative Security
@@ -717,6 +865,17 @@
     Configure Vault Account Policies to prevent simultaneous checkout of 
     privileged credentials.
 
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-account-groups,
+        https://docs.beyondtrust.com/pra/docs/pf-vault-options#allow-simultaneous-checkout-rules
+      ]
+
 #-------------------------------------------------------------------------------
 # CRYPTOGRAPHY
 #-------------------------------------------------------------------------------
@@ -751,12 +910,22 @@
     Protocols such as PPTP are no longer considered suitable for protecting 
     sensitive organisational communications.
 
+  positive: >
+    Legacy VPN protocols have been disabled.
+
   solution: >
     Remove support for deprecated VPN protocols and permit only modern,
     security-approved alternatives.
+  
+  references:
 
-  positive: >
-    Legacy VPN protocols have been disabled.
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: weak-tls-configuration
   finding_title: Weak TLS Configuration
@@ -772,7 +941,6 @@
 
   solution_types:
     - vpn
-    - pra
 
   vendors:
     - all
@@ -785,13 +953,6 @@
     Microsoft Always On VPN: |
       RRAS Server, SCHANNEL TLS Configuration, NPS and Windows Security Settings
 
-    BeyondTrust PRA: |
-      /appliance > Security > Certificates > TLS Configuration
-
-      Review the SSL/TLS certificate configuration and associated TLS settings. 
-      Confirm the deployment uses supported TLS versions and valid certificates 
-      issued by a trusted certificate authority.
-
   description: >
     Deprecated TLS versions were permitted for remote access communications.
 
@@ -799,12 +960,23 @@
     Deprecated TLS versions contain known weaknesses and may expose remote 
     access communications to downgrade and cryptographic attacks.
 
+  positive: >
+    Remote access communications were restricted to supported TLS versions.
+
+
   solution: >
     Enforce the use of TLS 1.2 and TLS 1.3 for remote access communications by 
     removing support for older protocol versions.
 
-  positive: >
-    Remote access communications were restricted to supported TLS versions.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: weak-cryptography
   finding_title: Weak Cryptographic Algorithms Permitted
@@ -841,12 +1013,26 @@
     and integrity of remote access communications and increase the risk of 
     cryptographic attacks.
 
+  positive: >
+    Strong, modern cryptographic algorithms were enforced.
+
   solution: >
     Align the cryptographic configuration with current vendor guidance and 
     industry best practice.
 
-  positive: >
-    Strong, modern cryptographic algorithms were enforced.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-tls-configuration,
+      ]
 
 #-------------------------------------------------------------------------------
 # ACCESS CONTROL
@@ -883,12 +1069,22 @@
     Split tunnelling may expose managed devices to untrusted networks while 
     simultaneously connected to internal resources.
 
+  positive: >
+    Split tunnelling was disabled or appropriately controlled.
+
   solution: >
     Minimise the use of split tunnelling and, where it remains necessary, 
     implement appropriate restrictions, monitoring, and governance controls.
 
-  positive: >
-    Split tunnelling was disabled or appropriately controlled.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: aovpn-route-validation-not-enforced
   finding_title: Route Validation Controls Not Enforced
@@ -926,12 +1122,22 @@
     network paths and reduces the risk of traffic bypassing organisational 
     security controls.
 
+  positive: >
+    Route validation controls were implemented and enforced.
+
   solution: >
     Validate configured VPN routes and enforce route validation controls to 
     limit connectivity to approved destinations.
 
-  positive: >
-    Route validation controls were implemented and enforced.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: device-compliance-not-enforced
   finding_title: Device Trust Validation Not Enforced
@@ -970,12 +1176,22 @@
     Devices that fail basic security requirements may retain access to 
     organisational systems and services.
 
+  positive: >
+    Device compliance validation was enforced prior to access.
+
   solution: >
     Introduce device compliance validation to ensure security requirements are 
     satisfied before access is granted.
 
-  positive: >
-    Device compliance validation was enforced prior to access.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: user-access-not-reviewed
   finding_title: User Access Not Periodically Reviewed
@@ -1018,12 +1234,22 @@
     excessive access, orphaned accounts, and inappropriate access permissions 
     remaining assigned following role changes.
 
+  positive: >
+    Remote access permissions were reviewed regularly.
+
   solution: >
     Establish a formal access review process to validate ongoing business need 
     and remove unnecessary permissions.
 
-  positive: >
-    Remote access permissions were reviewed regularly.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 - finding_id: pra-jump-clients-not-restricted
   finding_title: Jump Client Deployment Not Restricted
@@ -1048,7 +1274,7 @@
       controls.
 
     BeyondTrust PRA: |
-      Privileged Remote Access > Asset Management > Jump Clients
+      /login > Asset Management > Jump Clients
 
   expected_value: |
     Jump Clients are deployed only to approved systems, assigned to appropriate 
@@ -1072,6 +1298,16 @@
   solution: >
     Restrict Jump Client deployment to approved systems and review deployments 
     periodically.
+
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/jump-clients-1,
+      ]
 
 - finding_id: pra-vendor-account-expiration-not-enforced
   finding_title: Vendor Account Expiration Not Enforced
@@ -1112,13 +1348,23 @@
     unnecessary or orphaned access remaining available after business 
     requirements have ended.
 
+  positive: >
+    Vendor accounts were subject to defined expiration and lifecycle management 
+    controls.
+
   solution: >
     Configure vendor account expiration settings and automatic cleanup controls 
     to ensure third-party access is removed when no longer required.
 
-  positive: >
-    Vendor accounts were subject to defined expiration and lifecycle management 
-    controls.
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-vendors,
+      ]
 
 - finding_id: pra-network-restrictions-not-configured
   finding_title: Network Restrictions Not Configured
@@ -1167,14 +1413,24 @@
     other trusted administration locations may benefit from restricting
     access to authorised network ranges.
 
+  positive: >
+    Administrative and remote access interfaces were restricted to approved
+    source networks.
+
   solution: >
     Where operationally appropriate, configure network restrictions to limit
     access to administrative interfaces and remote access consoles from
     approved source networks.
 
-  positive: >
-    Administrative and remote access interfaces were restricted to approved
-    source networks.
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-security#network-restrictions,
+      ]
 
 - finding_id: users-can-modify-vpn-configuration
   finding_title: Users Able to Modify VPN Security Settings
@@ -1221,14 +1477,24 @@
     security-relevant settings helps ensure that organisational security 
     requirements are applied consistently across all remote access users.
 
+  positive: >
+      Security-critical VPN settings were centrally managed and could not be 
+      modified by standard users.
+
   solution: >
     Centrally manage VPN configuration settings and prevent end users from 
     modifying security-critical parameters that could weaken organisational 
     security controls.
 
-  positive: >
-    Security-critical VPN settings were centrally managed and could not be 
-    modified by standard users.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
 
 #-------------------------------------------------------------------------------
 # MONITORING
@@ -1283,14 +1549,28 @@
     Insufficient logging reduces visibility of suspicious activity, 
     authentication abuse, and security incidents.
 
+  positive: >
+    Remote access authentication, connection, and session activity was logged 
+    and retained appropriately.
+
   solution: >
     Ensure that authentication, connection, and session activity is logged and 
     retained for an appropriate period in accordance with organisational 
     monitoring and audit requirements.
 
-  positive: >
-    Remote access authentication, connection, and session activity was logged 
-    and retained appropriately.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-reports,
+      ]
 
 - finding_id: admin-activity-not-retained-or-reviewed
   finding_title: Administrative Activity Not Retained or Reviewed
@@ -1337,12 +1617,27 @@
     investigation of configuration changes, security incidents, and misuse of 
     privileged accounts.
 
+  positive: >
+    Administrative actions were logged and retained appropriately.
+
   solution: >
     Implement comprehensive audit logging for administrative activity and
     establish regular log review procedures.
 
-  positive: >
-    Administrative actions were logged and retained appropriately.
+  references:
+
+    generic: []
+
+    vendors: 
+
+      Microsoft Always On VPN: [
+        https://learn.microsoft.com/windows-server/remote/remote-access/vpn/always-on-vpn/,
+      ]
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-reports,
+        https://docs.beyondtrust.com/pra/docs/pf-appliance-administration
+      ]
 
 - finding_id: pra-session-inactivity-timeout-not-configured
   finding_title: Session Inactivity Timeout Not Configured
@@ -1391,6 +1686,18 @@
   solution: >
     Configure inactivity timeout controls to automatically remove users from 
     privileged sessions after an appropriate period of inactivity.
+
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-group-policies,
+        https://docs.beyondtrust.com/pra/docs/pf-security#log-out-idle-user-after,
+        https://docs.beyondtrust.com/pra/docs/pf-security#remove-user-from-session-after-inactivity
+      ]
 
 - finding_id: pra-session-recording-disabled
   finding_title: Session Recording Not Enforced
@@ -1443,6 +1750,16 @@
     retain recordings in accordance with organisational retention and audit 
     requirements.
 
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-configuration,
+      ]
+
 - finding_id: pra-session-recording-can-be-disabled
   finding_title: Session Recording Can Be Disabled Through Asset Policies
   theme: Monitoring and Detection
@@ -1487,3 +1804,13 @@
   solution: >
     Ensure privileged Asset Policies do not disable session recording 
     functionality and review policy exceptions regularly.
+
+  references:
+
+    generic: []
+
+    vendors:
+
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/pf-jump-policies#disable-recordings,
+      ]

@@ -10,7 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from remote_access_audit.constants import(
-    THEMES, REFERENCES, COMMENTARIES
+    THEMES, COMMENTARIES
 )
 from remote_access_audit.models import AssessmentResults
 
@@ -677,6 +677,23 @@ def _generate_commentary(
 #-------------------------------------------------------------------------------
 # Remediation
 #-------------------------------------------------------------------------------
+
+def _collect_references(
+    results: AssessmentResults,
+) -> list[str]:
+
+    refs = set()
+
+    platform = (results.context.remote_access_solution.value)
+
+    for finding in results.findings:
+
+        refs.update(finding.references.generic)
+        refs.update(finding.references.vendors.get(platform, []))
+
+    return sorted(refs)
+
+
 def _generate_remediation(
     results: AssessmentResults,
 ) -> list[str]:
@@ -714,15 +731,12 @@ def _generate_remediation(
     lines.append("### References")
     lines.append("")
 
-    for title, url in REFERENCES["Generic"].items():
-        lines.append(f"- [{url}]({url})")
+    references = _collect_references(results)
 
-    platform = results.context.remote_access_solution.value
+    if references:
 
-    if platform in REFERENCES:
-        for title, url in REFERENCES[platform].items():
-            lines.append(f"- [{url}]({url})")
-
+        for reference in references:
+            lines.append(f"- [{reference}]({reference})")
 
     return lines
 

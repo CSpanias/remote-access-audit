@@ -373,6 +373,7 @@ def generate_findings(
                     commentary=question.commentary.strip(),
                     solution=question.solution.strip(),
                     expected_value=question.expected_value.strip(),
+                    references=question.references,
                     notes=response.notes,
                 )
             )
