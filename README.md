@@ -14,7 +14,7 @@ Structured Assessment
 Markdown Report + Findings Export
 ```
 
-For more context regarding the assessed controls check [here](https://github.com/CSpanias/remote-access-audit/tree/main/remote_access_audit/docs/beyondtrust-pra-context.md).
+For more context regarding the assessed controls check [here](https://github.com/CSpanias/remote-access-audit/tree/main/remote_access_audit/docs/).
 
 ## Supported Platforms
 
