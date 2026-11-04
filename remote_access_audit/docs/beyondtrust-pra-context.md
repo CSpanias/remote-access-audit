@@ -1,10 +1,14 @@
+# BeyondTrust Privilege Remote Access (PRA)
+
+## Overview
+
 This assessment framework is designed to support reviews of BeyondTrust Privileged Remote Access (PRA) deployments.
 
 The goal of the assessment is to assess whether the platform has been configured and governed in a manner that aligns with organisational security requirements and industry good practice. The framework guides assessors through a series of focused questions covering platform configuration, authentication, access control, privileged access governance, cryptographic protections, monitoring, and auditing. The outcome is a set of findings and positive observations that can be used to understand the security posture of the deployment and identify opportunities for improvement.
 
 This document serves two purposes. Firstly, it provides background information for consultants performing assessments using the tool. Secondly, it acts as a high-level introduction to BeyondTrust PRA for assessors who may not have prior experience with PRA platforms.
 
-# What is Privileged Remote Access?
+## What is Privileged Remote Access?
 
 Traditional VPN solutions provide users with network connectivity into an organisation's environment. Once connected, users typically gain access to a range of internal services depending on their permissions and network routing configuration.
 
@@ -12,13 +16,13 @@ PRA platforms take a different approach. Rather than granting users broad networ
 
 This model allows organisations to apply additional controls that are difficult or impossible to enforce consistently through traditional remote access technologies. Examples include session recording, credential vaulting, credential injection, approval workflows, access reviews, session monitoring, and detailed auditing. As a result, PRA solutions are commonly used to manage administrative access, privileged operations, vendor access, contractor access, and access to sensitive systems.
 
-# What is BeyondTrust PRA?
+## What is BeyondTrust PRA?
 
 [BeyondTrust PRA](https://docs.beyondtrust.com/pra/docs/welcome-to-privileged-remote-access) is a platform designed to provide secure remote access to systems, applications, and infrastructure while maintaining visibility and control over privileged activities. The platform supports both internal and external users and provides a range of capabilities intended to strengthen governance over remote access activities.
 
 Key platform capabilities include controlled remote access, integration with enterprise identity providers, session monitoring and recording, privileged credential management, granular access policy enforcement, and support for third-party access management. Throughout this assessment, many of the controls reviewed relate to how effectively these capabilities are configured and governed.
 
-# Assessment Methodology
+## Assessment Methodology
 
 The assessment is divided into six areas.
 
@@ -31,7 +35,7 @@ The assessment is divided into six areas.
 
 Each section below provides background information to help assessors understand the purpose of the controls being reviewed and the security objectives they are intended to achieve. Associated assessment controls are listed under each section for ease of reference.
 
-## Platform Configuration
+### Platform Configuration
 
 > - `product_version` ([status](https://docs.beyondtrust.com/pra/docs/pf-status))
 > - `pra-update-management-not-defined` ([updates](https://docs.beyondtrust.com/pra/docs/pf-updates))
@@ -46,7 +50,7 @@ In addition to understanding the deployment model, assessors should identify the
 
 A key objective within this area is determining whether platform updates are managed through a defined maintenance process. Organisations should be able to demonstrate how updates are identified, tested, approved, scheduled, and deployed. An effective update process helps ensure security fixes and platform improvements are applied in a controlled and consistent manner.
 
-## Authentication
+### Authentication
 
 > - `identity_provider` ([identity provider](https://docs.beyondtrust.com/pra/docs/identity-providers))
 > - `user-mfa-not-enforced`, `admin-mfa-not-enforced` ([group policy settings](https://docs.beyondtrust.com/pra/docs/pf-group-policies#group-policy-settings))
@@ -64,7 +68,7 @@ Vendor authentication is another important area of review. BeyondTrust PRA is fr
 
 Finally, assessors should verify that individual users are assigned unique accounts. Shared accounts reduce accountability and make it significantly more difficult to attribute actions to specific individuals during investigations or audits.
 
-## Administrative Security
+### Administrative Security
 
 > - `pra-credential-injection-not-used` ([desktop credential injection](https://docs.beyondtrust.com/pra/docs/desktop-credential-injection))
 > - `pra-vault-password-rotation-not-enforced` ([account policies](https://docs.beyondtrust.com/pra/docs/pf-account-policies), [scheduled password rotation rules](https://docs.beyondtrust.com/pra/docs/pf-vault-options#scheduled-password-rotation-rules))
@@ -84,7 +88,7 @@ Credential governance should extend to credential checkout controls. Allowing mu
 
 Finally, organisations may choose to integrate file transfer workflows with malware inspection technologies. While not typically considered a baseline security requirement, malware scanning can provide an additional layer of defence in environments with enhanced security or compliance requirements.
 
-## Cryptography
+### Cryptography
 
 > - `weak-cryptography` ([tls configuration](https://docs.beyondtrust.com/pra/docs/pf-tls-configuration))
 
@@ -96,7 +100,7 @@ Within current versions of BeyondTrust PRA, TLS 1.2 and TLS 1.3 are enabled by d
 
 The assessment should seek to determine whether the deployment aligns with current vendor recommendations and accepted security practice.
 
-## Access Control
+### Access Control
 
 > - `user-access-not-reviewed`
 > - `pra-jump-clients-not-restricted` ([jump clients](https://docs.beyondtrust.com/pra/docs/jump-clients-1))
@@ -113,7 +117,7 @@ Third-party access should also be reviewed. Vendor accounts should be subject to
 
 Organisations may also choose to restrict access to administrative interfaces, APIs, consoles, or management functions based on source network location. While not appropriate in every environment, network restrictions can provide valuable defence-in-depth protections where trusted administration networks exist.
 
-## Monitoring and Detection
+### Monitoring and Detection
 
 > - `insufficient-logging` ([reports](https://docs.beyondtrust.com/pra/docs/pf-reports))
 > - `admin-activity-not-retained-or-reviewed` ([reports](https://docs.beyondtrust.com/pra/docs/pf-reports), [application administration](https://docs.beyondtrust.com/pra/docs/pf-appliance-administration))
