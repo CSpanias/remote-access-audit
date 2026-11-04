@@ -642,7 +642,9 @@
 
     vendors:
 
-      BeyondTrust PRA: []
+      BeyondTrust PRA: [
+        https://docs.beyondtrust.com/pra/docs/desktop-credential-injection,
+      ]
 
 - finding_id: pra-file-transfer-malware-scanning-not-enabled
   finding_title: File Transfer Malware Scanning Not Enabled
