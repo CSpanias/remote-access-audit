@@ -13,9 +13,10 @@ import argparse
 from rich.panel import Panel
 
 from remote_access_audit.exporters.json import (
-    export_findings_json, export_assessment_responses_json
+    build_findings, export_findings_json, export_assessment_responses_json
 )
 from remote_access_audit.exporters.markdown import export_markdown
+from remote_access_audit.exporters.sureformat import export_sureformat
 from remote_access_audit.review import run_assessment
 from remote_access_audit.ui import console
 
@@ -30,7 +31,20 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.parse_args()
+    parser.add_argument(
+        "--csacyber",
+        action="store_true",
+        help="Export SureFormat XML instead of JSON findings",
+    )
+    parser.add_argument(
+        "--hostname",
+        help="SureCloud asset hostname (required with --csacyber)",
+    )
+    args = parser.parse_args()
+    if args.csacyber and (not args.hostname or not args.hostname.strip()):
+        parser.error("--csacyber requires a non-empty --hostname")
+    if args.hostname is not None and not args.csacyber:
+        parser.error("--hostname requires --csacyber")
 
     results = run_assessment()
 
@@ -40,7 +54,12 @@ def main() -> None:
     console.print(f"[red]Findings:[/red] {len(results.findings)}")
     console.print(f"[green]Positive Observations:[/green] {len(results.positives)}")
 
-    export_findings_json(results, "remote-access-review-findings.json")
+    if args.csacyber:
+        export_sureformat(
+            build_findings(results), args.hostname.strip(), "remote-access-review-findings.xml"
+        )
+    else:
+        export_findings_json(results, "remote-access-review-findings.json")
     export_markdown(results, "remote-access-review-report.md")
     export_assessment_responses_json(results, "remote-access-review-notes.json")
 

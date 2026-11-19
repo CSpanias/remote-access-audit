@@ -12,12 +12,11 @@ from pathlib import Path
 from remote_access_audit.models import AssessmentResults
 
 
-def export_findings_json(
+def build_findings(
     results: AssessmentResults,
-    output_file: str,
-) -> None:
+) -> list[dict[str, str]]:
     """
-    Export findings in the standard findings format.
+    Build findings in the standard findings format.
     """
 
     findings = [
@@ -43,11 +42,19 @@ def export_findings_json(
         ]
     )
 
+    return findings
+
+
+def export_findings_json(
+    results: AssessmentResults,
+    output_file: str,
+) -> None:
+    """Export findings in the standard findings format."""
     path = Path(output_file)
 
     with path.open("w", encoding="utf-8") as file:
         json.dump(
-            {"findings": findings},
+            {"findings": build_findings(results)},
             file,
             indent=4,
         )
