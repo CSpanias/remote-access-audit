@@ -69,7 +69,6 @@ python -m remote_access_audit.cli
 - Guided remote access solution assessment workflow
 - Markdown-formatted report generation
 - JSON findings export
-- Optional SureFormat XML findings export
 - JSON assessment notes export
 - YAML-driven assessment content
 
@@ -80,17 +79,6 @@ Just launch the tool!
 ```bash
 remote-access-audit
 ```
-
-For SureCloud, supply the asset hostname and export XML instead of the findings JSON:
-
-```bash
-remote-access-audit --csacyber --hostname vpn.example.com
-```
-
-This writes `remote-access-review-findings.xml` with the supplied hostname.
-Unmapped findings are reported and omitted. The Markdown report and JSON
-assessment notes are still written; older findings exports in other formats
-are not removed.
 
 ## Requirements
 
